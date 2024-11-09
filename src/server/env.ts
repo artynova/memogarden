@@ -1,4 +1,7 @@
 import {z} from "zod";
+import dotenv from "dotenv";
+
+dotenv.config({path: ".env.local"});
 
 const envSchema = z.object({
     DB_USER: z.string().min(1).default("postgres"),
