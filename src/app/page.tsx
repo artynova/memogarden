@@ -1,5 +1,5 @@
 export default function Home() {
     return (
-        <p>Hello World</p>
+        <p className={"text-red-500"}>Hello World</p>
     );
 }
