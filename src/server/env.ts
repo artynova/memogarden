@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import {z} from "zod";
 
 const envSchema = z.object({
     DB_USER: z.string().min(1).default("postgres"),
@@ -13,7 +13,7 @@ const envSchema = z.object({
             z.literal("production"),
         ])
         .default("development"),
-})
+});
 
 const env = envSchema.parse(process.env);
 

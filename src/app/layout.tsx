@@ -1,3 +1,5 @@
+import "@/app/globals.css";
+
 export const metadata = {
     title: "MemoGarden",
     description: "Gamified flashcard revision app themed around gardening",
@@ -12,5 +14,5 @@ export default function RootLayout({
         <html lang="en">
         <body>{children}</body>
         </html>
-    )
+    );
 }
