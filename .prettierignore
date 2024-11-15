@@ -1,0 +1,8 @@
+node_modules
+.next
+.husky
+coverage
+.prettierignore
+*.log
+docs
+drizzle/meta

@@ -1,5 +1,3 @@
 export default function Home() {
-    return (
-        <p>Hello World</p>
-    );
+    return <p>Root page placeholder</p>;
 }

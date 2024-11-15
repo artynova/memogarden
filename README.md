@@ -12,18 +12,18 @@ users.
 
 ## Planned Features
 
-- Desktop and mobile support
-- Management of garden sections and flashcard plants
-- Card revision
-- Visual representation of card health, section health, and overall garden health
-- Garden Heart and garden-wide progression contingent on revising diligently
-- Authentication with email, Google, and Facebook
+-   Desktop and mobile support
+-   Management of garden sections and flashcard plants
+-   Card revision
+-   Visual representation of card health, section health, and overall garden health
+-   Garden Heart and garden-wide progression contingent on revising diligently
+-   Authentication with email, Google, and Facebook
 
 ## Technology Stack
 
-- React
-- Next.js
-- Tailwind CSS
-- ShadcnUI
-- Drizzle ORM
-- PostgreSQL
+-   React
+-   Next.js
+-   Tailwind CSS
+-   ShadcnUI (components imported from its collection are located at `src/components/ui/base`)
+-   Drizzle ORM
+-   PostgreSQL
