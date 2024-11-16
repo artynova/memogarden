@@ -23,10 +23,10 @@ export const userCredentials = pgTable("user_credentials", {
 
 export const userGoogle = pgTable("user_google", {
     userId: userReference.primaryKey(),
-    sub: varchar().notNull(), // Subject ID returned by Google, link between the external account and the MemoGarden account
+    sub: varchar().unique().notNull(), // Subject ID returned by Google, link between the external account and the MemoGarden account
 });
 
 export const userFacebook = pgTable("user_facebook", {
     userId: userReference.primaryKey(),
-    sub: varchar().notNull(), // Subject ID returned by Facebook, link between the external account and the MemoGarden account
+    sub: varchar().unique().notNull(), // Subject ID returned by Facebook, link between the external account and the MemoGarden account
 });
