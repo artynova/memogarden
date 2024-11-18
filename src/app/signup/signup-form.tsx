@@ -8,21 +8,34 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CredentialsSignupData, CredentialsSignupSchema } from "@/lib/validation-schemas";
 import { InputWithLabel } from "@/components/ui/form/input-with-label";
 import React from "react";
+import { ignoreAsyncFnResult } from "@/lib/utils";
+
+const formConfig = {
+    mode: "onBlur" as const,
+    resolver: zodResolver(CredentialsSignupSchema),
+    defaults: {
+        email: "",
+        password: "",
+        confirmPassword: "",
+    },
+};
 
 export function SignupForm() {
-    const form = useForm<CredentialsSignupData>({
-        mode: "onBlur",
-        resolver: zodResolver(CredentialsSignupSchema),
-    });
+    const form = useForm<CredentialsSignupData>(formConfig);
 
     async function onSubmit(data: CredentialsSignupData) {
         const response = await signup(data);
-        if (response?.status === 409) form.setError("email", { message: "Already in use" });
+        if (response?.status === 409) {
+            form.setError("email", { message: "Already in use" });
+        }
     }
 
     return (
         <Form {...form}>
-            <form onSubmit={void form.handleSubmit(onSubmit)} className="w-full space-y-2">
+            <form
+                onSubmit={ignoreAsyncFnResult(form.handleSubmit(onSubmit))}
+                className="w-full space-y-2"
+            >
                 <InputWithLabel control={form.control} name="email" label="Email:" />
                 <InputWithLabel
                     control={form.control}

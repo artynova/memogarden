@@ -10,33 +10,43 @@ import { InputWithLabel } from "@/components/ui/form/input-with-label";
 import { FieldsetWithErrorMessage } from "@/components/ui/form/fieldset/fieldset-with-error-message";
 import React, { useEffect, useState } from "react";
 import { ResponseUnauthorized } from "@/lib/responses";
+import { ignoreAsyncFnResult } from "@/lib/utils";
+
+const formConfig = {
+    mode: "onBlur" as const,
+    resolver: zodResolver(CredentialsSigninSchema),
+    defaultValues: {
+        email: "",
+        password: "",
+    },
+};
 
 export function SigninForm() {
     // Credentials mismatch error originating from the server
-    const [rootServerError, setRootServerError] = useState<string>();
-    const form = useForm<CredentialsSigninData>({
-        mode: "onBlur",
-        resolver: zodResolver(CredentialsSigninSchema),
-    });
+    const [rootServerError, setRootServerError] = useState("");
+    const form = useForm<CredentialsSigninData>(formConfig);
 
     const formData = form.watch();
 
     // Remove credentials error as soon as the user edits any of the credentials
     useEffect(() => {
-        setRootServerError(undefined);
+        setRootServerError("");
     }, [formData.email, formData.password]);
 
     async function onSubmit(data: CredentialsSigninData) {
-        setRootServerError(undefined);
         const response = await signinWithCredentials(data);
-        if (response?.status === ResponseUnauthorized.status)
+        if (response?.status === ResponseUnauthorized.status) {
             setRootServerError("Incorrect email or password");
+        }
     }
 
     return (
         <div className="space-y-2">
             <Form {...form}>
-                <form onSubmit={void form.handleSubmit(onSubmit)} className="w-full space-y-2">
+                <form
+                    onSubmit={ignoreAsyncFnResult(form.handleSubmit(onSubmit))}
+                    className="w-full space-y-2"
+                >
                     <FieldsetWithErrorMessage name="credentials" error={rootServerError}>
                         <InputWithLabel control={form.control} name="email" label="Email:" />
                         <InputWithLabel
@@ -52,10 +62,18 @@ export function SigninForm() {
                 </form>
             </Form>
             <div className="flex w-full justify-center text-sm text-muted-foreground">or</div>
-            <Button onClick={() => void signinWithGoogle()} variant="outline" className="w-full">
+            <Button
+                onClick={ignoreAsyncFnResult(() => signinWithGoogle())}
+                variant="outline"
+                className="w-full"
+            >
                 Sign in with Google
             </Button>
-            <Button onClick={() => void signinWithFacebook()} variant="outline" className="w-full">
+            <Button
+                onClick={ignoreAsyncFnResult(() => signinWithFacebook())}
+                variant="outline"
+                className="w-full"
+            >
                 Sign in with Facebook
             </Button>
         </div>
