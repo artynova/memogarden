@@ -11,7 +11,7 @@ import Link from "next/link";
 export default function Page() {
     return (
         <div className="flex h-screen w-full items-center justify-center px-4">
-            <Card className="mx-auto max-w-sm">
+            <Card className="mx-auto w-96 max-w-96">
                 <CardHeader>
                     <CardTitle className="text-2xl">Sign up</CardTitle>
                     <CardDescription>
