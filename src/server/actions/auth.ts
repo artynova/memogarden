@@ -13,14 +13,15 @@ import { redirect } from "next/navigation";
  * do not have a separate registration flow.
  *
  * @param formData Form data from the frontend.
+ * @param timezone Timezone string describing the user's inferred timezone based on system settings.
  */
-export async function signup({
-    email,
-    password,
-}: CredentialsSignupData): Promise<Response | undefined> {
+export async function signup(
+    { email, password }: CredentialsSignupData,
+    timezone: string,
+): Promise<Response | undefined> {
     const existingCredentials = await getUserCredentialsByEmail(email);
     if (existingCredentials) return ResponseConflict;
-    await createCredentialsUser(email, password);
+    await createCredentialsUser(email, password, timezone ?? "Etc/UTC"); // Default to UTC in unexpected cases
     redirect("/signin");
 }
 

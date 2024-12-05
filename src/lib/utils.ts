@@ -17,3 +17,7 @@ export function ignoreAsyncFnResult<T extends (...args: Parameters<T>) => Promis
         void asyncFn(...args);
     };
 }
+
+export function escapeRegex(input: string) {
+    return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}

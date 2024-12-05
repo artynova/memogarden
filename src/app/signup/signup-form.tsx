@@ -24,7 +24,8 @@ export function SignupForm() {
     const form = useForm<CredentialsSignupData>(formConfig);
 
     async function onSubmit(data: CredentialsSignupData) {
-        const response = await signup(data);
+        const inferredTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const response = await signup(data, inferredTimezone);
         if (response?.status === 409) {
             form.setError("email", { message: "Already in use" });
         }

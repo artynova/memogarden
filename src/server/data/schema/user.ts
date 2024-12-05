@@ -1,11 +1,14 @@
-import { char, pgTable, varchar } from "drizzle-orm/pg-core";
-import { autoId, autoIdExternal } from "@/server/data/schema/common";
+import { char, doublePrecision, pgTable, varchar } from "drizzle-orm/pg-core";
+import { autoId, autoIdExternal, timestampTz } from "@/server/data/schema/utils";
 
 /**
  * Table with common user data across all authentication methods.
  */
 export const user = pgTable("user", {
     id: autoId(),
+    lastHealthSync: timestampTz().notNull().defaultNow(), // When was the last automatic account-wide update of card retrievabilities (and thus "health")
+    timezone: varchar({ length: 50 }).notNull(), // Canonical IANA timezone name, e.g., America/New_York
+    retrievability: doublePrecision(), // Aggregated average retrievability of all active cards of the account
 });
 
 /**

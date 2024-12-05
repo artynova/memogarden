@@ -1,25 +1,15 @@
-import NextAuth, { Account, NextAuthConfig } from "next-auth";
+import NextAuth, { NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import {
-    createOAuthUser,
+    getIdFromOAuth,
     getUserCredentialsByEmail,
-    getUserIdBySub,
+    usesSupportedOAuth,
 } from "@/server/data/services/user";
 import { CredentialsSigninSchema } from "@/lib/validation-schemas";
 import bcrypt from "bcrypt";
 import "next-auth/jwt";
-
-function usesSupportedOAuth(account: Account | null) {
-    return account?.provider === "google" || account?.provider === "facebook";
-}
-
-async function getIdFromOAuth(provider: "google" | "facebook", sub: string) {
-    const internalId = await getUserIdBySub(provider, sub);
-    if (internalId) return internalId;
-    return createOAuthUser(provider, sub);
-}
 
 declare module "next-auth/jwt" {
     interface JWT {
@@ -62,12 +52,9 @@ export const authConfig: NextAuthConfig = {
     ],
     callbacks: {
         // Adds the user's internal MemoGarden ID to the token
-        async jwt({ user, account, token }) {
-            if (!usesSupportedOAuth(account)) return { ...token, id: user.id };
-            const internalId = await getIdFromOAuth(
-                account!.provider as "google" | "facebook",
-                account!.providerAccountId,
-            );
+        async jwt({ user, profile, account, token }) {
+            if (!usesSupportedOAuth(account)) return { ...token, id: user.id }; // Case when the user uses credentials
+            const internalId = await getIdFromOAuth(account, profile!);
             return { ...token, id: internalId.toString() };
         },
 

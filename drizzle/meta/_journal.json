@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1733430335682,
+      "tag": "0000_talented_maginty",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1733430693274,
+      "tag": "0001_seed_card_enums",
+      "breakpoints": true
+    }
+  ]
+}
