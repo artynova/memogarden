@@ -27,4 +27,7 @@ const envSchema = z.object({
     AUTH_FACEBOOK_SECRET: z.string().min(1),
 });
 
+/**
+ * Object with all environment variables parsed and validated.
+ */
 export const env = envSchema.parse(process.env);

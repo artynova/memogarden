@@ -25,11 +25,17 @@ export const userCredentials = pgTable("user_credentials", {
     passwordHash: char({ length: 60 }).notNull(), // bcrypt hash output is exactly 60 characters
 });
 
+/**
+ * Identification data for users authenticated by Google.
+ */
 export const userGoogle = pgTable("user_google", {
     userId: userReference().primaryKey(),
     sub: varchar().unique().notNull(), // Subject ID returned by Google, link between the external account and the MemoGarden account
 });
 
+/**
+ * Authentication data for users authenticated by Facebook.
+ */
 export const userFacebook = pgTable("user_facebook", {
     userId: userReference().primaryKey(),
     sub: varchar().unique().notNull(), // Subject ID returned by Facebook, link between the external account and the MemoGarden account

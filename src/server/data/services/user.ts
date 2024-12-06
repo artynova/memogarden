@@ -33,7 +33,6 @@ export type InsertUser = InferInsertModel<typeof user>;
 export type SelectUserCredentials = InferSelectModel<typeof userCredentials>;
 export type InsertUserCredentials = InferSelectModel<typeof userCredentials>;
 
-// Prepared statements to improve performance
 const insertUser = db
     .insert(user)
     .values(makeInsertPlaceholders(insertUserColumns))
@@ -100,10 +99,22 @@ const selectUserHealthSyncData = db
     .where(eqPlaceholder(user.id))
     .prepare("select_last_sync_date");
 
+/**
+ * Creates a new base user entry (without auth information).
+ *
+ * @param timezone User's inferred timezone.
+ * @return Internal ID of the newly created user.
+ */
 async function createUser(timezone: string) {
     return (await insertUser.execute({ timezone }).then(takeFirstOrNull))!.id;
 }
 
+/**
+ * Updates the recorded last daily sync date for the user's account to the given date.
+ *
+ * @param id User's ID.
+ * @param newLastSync New date.
+ */
 export async function updateUserHealthSyncDate(id: bigint, newLastSync: Date) {
     await updateHealthSyncDate.execute({ id, lastHealthSync: newLastSync });
 }
@@ -149,6 +160,12 @@ export async function maybeSyncUserHealth(id: bigint) {
     await updateUserHealthSyncDate(id, nowInTimezone.toUTC().toJSDate());
 }
 
+/**
+ * Retrieves user's full credentials by email.
+ *
+ * @param email Email.
+ * @return Credentials of the user with the email, or `null` if no such user exists.
+ */
 export async function getUserCredentialsByEmail(
     email: string,
 ): Promise<SelectUserCredentials | null> {
@@ -162,7 +179,7 @@ export async function getUserCredentialsByEmail(
  * @param email User's email.
  * @param password User's password (will be hashed).
  * @param timezone String representation of the user's inferred timezone.
- * @return Internal ID of the newly added user.
+ * @return Internal ID of the newly created user.
  */
 export async function createCredentialsUser(email: string, password: string, timezone: string) {
     const userId = await createUser(timezone);
@@ -182,6 +199,13 @@ const OAuthProviderToStatements = {
     },
 };
 
+/**
+ * Retrieves the MemoGarden ID of a user by their OAuth data (provider and subject ID).
+ *
+ * @param provider Provider ("google" or "facebook").
+ * @param sub Subject ID returned by the provider.
+ * @return User's ID, or `null` if the corresponding user does not exist.
+ */
 export async function getUserIdBySub(provider: "google" | "facebook", sub: string) {
     const user = await OAuthProviderToStatements[provider].selectBySub
         .execute({ sub })
@@ -200,21 +224,22 @@ export type SupportedAccount = Account & {
 /**
  * Verifies that the account uses supported providers.
  *
- * @param account The OAuth account to be checked.
+ * @param account OAuth account to be checked.
+ * @return `true` if the account object is non-null and has either "google" or "facebook" set as the provider.
  */
 export function usesSupportedOAuth(account: Account | null): account is SupportedAccount {
     return account?.provider === "google" || account?.provider === "facebook";
 }
 
 /**
- * Retrieves MemoGarden user ID that corresponds to the user identified. Will create a new user if the user does not
- * exist (i.e., it is their first sign-in with these OAuth credentials).
+ * Retrieves the MemoGarden ID that corresponds to the user identified by the OAuth information.
+ * Will create a new user if the user does not exist (i.e., it is their first sign-in with these OAuth credentials).
  *
- * @param account Account returned by Auth.js, ensured to be provided by google or facebook.
+ * @param account Account returned by Auth.js, ensured to be provided by Google or Facebook.
  * @param profile Profile returned by Auth.js.
- * @return ID of the MemoGarden user (potentially newly created) that is associated with the given OAuth profile.
+ * @return ID of the MemoGarden user (potentially newly created).
  */
-export async function getIdFromOAuth(account: SupportedAccount, profile: Profile) {
+export async function getOrCreateIdFromOAuth(account: SupportedAccount, profile: Profile) {
     const provider = account.provider;
     const sub = account.providerAccountId.toString();
     const timezone = profile.zoneinfo ?? "Etc/UTC"; // Default to the UTC timezone
@@ -230,7 +255,7 @@ export async function getIdFromOAuth(account: SupportedAccount, profile: Profile
  * @param provider OAuth provider string.
  * @param sub Subject ID in the provider's system.
  * @param timezone String representation of the user's inferred timezone.
- * @return Internal ID of the newly added user.
+ * @return Internal ID of the newly created user.
  */
 export async function createOAuthUser(
     provider: "google" | "facebook",
