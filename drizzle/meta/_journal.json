@@ -15,6 +15,13 @@
       "when": 1733430693274,
       "tag": "0001_seed_card_enums",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1733443457434,
+      "tag": "0002_youthful_spitfire",
+      "breakpoints": true
     }
   ]
 }

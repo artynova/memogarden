@@ -21,7 +21,7 @@ export const userReference = () => autoIdExternal().references(() => user.id);
  */
 export const userCredentials = pgTable("user_credentials", {
     userId: userReference().primaryKey(),
-    email: varchar().unique().notNull(),
+    email: varchar({ length: 320 }).unique().notNull(),
     passwordHash: char({ length: 60 }).notNull(), // bcrypt hash output is exactly 60 characters
 });
 
@@ -30,7 +30,7 @@ export const userCredentials = pgTable("user_credentials", {
  */
 export const userGoogle = pgTable("user_google", {
     userId: userReference().primaryKey(),
-    sub: varchar().unique().notNull(), // Subject ID returned by Google, link between the external account and the MemoGarden account
+    sub: varchar({ length: 300 }).unique().notNull(), // Subject ID returned by Google, link between the external account and the MemoGarden account
 });
 
 /**
@@ -38,5 +38,5 @@ export const userGoogle = pgTable("user_google", {
  */
 export const userFacebook = pgTable("user_facebook", {
     userId: userReference().primaryKey(),
-    sub: varchar().unique().notNull(), // Subject ID returned by Facebook, link between the external account and the MemoGarden account
+    sub: varchar({ length: 300 }).unique().notNull(), // Subject ID returned by Facebook, link between the external account and the MemoGarden account
 });
