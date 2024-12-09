@@ -1,15 +1,15 @@
-import { bigint, bigserial, timestamp } from "drizzle-orm/pg-core";
+import { timestamp, uuid } from "drizzle-orm/pg-core";
 
 /**
- * Column builder that configures an auto-incrementing primary key bigint ID column.
+ * Column builder that configures an automatically randomly generated UUID primary key column.
  */
-export const autoId = () => bigserial({ mode: "bigint" }).primaryKey();
+export const autoId = () => uuid().primaryKey().defaultRandom();
 
 /**
  * Column builder that configures a column with the same storage type as the "autoId" builder,
- * but without auto-incrementing or a primary key. Basis for foreign keys.
+ * but without automated generation or primary key constraints. Basis for foreign keys.
  */
-export const autoIdExternal = () => bigint({ mode: "bigint" });
+export const autoIdExternal = () => uuid();
 
 /**
  * Column builder that configures a column with a timestamp qualified by a timezone.

@@ -143,7 +143,7 @@ const updateDeckRetrievability = db
  * @param id Deck's ID.
  * @return Whether the user can edit the deck.
  */
-export async function canEditDeck(userId: bigint, id: bigint) {
+export async function canEditDeck(userId: string, id: string) {
     return (
         (await checkDeckOwnership.execute({ userId, id }).then(takeFirstOrNull))?.result ?? false
     );
@@ -165,7 +165,7 @@ export async function createDeck(data: InsertDeck) {
  * @param id Deck's ID (the function is a no-op if it is not an ID of a valid active deck).
  * @param data New user input data for the deck.
  */
-export async function editDeck(id: bigint, data: UpdateDeck) {
+export async function editDeck(id: string, data: UpdateDeck) {
     await updateDeck.execute({ id, ...data });
 }
 
@@ -175,7 +175,7 @@ export async function editDeck(id: bigint, data: UpdateDeck) {
  *
  * @param id Deck's ID.
  */
-export async function removeDeck(id: bigint) {
+export async function removeDeck(id: string) {
     await deleteCardsInDeck.execute({ id });
     await deleteDeckSelf.execute({ id });
     await forceSyncDeckHealth(id);
@@ -187,7 +187,7 @@ export async function removeDeck(id: bigint) {
  * @param id Deck's ID.
  * @return Retrieved deck, or `null` if the ID is not one of a valid deck.
  */
-export async function getDeck(id: bigint) {
+export async function getDeck(id: string) {
     return await selectDeck.execute({ id }).then(takeFirstOrNull);
 }
 
@@ -225,7 +225,7 @@ export type DeckPreview = {
  * @return Information about how many new, learning, and review cards are currently due in the deck. All can be 0 if
  * the deck has no due cards at the given moment.
  */
-export async function getDeckRemaining(id: bigint, anchor: Date): Promise<DeckRemaining> {
+export async function getDeckRemaining(id: string, anchor: Date): Promise<DeckRemaining> {
     const result = await selectDeckRevisionRemaining.execute({ id, anchor });
     return {
         new: result[CardState.New].remaining,
@@ -241,7 +241,7 @@ export async function getDeckRemaining(id: bigint, anchor: Date): Promise<DeckRe
  * @param id Deck's ID.
  * @param anchor Reference moment in time (normally the current moment).
  */
-export async function getDeckPreview(id: bigint, anchor: Date): Promise<DeckPreview | null> {
+export async function getDeckPreview(id: string, anchor: Date): Promise<DeckPreview | null> {
     const deck = await selectDeckPreview.execute({ id }).then(takeFirstOrNull);
     if (!deck) return null;
     const preview = await getDeckRemaining(id, anchor);
@@ -253,7 +253,7 @@ export async function getDeckPreview(id: bigint, anchor: Date): Promise<DeckPrev
  *
  * @param userId User's ID.
  */
-export async function forceSyncDecksHealth(userId: bigint) {
+export async function forceSyncDecksHealth(userId: string) {
     await updateDecksRetrievability.execute({ userId });
 }
 
@@ -262,6 +262,6 @@ export async function forceSyncDecksHealth(userId: bigint) {
  *
  * @param id Deck's ID.
  */
-export async function forceSyncDeckHealth(id: bigint) {
+export async function forceSyncDeckHealth(id: string) {
     await updateDeckRetrievability.execute({ id });
 }

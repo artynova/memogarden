@@ -115,7 +115,7 @@ async function createUser(timezone: string) {
  * @param id User's ID.
  * @param newLastSync New date.
  */
-export async function updateUserHealthSyncDate(id: bigint, newLastSync: Date) {
+export async function updateUserHealthSyncDate(id: string, newLastSync: Date) {
     await updateHealthSyncDate.execute({ id, lastHealthSync: newLastSync });
 }
 
@@ -125,7 +125,7 @@ export async function updateUserHealthSyncDate(id: bigint, newLastSync: Date) {
  *
  * @param id User's ID.
  */
-export async function forceSyncUserHealth(id: bigint) {
+export async function forceSyncUserHealth(id: string) {
     await updateUserRetrievability.execute({ id });
 }
 
@@ -139,7 +139,7 @@ export async function forceSyncUserHealth(id: bigint) {
  *
  * @param id User's ID.
  */
-export async function maybeSyncUserHealth(id: bigint) {
+export async function maybeSyncUserHealth(id: string) {
     const syncData = await selectUserHealthSyncData.execute({ id: id }).then(takeFirstOrNull);
     if (!syncData) return; // Since a user is guaranteed to have non-null lastHealthSync, this case means that the user ID itself was invalid and nothing can be done further
 

@@ -237,7 +237,7 @@ const updateCardRetrievabilityAfterReview = db
  * @param userId User's ID.
  * @param id Card's ID.
  */
-export async function canEditCard(userId: bigint, id: bigint) {
+export async function canEditCard(userId: string, id: string) {
     return (
         (await checkCardOwnership.execute({ userId, id }).then(takeFirstOrNull))?.result ?? false
     );
@@ -290,7 +290,7 @@ export function toFsrsCard(metadata: CardMetadata): Card {
  * @param answerAttempt Text user entered when answering (not evaluated, just for user's reference).
  * @param fsrsLog Log returned by ts-fsrs.
  */
-export function toInsertLog(cardId: bigint, answerAttempt: string, fsrsLog: ReviewLog): InsertLog {
+export function toInsertLog(cardId: string, answerAttempt: string, fsrsLog: ReviewLog): InsertLog {
     return {
         cardId,
         answerAttempt,
@@ -324,7 +324,7 @@ export async function createCard(data: UpdateCardData) {
  * @param id Card's ID.
  * @param data Updated data.
  */
-export async function editCard(id: bigint, data: UpdateCardData) {
+export async function editCard(id: string, data: UpdateCardData) {
     const card = await getCard(id);
     // If either the card does not exist or it does not have retrievability (i.e., is a new card), it does not impact aggregate health at all, so we do not need any extra deck manipulation
     if (!card?.retrievability) {
@@ -347,7 +347,7 @@ export async function editCard(id: bigint, data: UpdateCardData) {
  *
  * @param id Card's ID.
  */
-export async function removeCard(id: bigint) {
+export async function removeCard(id: string) {
     const card = await getCard(id);
     await deleteCard.execute({ id });
     if (!card?.retrievability) return; // If the card did not exist, or it had NULL retrievability, there is no need to update the aggregate retrievabilities
@@ -363,7 +363,7 @@ export async function removeCard(id: bigint) {
  * @param id Card's ID.
  * @return Card information (both user-defined and app-managed), or `null` if the ID does not belong to a valid card.
  */
-export async function getCard(id: bigint): Promise<SelectCard | null> {
+export async function getCard(id: string): Promise<SelectCard | null> {
     return selectCard.execute({ id }).then(takeFirstOrNull);
 }
 
@@ -374,7 +374,7 @@ export async function getCard(id: bigint): Promise<SelectCard | null> {
  * @param anchor Reference moment in time (normally the current moment).
  * @return Selected card, or `null` if there are no due cards in the deck at the given moment.
  */
-export async function getNextCard(deckId: bigint, anchor: Date): Promise<SelectCard | null> {
+export async function getNextCard(deckId: string, anchor: Date): Promise<SelectCard | null> {
     return await selectNextCard.execute({ deckId, anchor }).then(takeFirstOrNull);
 }
 
@@ -384,7 +384,7 @@ export async function getNextCard(deckId: bigint, anchor: Date): Promise<SelectC
  * @param id Card's ID.
  * @return Card data, or `null` if the ID does not belong to a valid card.
  */
-export async function getCardDataView(id: bigint): Promise<SelectCardDataView | null> {
+export async function getCardDataView(id: string): Promise<SelectCardDataView | null> {
     return selectCardDataView.execute({ id }).then(takeFirstOrNull);
 }
 
@@ -394,7 +394,7 @@ export async function getCardDataView(id: bigint): Promise<SelectCardDataView | 
  * @param id Card's ID.
  * @return Card metadata, or `null` if the ID does not belong to a valid card.
  */
-export async function getCardMetadata(id: bigint): Promise<CardMetadata | null> {
+export async function getCardMetadata(id: string): Promise<CardMetadata | null> {
     return selectCardMetadata.execute({ id }).then(takeFirstOrNull);
 }
 
@@ -418,7 +418,7 @@ export async function getRatingNames() {
  * @param now Date at the time of answering (parametrized to allow syncing with other function calls).
  * @return Mapping of {@link ReviewRating} enum members to corresponding next card revision dates.
  */
-export async function getCardRevisionOptions(id: bigint, now: Date) {
+export async function getCardRevisionOptions(id: string, now: Date) {
     const metadata = await getCardMetadata(id);
     if (!metadata || metadata.due < now) return null;
     const ratingNames = await getRatingNames();
@@ -448,7 +448,7 @@ export async function getCardRevisionOptions(id: bigint, now: Date) {
  * @return Updated card data, or `null` if the ID does not belong to a valid card.
  */
 export async function reviewCard(
-    id: bigint,
+    id: string,
     answerAttempt: string,
     now: Date,
     rating: ReviewRating,
@@ -496,7 +496,7 @@ function convertToSearchRegex(queryString: string) {
  * each card.
  */
 export async function searchCards(
-    userId: bigint,
+    userId: string,
     pagination: Pagination,
     queryString = "",
     deckId: number | null,
@@ -517,6 +517,6 @@ export async function searchCards(
  * @param userId User's ID.
  * @param anchor Reference moment in time (normally the current moment).
  */
-export async function forceSyncCardsHealth(userId: bigint, anchor: Date) {
+export async function forceSyncCardsHealth(userId: string, anchor: Date) {
     await updateCardsRetrievability.execute({ userId, anchor });
 }

@@ -55,7 +55,7 @@ export const authConfig: NextAuthConfig = {
         async jwt({ user, profile, account, token }) {
             if (!usesSupportedOAuth(account)) return { ...token, id: user.id }; // Case when the user uses credentials
             const internalId = await getOrCreateIdFromOAuth(account, profile!);
-            return { ...token, id: internalId.toString() };
+            return { ...token, id: internalId };
         },
 
         // Adds the user's internal MemoGarden ID to the session user object
