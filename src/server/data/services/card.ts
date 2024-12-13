@@ -162,7 +162,7 @@ const selectNextCard = db
             isNotDeleted(card),
         ),
     )
-    .orderBy(card.due, card.id) // Secondary ordering by card ID just in case, to break any ties deterministically
+    .orderBy(card.due, card.createdAt) // Secondary ordering by card update date just in case, to break any ties deterministically
     .limit(1)
     .prepare("select_next_card");
 
