@@ -45,7 +45,7 @@ export const card = pgTable("card", {
     scheduledDays: integer().notNull(),
     reps: integer().notNull(),
     lapses: integer().notNull(),
-    stateId: reviewRatingReference().notNull(),
+    stateId: cardStateReference().notNull(),
     lastReview: timestampTz(),
     retrievability: doublePrecision(), // Nullable, absent if the card is new (has not yet been reviewed) because judgements about retrievability cannot be made before the first review
 });
