@@ -13,7 +13,7 @@ import { ignoreAsyncFnResult } from "@/lib/utils";
 const formConfig = {
     mode: "onBlur" as const,
     resolver: zodResolver(CredentialsSignupSchema),
-    defaults: {
+    defaultValues: {
         email: "",
         password: "",
         confirmPassword: "",
