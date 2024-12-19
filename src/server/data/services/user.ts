@@ -33,11 +33,20 @@ export type InsertUser = InferInsertModel<typeof user>;
 export type SelectUserCredentials = InferSelectModel<typeof userCredentials>;
 export type InsertUserCredentials = InferSelectModel<typeof userCredentials>;
 
+/**
+ * Placeholders: derived from insertUserColumns.
+ */
 const insertUser = db
     .insert(user)
     .values(makeInsertPlaceholders(insertUserColumns))
     .returning({ id: user.id })
     .prepare("insert_user");
+
+/**
+ * Placeholders: "id" = user's ID.
+ */
+const selectUser = db.select().from(user).where(eqPlaceholder(user.id)).prepare("select_user");
+
 const selectCredentialsByEmail = db
     .select()
     .from(userCredentials)
@@ -107,6 +116,16 @@ const selectUserHealthSyncData = db
  */
 async function createUser(timezone: string) {
     return (await insertUser.execute({ timezone }).then(takeFirstOrNull))!.id;
+}
+
+/**
+ * Retrieves a user by their MemoGarden ID.
+ *
+ * @param id User's ID.
+ * @return General user record for the user with the matching ID, or `null` if such does not exist.
+ */
+export async function getUser(id: string): Promise<SelectUser | null> {
+    return await selectUser.execute({ id }).then(takeFirstOrNull);
 }
 
 /**
@@ -236,7 +255,7 @@ export function usesSupportedOAuth(account: Account | null): account is Supporte
  * Will create a new user if the user does not exist (i.e., it is their first sign-in with these OAuth credentials).
  *
  * @param account Account returned by Auth.js, ensured to be provided by Google or Facebook.
- * @param profile Profile returned by Auth.js.
+ * @param profile ProfileBadge returned by Auth.js.
  * @return ID of the MemoGarden user (potentially newly created).
  */
 export async function getOrCreateIdFromOAuth(account: SupportedAccount, profile: Profile) {

@@ -9,7 +9,7 @@ export const deck = pgTable("deck", {
     id: autoId(),
     ...timestamps,
     userId: userReference().notNull(),
-    name: varchar({ length: 100 }),
+    name: varchar({ length: 100 }).notNull(),
     retrievability: doublePrecision(), // Average retrievability is nullable, absent when there are no individual cards with valid retrievabilities in the deck
 });
 

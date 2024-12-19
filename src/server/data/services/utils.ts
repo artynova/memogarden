@@ -358,7 +358,7 @@ export function imatch(column: Column | SQL.Aliased | SQL, regex: string | SQLWr
  * @param value Value being compared against.
  */
 export function eqOptional(column: Column | SQL.Aliased | SQL, value: string | SQLWrapper) {
-    return sql<boolean>`${value} IS NULL OR ${column} = ${value}`; // bypass the comparison and immediately yield TRUE for value NULL
+    return sql<boolean>`${value} IS NULL OR ${column} = ${value}`; // Bypass the comparison and immediately yield TRUE for value NULL
 }
 
 /**

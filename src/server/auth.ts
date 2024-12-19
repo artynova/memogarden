@@ -44,7 +44,7 @@ export const authConfig: NextAuthConfig = {
                 if (!storedCredentials) return null;
                 const { userId, passwordHash } = storedCredentials;
                 if (!bcrypt.compareSync(attemptedPassword, passwordHash)) return null;
-                return { id: userId.toString(), email };
+                return { id: userId, email };
             },
         }),
         GoogleProvider,
@@ -53,6 +53,7 @@ export const authConfig: NextAuthConfig = {
     callbacks: {
         // Adds the user's internal MemoGarden ID to the token
         async jwt({ user, profile, account, token }) {
+            if (!user) return token; // Handle subsequent calls after sign-in, when the user data is no longer accessible
             if (!usesSupportedOAuth(account)) return { ...token, id: user.id }; // Case when the user uses credentials
             const internalId = await getOrCreateIdFromOAuth(account, profile!);
             return { ...token, id: internalId };

@@ -32,7 +32,7 @@ import {
 import { escapeRegex } from "@/lib/utils";
 import { Card, createEmptyCard, DECAY, FACTOR, Grade, ReviewLog } from "ts-fsrs";
 import { retrievabilityAfterReview, scheduler } from "@/server/data/scheduler";
-import { ReviewRating } from "@/lib/types";
+import { ReviewRating } from "@/lib/spaced-repetition";
 import { inArray } from "drizzle-orm/sql/expressions/conditions";
 import { forceSyncDeckHealth, getDeck } from "@/server/data/services/deck";
 import { forceSyncUserHealth } from "@/server/data/services/user";
@@ -83,7 +83,7 @@ const userCardTest = inArray(
 /**
  * Placeholders: "id" = card's ID, "userID" = user's ID.
  */
-const checkCardOwnership = db
+const checkCardAccessibility = db
     .select({ result: userCardTest })
     .from(card)
     .where(and(eqPlaceholder(card.id), isNotDeleted(card)))
@@ -233,13 +233,16 @@ const updateCardRetrievabilityAfterReview = db
 
 /**
  * Checks whether a given user has access to a given card, i.e., currently - whether they are the owner.
+ * A `true` response here also implies that the card exists and is not deleted.
  *
  * @param userId User's ID.
  * @param id Card's ID.
+ * @return Whether the user can access the deck.
  */
-export async function canEditCard(userId: string, id: string) {
+export async function isCardAccessible(userId: string, id: string) {
     return (
-        (await checkCardOwnership.execute({ userId, id }).then(takeFirstOrNull))?.result ?? false
+        (await checkCardAccessibility.execute({ userId, id }).then(takeFirstOrNull))?.result ??
+        false
     );
 }
 

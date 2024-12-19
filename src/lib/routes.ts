@@ -1,4 +1,8 @@
 /**
+ * Where the user is returned upon clicking the "home" button.
+ */
+export const HOME = "/home";
+/**
  * Where the user without a session should be redirected if they visit a non-public route.
  */
 export const REDIRECT_WITHOUT_AUTH_TO = "/signin";

@@ -41,3 +41,20 @@ export const CredentialsSignupSchema = z
     });
 
 export type CredentialsSignupData = z.infer<typeof CredentialsSignupSchema>;
+
+/**
+ * Schema for the user input required to create a new deck.
+ */
+export const CreateDeckSchema = z.object({
+    name: z.string().min(1, { message: "Required" }),
+});
+
+export type CreateDeckData = z.infer<typeof CreateDeckSchema>;
+
+/**
+ * Schema for the user input required to update an existing deck (the deck ID is not part of the input and is passed
+ * separately).
+ */
+export const UpdateDeckSchema = CreateDeckSchema.extend({});
+
+export type UpdateDeckData = z.infer<typeof UpdateDeckSchema>;

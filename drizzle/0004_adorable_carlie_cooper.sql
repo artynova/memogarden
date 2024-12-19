@@ -1,0 +1,1 @@
+ALTER TABLE "deck" ALTER COLUMN "name" SET NOT NULL;

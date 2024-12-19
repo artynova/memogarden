@@ -1,0 +1,24 @@
+import { Button } from "@/components/ui/base/button";
+import { HomeIcon } from "lucide-react";
+import Link from "next/link";
+import { HOME } from "@/lib/routes";
+import { cn } from "@/lib/utils";
+
+export interface HomeButtonProps {
+    className?: string;
+}
+
+export function HomeButton({ className }: HomeButtonProps) {
+    return (
+        <Button
+            variant={"ghost"}
+            className={cn("h-auto w-32 rounded-none [&_svg]:size-16", className)}
+            asChild
+        >
+            <Link href={HOME}>
+                <HomeIcon />
+                <span className={"sr-only"}>Home</span>
+            </Link>
+        </Button>
+    );
+}

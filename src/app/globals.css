@@ -22,7 +22,7 @@ body {
         --popover-foreground: 220 12% 18%;
         --primary: 120 45% 45%;
         --primary-foreground: 0 0% 98%;
-        --secondary: 56 80% 85%;
+        --secondary: 118 79% 85%;
         --secondary-foreground: 120 25% 20%;
         --muted: 120 18% 88%;
         --muted-foreground: 120 18% 35%;
@@ -30,8 +30,8 @@ body {
         --accent-foreground: 0 0% 15%;
         --destructive: 0 65% 65%;
         --destructive-foreground: 0 0% 100%;
-        --border: 120 18% 85%;
-        --input: 120 18% 85%;
+        --border: 150 18% 85%;
+        --input: 150 18% 85%;
         --ring: 120 30% 35%;
         --chart-1: 56 85% 65%;
         --chart-2: 140 50% 55%;
