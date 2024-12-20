@@ -20,6 +20,10 @@ const updateDeckColumns = [deck.name] as const;
 const insertDeckColumns = [...updateDeckColumns, deck.userId] as const;
 const selectDeckPreviewColumns = [deck.id, deck.name, deck.retrievability] as const;
 const selectDeckColumns = [...selectDeckPreviewColumns, deck.userId] as const;
+const selectDeckOptionsColumns = [
+    [deck.id, "value"],
+    [deck.name, "label"],
+] as const;
 
 export type UpdateDeck = InferInsertModelFromGroup<typeof updateDeckColumns>;
 export type InsertDeck = InferInsertModelFromGroup<typeof insertDeckColumns>;
@@ -138,6 +142,16 @@ const selectDeck = db
 /**
  * Placeholders: "userId" = user's ID.
  */
+const selectUserDeckOptions = db
+    .select(toColumnMapping(selectDeckOptionsColumns))
+    .from(deck)
+    .where(and(eqPlaceholder(deck.userId), isNotDeleted(deck)))
+    .orderBy(deck.createdAt)
+    .prepare("select_user_deck_options");
+
+/**
+ * Placeholders: "userId" = user's ID.
+ */
 const selectUserDecksPreview = db
     .select(toColumnMapping(selectDeckPreviewColumns))
     .from(deck)
@@ -231,6 +245,16 @@ export async function removeDeck(id: string) {
  */
 export async function getDeck(id: string): Promise<SelectDeck | null> {
     return await selectDeck.execute({ id }).then(takeFirstOrNull);
+}
+
+/**
+ * Selects all available options for assigning a deck to a user's card.
+ *
+ * @param userId User's ID.
+ * @return IDs and names of all non-deleted decks of the user.
+ */
+export async function getDeckOptions(userId: string) {
+    return selectUserDeckOptions.execute({ userId });
 }
 
 /**

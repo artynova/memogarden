@@ -38,14 +38,14 @@ export const card = pgTable("card", {
     deckId: deckReference().notNull(),
     front: varchar({ length: 300 }).notNull(),
     back: varchar({ length: 1000 }).notNull(),
-    due: timestampTz().notNull(),
-    stability: doublePrecision().notNull(),
-    difficulty: doublePrecision().notNull(),
-    elapsedDays: integer().notNull(),
-    scheduledDays: integer().notNull(),
-    reps: integer().notNull(),
-    lapses: integer().notNull(),
-    stateId: cardStateReference().notNull(),
+    due: timestampTz().notNull().defaultNow(),
+    stability: doublePrecision().notNull().default(0),
+    difficulty: doublePrecision().notNull().default(0),
+    elapsedDays: integer().notNull().default(0),
+    scheduledDays: integer().notNull().default(0),
+    reps: integer().notNull().default(0),
+    lapses: integer().notNull().default(0),
+    stateId: cardStateReference().notNull().default(0), // State with index 0 is guaranteed to exist because it is part of an internal lookup table and not a user-managed record
     lastReview: timestampTz(),
     retrievability: doublePrecision(), // Nullable, absent if the card is new (has not yet been reviewed) because judgements about retrievability cannot be made before the first review
 });

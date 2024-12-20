@@ -43,18 +43,21 @@ export const CredentialsSignupSchema = z
 export type CredentialsSignupData = z.infer<typeof CredentialsSignupSchema>;
 
 /**
- * Schema for the user input required to create a new deck.
+ * Schema for the user input required to modify a new deck.
  */
-export const CreateDeckSchema = z.object({
+export const ModifyDeckSchema = z.object({
     name: z.string().min(1, { message: "Required" }),
 });
 
-export type CreateDeckData = z.infer<typeof CreateDeckSchema>;
+export type ModifyDeckData = z.infer<typeof ModifyDeckSchema>;
 
 /**
- * Schema for the user input required to update an existing deck (the deck ID is not part of the input and is passed
- * separately).
+ * Schema for the user input required to modify a card.
  */
-export const UpdateDeckSchema = CreateDeckSchema.extend({});
+export const ModifyCardSchema = z.object({
+    deckId: z.string().min(1, { message: "Required" }), // To trigger an error in the select field if no option is selected
+    front: z.string().min(1, { message: "Required" }),
+    back: z.string().min(1, { message: "Required" }),
+});
 
-export type UpdateDeckData = z.infer<typeof UpdateDeckSchema>;
+export type ModifyCardData = z.infer<typeof ModifyCardSchema>;

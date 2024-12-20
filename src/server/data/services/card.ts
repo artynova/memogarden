@@ -30,7 +30,7 @@ import {
 } from "@/server/data/services/utils";
 
 import { escapeRegex } from "@/lib/utils";
-import { Card, createEmptyCard, DECAY, FACTOR, Grade, ReviewLog } from "ts-fsrs";
+import { Card, DECAY, FACTOR, Grade, ReviewLog } from "ts-fsrs";
 import { retrievabilityAfterReview, scheduler } from "@/server/data/scheduler";
 import { ReviewRating } from "@/lib/spaced-repetition";
 import { inArray } from "drizzle-orm/sql/expressions/conditions";
@@ -61,7 +61,6 @@ const cardMetadataColumns = [
     card.stateId,
     card.lastReview,
 ] as const;
-const cardCreateColumns = [...cardUpdateDataColumns, ...cardMetadataColumns] as const;
 const cardSelectColumns = [...cardDataViewColumns, ...cardMetadataColumns] as const;
 
 export type SelectCard = InferSelectModelFromGroup<typeof cardSelectColumns>;
@@ -94,7 +93,7 @@ const checkCardAccessibility = db
  */
 const insertCard = db
     .insert(card)
-    .values(makeInsertPlaceholders(cardCreateColumns))
+    .values(makeInsertPlaceholders(cardUpdateDataColumns))
     .returning({ id: card.id })
     .prepare("insert_card");
 
@@ -316,9 +315,8 @@ export function toInsertLog(cardId: string, answerAttempt: string, fsrsLog: Revi
  * @return Internal ID of the newly created card.
  */
 export async function createCard(data: UpdateCardData) {
-    const metadata = toMetadata(createEmptyCard());
     // A newly created card has a retrievability of NULL, which is ignored during aggregate retrievability calculations, so there is no need to update the aggregates here because they are not impacted yet
-    return (await insertCard.execute({ ...data, ...metadata }).then(takeFirstOrNull))!.id;
+    return (await insertCard.execute({ ...data }).then(takeFirstOrNull))!.id;
 }
 
 /**
