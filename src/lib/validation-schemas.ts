@@ -46,7 +46,10 @@ export type CredentialsSignupData = z.infer<typeof CredentialsSignupSchema>;
  * Schema for the user input required to modify a new deck.
  */
 export const ModifyDeckSchema = z.object({
-    name: z.string().min(1, { message: "Required" }),
+    name: z
+        .string()
+        .min(1, { message: "Most likely should not be empty" })
+        .max(100, { message: "Should be at most 100 characters" }),
 });
 
 export type ModifyDeckData = z.infer<typeof ModifyDeckSchema>;
@@ -56,8 +59,14 @@ export type ModifyDeckData = z.infer<typeof ModifyDeckSchema>;
  */
 export const ModifyCardSchema = z.object({
     deckId: z.string().min(1, { message: "Required" }), // To trigger an error in the select field if no option is selected
-    front: z.string().min(1, { message: "Required" }),
-    back: z.string().min(1, { message: "Required" }),
+    front: z
+        .string()
+        .min(1, { message: "Most likely should not be empty" })
+        .max(300, { message: "Should be at most 300 characters" }),
+    back: z
+        .string()
+        .min(1, { message: "Most likely should not be empty" })
+        .max(1000, { message: "Should be at most 1000 characters" }),
 });
 
 export type ModifyCardData = z.infer<typeof ModifyCardSchema>;

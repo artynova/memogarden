@@ -1,12 +1,16 @@
 import type { Config } from "tailwindcss";
 
 import animate from "tailwindcss-animate";
+import typography from "@tailwindcss/typography";
 
 const config: Config = {
     darkMode: ["class"],
     content: ["./src/components/**/*.{js,ts,jsx,tsx,mdx}", "./src/app/**/*.{js,ts,jsx,tsx,mdx}"],
     theme: {
         extend: {
+            fontFamily: {
+                display: "var(--font-display)",
+            },
             colors: {
                 background: "hsl(var(--background))",
                 foreground: "hsl(var(--foreground))",
@@ -56,6 +60,6 @@ const config: Config = {
             },
         },
     },
-    plugins: [animate],
+    plugins: [animate, typography],
 };
 export default config;

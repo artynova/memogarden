@@ -19,4 +19,4 @@ export const connectionURL = makeConnectionURL(
     env.DB_NAME,
 );
 
-export default drizzle({ logger: true, connection: connectionURL, casing: "snake_case" }); // snake_case casing will convert TypeScript camelCase names to snake_case names conventional for SQL
+export default drizzle({ connection: connectionURL, casing: "snake_case" }); // snake_case casing will convert TypeScript camelCase names to snake_case names conventional for SQL

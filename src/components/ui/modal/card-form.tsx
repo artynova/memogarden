@@ -1,14 +1,15 @@
-// Client component. The "use client" directive is not present  because this is not a boundary
+// Client component. The "use client" directive is not present because this is not a boundary
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ModifyCardData, ModifyCardSchema } from "@/lib/validation-schemas";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/base/form";
-import { InputWithLabel } from "@/components/ui/form/input-with-label";
 import { Button } from "@/components/ui/base/button";
-import { Check, X } from "lucide-react";
+import { BookOpen, Check, Pencil, X } from "lucide-react";
 import { SelectOption, SelectWithLabel } from "@/components/ui/form/select-with-label";
 import { ignoreAsyncFnResult } from "@/lib/utils";
+import { MarkdownInput } from "@/components/ui/form/markdown/markdown-input";
+import { Toggle } from "@/components/ui/base/toggle";
 
 const formConfig = {
     mode: "onBlur" as const,
@@ -32,6 +33,7 @@ export function CardForm({ onSubmit, onCancel, deckOptions, card }: CardFormProp
         back: card?.back ?? "",
     };
     const form = useForm<ModifyCardData>({ ...formConfig, defaultValues });
+    const [preview, setPreview] = useState(false);
 
     function onSubmitInternal(data: ModifyCardData) {
         if (onSubmit) onSubmit(data);
@@ -51,8 +53,17 @@ export function CardForm({ onSubmit, onCancel, deckOptions, card }: CardFormProp
                     label="Deck"
                     innerLabel={"Your decks"}
                 />
-                <InputWithLabel control={form.control} name="front" label="Front" />
-                <InputWithLabel control={form.control} name="back" label="Back" />
+                <MarkdownInput
+                    preview={preview}
+                    control={form.control}
+                    name="front"
+                    label="Front"
+                />
+                <MarkdownInput preview={preview} control={form.control} name="back" label="Back" />
+                <Toggle className={""} pressed={preview} onPressedChange={setPreview}>
+                    <span>{preview ? "Disable Preview" : "Enable Preview"}</span>
+                    {preview ? <Pencil /> : <BookOpen />}
+                </Toggle>
                 <div className={"flex justify-center space-x-2"}>
                     <Button size={"lg"}>
                         <span>Save</span>

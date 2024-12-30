@@ -1,6 +1,7 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader } from "@/components/ui/base/sheet";
 import { ReactNode } from "react";
 import { DialogTitle } from "@/components/ui/base/dialog";
+import { cn } from "@/lib/utils";
 
 export interface ControlledOverlayProps {
     open: boolean;
@@ -27,7 +28,10 @@ export function ControlledActionModal({
 }: ControlledOverlayProps) {
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-            <SheetContent side={"bottom"} className={className}>
+            <SheetContent
+                side={"bottom"}
+                className={cn("max-h-screen overflow-y-scroll", className)}
+            >
                 <SheetHeader>
                     <DialogTitle className={"text-center font-bold"}>{title}</DialogTitle>
                     {description && <SheetDescription>{description}</SheetDescription>}
