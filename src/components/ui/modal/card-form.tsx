@@ -6,10 +6,11 @@ import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/base/form";
 import { Button } from "@/components/ui/base/button";
 import { BookOpen, Check, Pencil, X } from "lucide-react";
-import { SelectOption, SelectWithLabel } from "@/components/ui/form/select-with-label";
+import { FormSelect } from "@/components/ui/form/form-select";
 import { ignoreAsyncFnResult } from "@/lib/utils";
-import { MarkdownInput } from "@/components/ui/form/markdown/markdown-input";
+import { FormMarkdownInput } from "@/components/ui/form/markdown/form-markdown-input";
 import { Toggle } from "@/components/ui/base/toggle";
+import { SelectOption } from "@/lib/ui";
 
 const formConfig = {
     mode: "onBlur" as const,
@@ -45,7 +46,7 @@ export function CardForm({ onSubmit, onCancel, deckOptions, card }: CardFormProp
                 className={"space-y-2"}
                 onSubmit={ignoreAsyncFnResult(form.handleSubmit(onSubmitInternal))}
             >
-                <SelectWithLabel
+                <FormSelect
                     control={form.control}
                     name="deckId"
                     options={deckOptions}
@@ -53,13 +54,18 @@ export function CardForm({ onSubmit, onCancel, deckOptions, card }: CardFormProp
                     label="Deck"
                     innerLabel={"Your decks"}
                 />
-                <MarkdownInput
+                <FormMarkdownInput
                     preview={preview}
                     control={form.control}
                     name="front"
                     label="Front"
                 />
-                <MarkdownInput preview={preview} control={form.control} name="back" label="Back" />
+                <FormMarkdownInput
+                    preview={preview}
+                    control={form.control}
+                    name="back"
+                    label="Back"
+                />
                 <Toggle className={""} pressed={preview} onPressedChange={setPreview}>
                     <span>{preview ? "Disable Preview" : "Enable Preview"}</span>
                     {preview ? <Pencil /> : <BookOpen />}

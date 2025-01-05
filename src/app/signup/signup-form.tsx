@@ -6,7 +6,7 @@ import { Form } from "@/components/ui/base/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CredentialsSignupData, CredentialsSignupSchema } from "@/lib/validation-schemas";
-import { InputWithLabel } from "@/components/ui/form/input-with-label";
+import { FormInput } from "@/components/ui/form/form-input";
 import React from "react";
 import { ignoreAsyncFnResult } from "@/lib/utils";
 
@@ -37,14 +37,14 @@ export function SignupForm() {
                 onSubmit={ignoreAsyncFnResult(form.handleSubmit(onSubmit))}
                 className="w-full space-y-2"
             >
-                <InputWithLabel control={form.control} name="email" label="Email:" />
-                <InputWithLabel
+                <FormInput control={form.control} name="email" label="Email:" />
+                <FormInput
                     control={form.control}
                     name="password"
                     label="Password:"
                     type="password"
                 />
-                <InputWithLabel
+                <FormInput
                     control={form.control}
                     name="confirmPassword"
                     label="Confirm password:"

@@ -13,9 +13,9 @@ import { useRouter } from "next/navigation";
 import { ModifyCardData, ModifyDeckData } from "@/lib/validation-schemas";
 import { createNewDeck } from "@/server/actions/deck";
 import { ignoreAsyncFnResult } from "@/lib/utils";
-import { SelectOption } from "@/components/ui/form/select-with-label";
 import { CardForm } from "@/components/ui/modal/card-form";
 import { createNewCard } from "@/server/actions/card";
+import { SelectOption } from "@/lib/ui";
 
 export interface HomePageProps {
     user: SelectUser;

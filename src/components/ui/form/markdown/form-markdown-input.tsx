@@ -16,13 +16,13 @@ import { markdown } from "@codemirror/lang-markdown";
 import { memoGarden } from "@/components/ui/form/markdown/codemirror-theme";
 import Markdown from "react-markdown";
 
-export interface MarkdownInputProps<
+export interface FormMarkdownInputProps<
     TFieldValues extends FieldValues = FieldValues,
     TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > {
     control: Control<TFieldValues>;
     name: TName;
-    label: string;
+    label?: string;
     description?: string;
     preview?: boolean;
     className?: string;
@@ -40,7 +40,7 @@ export interface MarkdownInputProps<
  * @param preview Whether to render the field in "preview" mode (optional, off by default).
  * @param className Custom CSS classes to override standard styles (optional).
  */
-export function MarkdownInput<
+export function FormMarkdownInput<
     TFieldValues extends FieldValues = FieldValues,
     TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
@@ -50,7 +50,7 @@ export function MarkdownInput<
     description,
     preview,
     className,
-}: MarkdownInputProps<TFieldValues, TName>) {
+}: FormMarkdownInputProps<TFieldValues, TName>) {
     return (
         <FormField
             control={control}

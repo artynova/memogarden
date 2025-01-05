@@ -6,33 +6,37 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/base/form";
-import { Input } from "@/components/ui/base/input";
 import { Control, FieldPath, FieldValues } from "react-hook-form";
-import { HTMLInputTypeAttribute } from "react";
+import { SelectOption } from "@/lib/ui";
+import { ControlledSelect } from "@/components/ui/controlled-select";
 
-export interface InputWithLabelProps<
+export interface FormSelectProps<
     TFieldValues extends FieldValues = FieldValues,
     TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > {
     control: Control<TFieldValues>;
     name: TName;
-    label: string;
+    options: SelectOption[];
+    placeholder?: string;
+    label?: string;
+    innerLabel: string;
     description?: string;
     className?: string;
-    type?: HTMLInputTypeAttribute;
 }
 
-export function InputWithLabel<
+export function FormSelect<
     TFieldValues extends FieldValues = FieldValues,
     TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
     control,
     name,
+    options,
+    placeholder,
     label,
+    innerLabel,
     description,
     className,
-    type = "text",
-}: InputWithLabelProps<TFieldValues, TName>) {
+}: FormSelectProps<TFieldValues, TName>) {
     return (
         <FormField
             control={control}
@@ -41,7 +45,13 @@ export function InputWithLabel<
                 <FormItem className={className}>
                     <FormLabel>{label}</FormLabel>
                     <FormControl>
-                        <Input type={type} {...field} />
+                        <ControlledSelect
+                            options={options}
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            placeholder={placeholder}
+                            innerLabel={innerLabel}
+                        />
                     </FormControl>
                     <FormDescription>{description}</FormDescription>
                     <FormMessage />

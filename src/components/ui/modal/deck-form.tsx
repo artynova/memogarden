@@ -4,7 +4,7 @@ import { ModifyDeckData, ModifyDeckSchema } from "@/lib/validation-schemas";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/base/form";
-import { InputWithLabel } from "@/components/ui/form/input-with-label";
+import { FormInput } from "@/components/ui/form/form-input";
 import { Button } from "@/components/ui/base/button";
 import { Check, X } from "lucide-react";
 import { ignoreAsyncFnResult } from "@/lib/utils";
@@ -37,7 +37,7 @@ export function DeckForm({ onSubmit, onCancel, deck }: DeckFormProps) {
                 className={"space-y-2"}
                 onSubmit={ignoreAsyncFnResult(form.handleSubmit(onSubmitInternal))}
             >
-                <InputWithLabel control={form.control} name="name" label="Name" />
+                <FormInput control={form.control} name="name" label="Name" />
                 <div className={"flex justify-center space-x-2"}>
                     <Button size={"lg"}>
                         <span>Save</span>

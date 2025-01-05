@@ -17,8 +17,8 @@ import { useState } from "react";
 import { DeckForm } from "@/components/ui/modal/deck-form";
 import { ModifyCardData, ModifyDeckData } from "@/lib/validation-schemas";
 import { createNewCard } from "@/server/actions/card";
-import { SelectOption } from "@/components/ui/form/select-with-label";
 import { CardForm } from "@/components/ui/modal/card-form";
+import { SelectOption } from "@/lib/ui";
 
 export interface DeckPageProps {
     user: SelectUser;
@@ -79,7 +79,7 @@ export function DeckPage({ user, preview, deckOptions }: DeckPageProps) {
         {
             Icon: SquareStack,
             text: "Browse Deck Cards",
-            action: `/browse?deck=${encodeURIComponent(deck.id)}`,
+            action: `/browse?deckId=${encodeURIComponent(deck.id)}`,
         },
     ];
 

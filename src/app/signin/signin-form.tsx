@@ -6,7 +6,7 @@ import { Form } from "@/components/ui/base/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CredentialsSigninData, CredentialsSigninSchema } from "@/lib/validation-schemas";
-import { InputWithLabel } from "@/components/ui/form/input-with-label";
+import { FormInput } from "@/components/ui/form/form-input";
 import { FieldsetWithErrorMessage } from "@/components/ui/form/fieldset/fieldset-with-error-message";
 import React, { useEffect, useState } from "react";
 import { ResponseUnauthorized } from "@/lib/responses";
@@ -48,8 +48,8 @@ export function SigninForm() {
                     className="w-full space-y-2"
                 >
                     <FieldsetWithErrorMessage name="credentials" error={rootServerError}>
-                        <InputWithLabel control={form.control} name="email" label="Email:" />
-                        <InputWithLabel
+                        <FormInput control={form.control} name="email" label="Email:" />
+                        <FormInput
                             control={form.control}
                             name="password"
                             label="Password:"
