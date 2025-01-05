@@ -1,6 +1,7 @@
 import { CardsRemaining } from "@/server/data/services/deck";
 import { Fragment } from "react";
 import { cn } from "@/lib/utils";
+import { textFineClass, textProblemClass, textUnimportantClass, textWarningClass } from "@/lib/ui";
 
 export interface RemainingCardsForType {
     name: string;
@@ -8,27 +9,22 @@ export interface RemainingCardsForType {
     textColorClass: string;
 }
 
-const remainingNewColor = "text-accent";
-const remainingLearningColor = "text-destructive";
-const remainingReviewColor = "text-primary";
-const remainingZeroColor = "text-muted-foreground";
-
 function getDeckRemainingRenderData(remaining: CardsRemaining): RemainingCardsForType[] {
     return [
         {
             name: "New",
             number: remaining.new,
-            textColorClass: remaining.new ? remainingNewColor : remainingZeroColor,
+            textColorClass: remaining.new ? textWarningClass : textUnimportantClass,
         },
         {
             name: "Learning",
             number: remaining.learning,
-            textColorClass: remaining.new ? remainingLearningColor : remainingZeroColor,
+            textColorClass: remaining.learning ? textProblemClass : textUnimportantClass,
         },
         {
             name: "Review",
             number: remaining.review,
-            textColorClass: remaining.new ? remainingReviewColor : remainingZeroColor,
+            textColorClass: remaining.review ? textFineClass : textUnimportantClass,
         },
     ];
 }
