@@ -22,7 +22,7 @@
         --secondary-foreground: 120 25% 20%;
         --muted: 120 18% 88%;
         --muted-foreground: 120 18% 35%;
-        --accent: 45, 100%, 74%;
+        --accent: 45, 100%, 60%;
         --accent-foreground: 0 0% 15%;
         --destructive: 0 65% 65%;
         --destructive-foreground: 0 0% 100%;
@@ -34,6 +34,10 @@
         --chart-3: 220 35% 45%;
         --chart-4: 34 65% 70%;
         --chart-5: 330 50% 65%;
+
+        --fine-foreground: 120 45% 45%;
+        --warning-foreground: 45, 100%, 60%;
+        --problem-foreground: 0 65% 65%;
 
         --radius: 0.5rem;
         --font-display: Arial, Helvetica, sans-serif;
