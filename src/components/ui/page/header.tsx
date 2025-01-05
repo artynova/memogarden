@@ -15,7 +15,7 @@ export function Header({ title, user, hideHomeButton, className }: HeaderProps) 
         <header className={cn("flex justify-between border-b bg-secondary shadow", className)}>
             {!hideHomeButton && <HomeButton />}
             <div className={"flex grow-[5] items-center justify-between py-6"}>
-                <h1 className="flex grow-[3] justify-center text-xl font-bold text-gray-800">
+                <h1 className="flex grow-[3] justify-center text-xl font-bold text-secondary-foreground">
                     {title}
                 </h1>
                 <ProfileBadge user={user} className={"px-6"} />
