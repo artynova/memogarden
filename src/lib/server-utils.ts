@@ -27,3 +27,16 @@ export async function getUserIDInProtectedRoute() {
 export async function getUserDataInProtectedRoute() {
     return (await getUser(await getUserIDInProtectedRoute()))!;
 }
+
+export type SearchParam = string | string[] | undefined;
+
+export function parseStringParam(param: SearchParam) {
+    if (typeof param === "undefined") return null;
+    return Array.isArray(param) ? param[0] : param;
+}
+
+export function parseIntParam(param: SearchParam) {
+    if (typeof param === "undefined") return null;
+    const parsed = parseInt(Array.isArray(param) ? param[0] : param);
+    return isNaN(parsed) ? null : parsed;
+}
