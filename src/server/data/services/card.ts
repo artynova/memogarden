@@ -1,5 +1,6 @@
 import {
     and,
+    count,
     eq,
     getTableColumns,
     InferInsertModel,
@@ -166,8 +167,26 @@ const selectNextCard = db
     .prepare("select_next_card");
 
 /**
+ * Counts the total number of cards matching search filters, to calculate the total number of pages for pagination.
  * Placeholders: "userId" = user's ID (for retrieving cards from all of that user's decks if a specific deck is not
- * requested), "query" = processed query regex (applied separately to the front text and the back text),
+ * requested), "deckId" = specific deck's ID (or null), "query" = processed query regex
+ * string (applied separately to the front text and the back text).
+ */
+const countCardsMatchingQuery = db
+    .select({ count: count() })
+    .from(card)
+    .where(
+        and(
+            userCardTest,
+            eqOptionalPlaceholder(card.deckId),
+            or(imatchPlaceholder(card.front, "query"), imatchPlaceholder(card.back, "query")),
+            isNotDeleted(card),
+        ),
+    )
+    .prepare("count_cards_matching_query");
+
+/**
+ * Placeholders: "userId" = user's ID, "deckId" = specific deck's ID (or null), "query" = processed query regex string,
  * "limit" = pagination limit, "offset" = pagination offset.
  */
 const selectCardsMatchingQuery = db
@@ -186,6 +205,7 @@ const selectCardsMatchingQuery = db
             isNotDeleted(card),
         ),
     )
+    .orderBy(card.front, card.back, card.createdAt)
     .limit(sql.placeholder("limit"))
     .offset(sql.placeholder("offset"))
     .prepare("select_cards_matching_query");
@@ -472,18 +492,24 @@ export async function reviewCard(
 }
 
 /**
- * Splits a search query string to a regex that checks for presence of all terms listed in it. Terms are
+ * Splits a search query string into a regex string that checks for presence of all terms listed in it. Terms are
  * considered to be separated by whitespaces.
  *
  * @param queryString Query string, e.g., "cat dog".
- * @return Regex, e.g., ```^/(?=.*cat)(?=.*dog).*$/```.
+ * @return Regex string, e.g., ```^(?=.*cat)(?=.*dog).*$```.
  */
 function convertToSearchRegex(queryString: string) {
     const terms = queryString.split(/\s/);
     const processedTerms = terms.map((term) => escapeRegex(term).toLowerCase());
     const regexString = processedTerms.map((term) => `(?=.*${term})`).join(""); // Regex string with positive lookaheads for each term, asserting their presence
-    return new RegExp(`^${regexString}.*$`);
+    return `^${regexString}.*$`;
 }
+
+export type PaginatedCardPreviews = {
+    pageCards: SelectCardPreview[];
+    page: number; // Useful in cases when accessing the page requested by pagination is impossible (e.g., there are too few results for that), and the actual page used for search was different from the requested one
+    totalCards: number;
+};
 
 /**
  * Searches the user's collection of cards, filtering by occurrence of terms listed in the query and/or belonging to a
@@ -500,15 +526,25 @@ export async function searchCards(
     userId: string,
     pagination: Pagination,
     queryString = "",
-    deckId: number | null,
-): Promise<SelectCardPreview[]> {
+    deckId: string | null,
+): Promise<PaginatedCardPreviews> {
     const query = convertToSearchRegex(queryString);
-    return selectCardsMatchingQuery.execute({
+    const totalCards = (await countCardsMatchingQuery
+        .execute({ userId, deckId, query })
+        .then(takeFirstOrNull))!.count; // This is a counting query, so it will always return exactly one row
+    const safePage =
+        totalCards > pagination.pageSize * (pagination.page - 1)
+            ? pagination.page // If the results have enough rows to support the requested pagination parameters, use the requested page directly
+            : totalCards === 0
+              ? 1
+              : Math.ceil(totalCards / pagination.pageSize); // If there are too few results to use the requested page with the requested page size, use the last available page with this page size instead
+    const pageCards = await selectCardsMatchingQuery.execute({
         userId,
         deckId,
         query,
-        ...toLimitOffset(pagination),
+        ...toLimitOffset({ ...pagination, page: safePage }),
     });
+    return { pageCards, totalCards, page: safePage };
 }
 
 /**

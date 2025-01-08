@@ -347,7 +347,7 @@ export function makeDeletedAt() {
  * @param regex Regular expression.
  */
 export function imatch(column: Column | SQL.Aliased | SQL, regex: string | SQLWrapper) {
-    return sql<boolean>`${column} ~* ${regex}`;
+    return sql<boolean>`(${column} ~* ${regex})`;
 }
 
 /**
@@ -356,9 +356,16 @@ export function imatch(column: Column | SQL.Aliased | SQL, regex: string | SQLWr
  *
  * @param column SQL expression.
  * @param value Value being compared against.
+ * @param useGenericComparison Whether to cast the column to TEXT, thus avoiding any implicit casts of the value to the
+ * column's type. Enabled by default.
  */
-export function eqOptional(column: Column | SQL.Aliased | SQL, value: string | SQLWrapper) {
-    return sql<boolean>`${value} IS NULL OR ${column} = ${value}`; // Bypass the comparison and immediately yield TRUE for value NULL
+export function eqOptional(
+    column: Column | SQL.Aliased | SQL,
+    value: string | SQLWrapper,
+    useGenericComparison = true,
+) {
+    const preparedColumn = useGenericComparison ? sql`CAST(${column} AS TEXT)` : column;
+    return sql<boolean>`(CAST(${value} AS TEXT) IS NULL OR ${preparedColumn} = ${value})`; // Bypass the comparison and immediately yield TRUE for value NULL. In the NULL check, the value is cast to TEXT regardless of the generic comparison mode because the specific type does not actually matter for the nullity check
 }
 
 /**
@@ -369,7 +376,7 @@ export function eqOptional(column: Column | SQL.Aliased | SQL, value: string | S
  * @return Equality check SQL with the placeholder.
  */
 export function eqPlaceholder(column: PgColumn, name?: string) {
-    return sql<boolean>`${column} = ${sql.placeholder(name ?? column.name)}`;
+    return sql<boolean>`(${column} = ${sql.placeholder(name ?? column.name)})`;
 }
 
 /**
@@ -378,10 +385,16 @@ export function eqPlaceholder(column: PgColumn, name?: string) {
  *
  * @param column Column.
  * @param name Custom placeholder name, will be inferred from the column if not specified.
+ * @param useGenericComparison Whether to cast the column to TEXT, thus avoiding any implicit casts of the value to the
+ * column's type. Enabled by default.
  * @return Optional equality check SQL with the placeholder.
  */
-export function eqOptionalPlaceholder(column: PgColumn, name?: string) {
-    return eqOptional(column, sql.placeholder(name ?? column.name));
+export function eqOptionalPlaceholder(
+    column: PgColumn,
+    name?: string,
+    useGenericComparison = true,
+) {
+    return eqOptional(column, sql.placeholder(name ?? column.name), useGenericComparison);
 }
 
 /**

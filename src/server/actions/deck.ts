@@ -23,8 +23,9 @@ export async function createNewDeck(data: ModifyDeckData) {
  * @param id Deck's ID.
  */
 export async function updateDeck(data: ModifyDeckData, id: string) {
+    if (ModifyDeckSchema.safeParse(data).error) return;
     const userId = await getUserIDInProtectedRoute();
-    if (!(await isDeckAccessible(userId, id))) return; // Under normal use, the client application will never request to update a deck the currently logged-in user does not own. Therefore, if this branch is reached, the request was constructed maliciously and does not need proper
+    if (!(await isDeckAccessible(userId, id))) return; // Under normal use, the client application will never request to update a deck the currently logged-in user does not own. Therefore, if this branch is reached, the request was constructed maliciously and does not need proper error reporting
     await editDeck(id, data);
 }
 
