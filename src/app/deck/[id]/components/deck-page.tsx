@@ -12,13 +12,16 @@ import Link from "next/link";
 import { DeckPreview } from "@/server/data/services/deck";
 import { useRouter } from "next/navigation";
 import { SelectUser } from "@/server/data/services/user";
-import { ControlledActionModal } from "@/components/ui/modal/controlled-action-modal";
 import { useState } from "react";
 import { DeckForm } from "@/components/ui/modal/deck-form";
 import { ModifyCardData, ModifyDeckData } from "@/lib/validation-schemas";
 import { createNewCard } from "@/server/actions/card";
 import { CardForm } from "@/components/ui/modal/card-form";
 import { SelectOption } from "@/lib/ui";
+import {
+    ControlledModalCollection,
+    ModalData,
+} from "@/components/ui/modal/controlled-modal-collection";
 
 export interface DeckPageProps {
     user: SelectUser;
@@ -27,54 +30,69 @@ export interface DeckPageProps {
 }
 
 export function DeckPage({ user, preview, deckOptions }: DeckPageProps) {
-    const [isEditOpen, setEditOpen] = useState(false);
-    const [isNewCardOpen, setNewCardOpen] = useState(false);
+    const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(null); // null value means that no modal is open
     const router = useRouter();
 
     const { deck, remaining } = preview;
 
-    function onEditClick() {
-        setEditOpen(isNewCardOpen ? isEditOpen : true);
-    }
-
     async function onEditSubmit(data: ModifyDeckData) {
         await updateDeck(data, deck.id);
-        setEditOpen(false);
+        setCurrentModalIndex(null);
         router.refresh();
-    }
-
-    function onEditCancel() {
-        setEditOpen(false);
-    }
-
-    function onNewCardClick() {
-        setNewCardOpen(isEditOpen ? isNewCardOpen : true);
     }
 
     async function onNewCardSubmit(data: ModifyCardData) {
         await createNewCard(data);
-        setNewCardOpen(false);
+        setCurrentModalIndex(null);
         router.refresh();
     }
 
-    function onNewCardCancel() {
-        setNewCardOpen(false);
+    async function onDeckDelete() {
+        await deleteDeck(deck.id);
+        router.push(HOME);
     }
+
+    const modals: ModalData[] = [
+        {
+            title: "Edit Deck",
+            description: "Edit the deck.",
+            children: (
+                <DeckForm
+                    onSubmit={ignoreAsyncFnResult(onEditSubmit)}
+                    onCancel={() => setCurrentModalIndex(null)}
+                    deck={deck}
+                />
+            ),
+        },
+        {
+            title: "New Card",
+            description: "Create a new card.",
+            children: (
+                <CardForm
+                    onSubmit={ignoreAsyncFnResult(onNewCardSubmit)}
+                    onCancel={() => setCurrentModalIndex(null)}
+                    deckOptions={deckOptions}
+                    card={{ deckId: deck.id }}
+                />
+            ),
+        },
+    ];
 
     const footerActions: FooterActionData[] = [
         {
+            Icon: Pencil,
+            text: "Edit Deck",
+            action: () => setCurrentModalIndex(0),
+        },
+        {
             Icon: SquarePlus,
             text: "New Card",
-            action: onNewCardClick,
+            action: () => setCurrentModalIndex(1),
         },
-        { Icon: Pencil, text: "Edit Deck", action: onEditClick },
         {
             Icon: Trash,
             text: "Delete Deck",
-            action: ignoreAsyncFnResult(async () => {
-                await deleteDeck(deck.id);
-                router.push(HOME);
-            }),
+            action: ignoreAsyncFnResult(onDeckDelete),
         },
         {
             Icon: SquareStack,
@@ -110,32 +128,11 @@ export function DeckPage({ user, preview, deckOptions }: DeckPageProps) {
                     </button>
                 </Button>
             </div>
-            <ControlledActionModal
-                open={isEditOpen}
-                onOpenChange={setEditOpen}
-                title={"Edit Deck"}
-                description={"Edit the deck"}
-            >
-                <DeckForm
-                    onSubmit={ignoreAsyncFnResult(onEditSubmit)}
-                    onCancel={onEditCancel}
-                    deck={deck}
-                />
-            </ControlledActionModal>
-
-            <ControlledActionModal
-                open={isNewCardOpen}
-                onOpenChange={setNewCardOpen}
-                title={"New Card"}
-                description={"Create a new card"}
-            >
-                <CardForm
-                    onSubmit={ignoreAsyncFnResult(onNewCardSubmit)}
-                    onCancel={onNewCardCancel}
-                    deckOptions={deckOptions}
-                    card={{ deckId: deck.id }}
-                />
-            </ControlledActionModal>
+            <ControlledModalCollection
+                modals={modals}
+                currentModalIndex={currentModalIndex}
+                onCurrentModalChange={setCurrentModalIndex}
+            />
         </PageTemplate>
     );
 }
