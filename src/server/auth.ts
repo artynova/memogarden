@@ -24,17 +24,6 @@ export const authConfig: NextAuthConfig = {
     providers: [
         CredentialsProvider({
             name: "Credentials",
-            credentials: {
-                email: {
-                    label: "Email:",
-                    type: "text",
-                    placeholder: "your-email",
-                },
-                password: {
-                    label: "Password:",
-                    type: "text",
-                },
-            },
 
             async authorize(credentials) {
                 const parsedCredentials = CredentialsSigninSchema.safeParse(credentials);
@@ -51,7 +40,7 @@ export const authConfig: NextAuthConfig = {
         FacebookProvider,
     ],
     callbacks: {
-        // Adds the user's internal MemoGarden ID to the token
+        // Adds the user's internal ID to the token
         async jwt({ user, profile, account, token }) {
             if (!user) return token; // Handle subsequent calls after sign-in, when the user data is no longer accessible
             if (!usesSupportedOAuth(account)) return { ...token, id: user.id }; // Case when the user uses credentials
@@ -59,7 +48,7 @@ export const authConfig: NextAuthConfig = {
             return { ...token, id: internalId };
         },
 
-        // Adds the user's internal MemoGarden ID to the session user object
+        // Adds the user's internal ID to the session user object
         session({ session, token }) {
             return { ...session, user: { ...session.user, id: token.id } };
         },

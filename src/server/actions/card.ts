@@ -4,7 +4,7 @@ import { ModifyCardData, ModifyCardSchema } from "@/lib/validation-schemas";
 import { getUserIDInProtectedRoute } from "@/lib/server-utils";
 import { isDeckAccessible } from "@/server/data/services/deck";
 import { ResponseNotFound } from "@/lib/responses";
-import { createCard, editCard, isCardAccessible } from "@/server/data/services/card";
+import { createCard, editCard, isCardAccessible, removeCard } from "@/server/data/services/card";
 
 /**
  * Creates a new deck using the given input data and assigns it to the currently logged-in user.
@@ -31,4 +31,16 @@ export async function updateCard(data: ModifyCardData, id: string) {
     const userId = await getUserIDInProtectedRoute();
     if (!(await isCardAccessible(userId, id))) return; // Under normal use, the client application will never request to update a card the currently logged-in user does not own. Therefore, if this branch is reached, the request was constructed maliciously and does not need proper error reporting
     await editCard(id, data);
+}
+
+/**
+ * Deletes an existing card if the currently authenticated user has the rights
+ * to do so. Otherwise, the function does nothing.
+ *
+ * @param id Card's ID.
+ */
+export async function deleteCard(id: string) {
+    const userId = await getUserIDInProtectedRoute();
+    if (!(await isCardAccessible(userId, id))) return; // Under normal use, the client application will never request to delete a deck the currently logged-in user does not own. Therefore, if this branch is reached, the request was constructed maliciously and does not need proper
+    await removeCard(id);
 }

@@ -24,3 +24,7 @@ export function ignoreAsyncFnResult<T extends (...args: Parameters<T>) => Promis
 export function escapeRegex(input: string) {
     return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
+
+export function getTrimmedText(text: string, maxLength: number) {
+    return text.length <= maxLength ? text : text.slice(0, maxLength) + "...";
+}

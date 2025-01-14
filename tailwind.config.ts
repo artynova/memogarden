@@ -6,7 +6,18 @@ import typography from "@tailwindcss/typography";
 const config: Config = {
     darkMode: ["class"],
     content: ["./src/components/**/*.{js,ts,jsx,tsx,mdx}", "./src/app/**/*.{js,ts,jsx,tsx,mdx}"],
-    safelist: ["text-fine-foreground", "text-warning-foreground", "text-problem-foreground"],
+    safelist: [
+        "text-fine",
+        "text-warning",
+        "text-problem",
+        "[&>div]:bg-fine",
+        "bg-fine/40",
+        "[&>div]:bg-warning",
+        "bg-warning/40",
+        "[&>div]:bg-problem",
+        "bg-problem/40",
+        "bg-muted/40",
+    ],
     theme: {
         extend: {
             fontFamily: {
@@ -53,15 +64,9 @@ const config: Config = {
                     "4": "hsl(var(--chart-4))",
                     "5": "hsl(var(--chart-5))",
                 },
-                fine: {
-                    foreground: "hsl(var(--fine-foreground))",
-                },
-                warning: {
-                    foreground: "hsl(var(--warning-foreground))",
-                },
-                problem: {
-                    foreground: "hsl(var(--problem-foreground))",
-                },
+                fine: "hsl(var(--fine))",
+                warning: "hsl(var(--warning))",
+                problem: "hsl(var(--problem))",
             },
             borderRadius: {
                 lg: "var(--radius)",

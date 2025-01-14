@@ -1,7 +1,12 @@
-export const textFineClass = "text-fine-foreground";
-export const textWarningClass = "text-warning-foreground";
-export const textProblemClass = "text-problem-foreground";
-export const textUnimportantClass = "text-muted-foreground";
+export const textFineClass = "text-fine";
+export const textWarningClass = "text-warning";
+export const textProblemClass = "text-problem";
+export const textUnimportantClass = "text-muted";
+
+export const bgFineClass = "bg-fine";
+export const bgWarningClass = "bg-warning";
+export const bgProblemClass = "bg-problem";
+export const bgUnimportantClass = "bg-muted";
 
 export interface SelectOption {
     value: string;

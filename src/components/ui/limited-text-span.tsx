@@ -1,6 +1,4 @@
-function getTrimmed(text: string, maxLength: number) {
-    return text.length <= maxLength ? text : text.slice(0, maxLength) + "...";
-}
+import { getTrimmedText } from "@/lib/utils";
 
 export interface LimitedTextSpanProps {
     text: string;
@@ -12,8 +10,10 @@ export interface LimitedTextSpanProps {
 export function LimitedTextSpan({ text, maxLength, maxLengthMobile }: LimitedTextSpanProps) {
     return (
         <>
-            <span className={"hidden md:inline"}>{getTrimmed(text, maxLength)}</span>
-            <span className={"md:hidden"}>{getTrimmed(text, maxLengthMobile ?? maxLength)}</span>
+            <span className={"hidden sm:inline"}>{getTrimmedText(text, maxLength)}</span>
+            <span className={"sm:hidden"}>
+                {getTrimmedText(text, maxLengthMobile ?? maxLength)}
+            </span>
         </>
     );
 }

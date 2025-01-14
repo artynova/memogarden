@@ -8,10 +8,10 @@ import { CardState } from "@/lib/spaced-repetition";
 import { LimitedTextSpan } from "@/components/ui/limited-text-span";
 import removeMd from "remove-markdown";
 
-const MAX_FRONT_PREVIEW_LENGTH_DESKTOP = 60;
-const MAX_FRONT_PREVIEW_LENGTH_MOBILE = 30;
+const MAX_FRONT_PREVIEW_LENGTH_DESKTOP = 30;
+const MAX_FRONT_PREVIEW_LENGTH_MOBILE = 10;
 const MAX_DECK_NAME_LENGTH_DESKTOP = 30;
-const MAX_DECK_NAME_LENGTH_MOBILE = 15;
+const MAX_DECK_NAME_LENGTH_MOBILE = 10;
 
 export const columns: ColumnDef<SelectCardPreview>[] = [
     {

@@ -50,7 +50,7 @@ const cardPreviewColumns = [
     [deck.retrievability, "deckRetrievability"],
 ] as const;
 const cardUpdateDataColumns = [card.front, card.back, card.deckId] as const;
-const cardDataViewColumns = [...cardPreviewColumns, card.back] as const;
+const cardDataViewColumns = [...cardPreviewColumns, card.back, card.scheduledDays] as const;
 const cardMetadataColumns = [
     card.due,
     card.stability,
