@@ -19,7 +19,7 @@ export function HealthBar({ retrievability, className, withText }: HealthBarProp
             <div className={cn("overflow-hidden rounded-full border-4 border-ring", className)}>
                 <Progress
                     value={progress}
-                    className={cn("h-4", backColorClass, `[&>div]:${frontColorClass}`)}
+                    className={cn("h-full", backColorClass, `[&>div]:${frontColorClass}`)}
                 />
             </div>
             {withText && (
