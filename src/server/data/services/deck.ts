@@ -114,7 +114,7 @@ const selectAllRevisionRemaining = db
                     .where(and(eqPlaceholder(deck.userId), isNotDeleted(deck))),
             ),
             lte(card.due, sql.placeholder("anchor")),
-            // No need to check whether the card was soft-deleted because the array check already ensures that the card belongs to a non-deleted deck and, consequently, is guaranteed to be non-deleted itself
+            isNotDeleted(card),
         ),
     )
     .groupBy(cardState.id)
