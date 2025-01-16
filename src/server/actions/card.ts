@@ -1,10 +1,18 @@
 "use server";
 
 import { ModifyCardData, ModifyCardSchema } from "@/lib/validation-schemas";
-import { getUserIDInProtectedRoute } from "@/lib/server-utils";
+import { getSyncedUserInProtectedRoute, getUserIDInProtectedRoute } from "@/lib/server-utils";
 import { isDeckAccessible } from "@/server/data/services/deck";
 import { ResponseNotFound } from "@/lib/responses";
-import { createCard, editCard, isCardAccessible, removeCard } from "@/server/data/services/card";
+import {
+    createCard,
+    editCard,
+    isCardAccessible,
+    removeCard,
+    reviewCard,
+} from "@/server/data/services/card";
+import { ReviewRating } from "@/lib/spaced-repetition";
+import { getUserDayEnd } from "@/lib/utils";
 
 /**
  * Creates a new deck using the given input data and assigns it to the currently logged-in user.
@@ -41,6 +49,21 @@ export async function updateCard(data: ModifyCardData, id: string) {
  */
 export async function deleteCard(id: string) {
     const userId = await getUserIDInProtectedRoute();
-    if (!(await isCardAccessible(userId, id))) return; // Under normal use, the client application will never request to delete a deck the currently logged-in user does not own. Therefore, if this branch is reached, the request was constructed maliciously and does not need proper
+    if (!(await isCardAccessible(userId, id))) return; // Under normal use, the client application will never request to delete a card the currently logged-in user does not own. Therefore, if this branch is reached, the request was constructed maliciously and does not need proper error reporting
     await removeCard(id);
+}
+
+/**
+ * Updates SRS metadata of a card based on a review with a given rating at the current timestamp if the user has the
+ * rights to review the card. Otherwise, the function does nothing.
+ *
+ * @param id Card's ID.
+ * @param answer User's attempted answer (will be recorded as part of the review log).
+ * @param rating Review ease rating given by the user.
+ */
+export async function reviewCardWithRating(id: string, answer: string, rating: ReviewRating) {
+    const user = await getSyncedUserInProtectedRoute();
+    if (!(await isCardAccessible(user.id, id))) return; // Under normal use, the client application will never request to revise a card the currently logged-in user does not own. Therefore, if this branch is reached, the request was constructed maliciously and does not need proper
+    const now = new Date();
+    await reviewCard(id, answer, now, getUserDayEnd(user, now), rating);
 }
