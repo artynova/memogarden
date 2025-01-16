@@ -40,6 +40,7 @@ const config = [
 
         rules: {
             "tailwindcss/classnames-order": "off",
+            "@typescript-eslint/no-unused-vars": ["error", { ignoreRestSiblings: true }],
         },
     },
     ...compat
