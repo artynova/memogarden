@@ -44,9 +44,15 @@ export interface MaturityBarProps {
     currentMaturity: CardMaturity;
 }
 
+/**
+ * Maturity bar for a card, displayed on a line with dots representing states. Each dot has a label and an SVG
+ * icon. The current state is highlighted through yellow coloring and increased size.
+ *
+ * @param currentMaturity The index of the current maturity state from left to right.
+ */
 export function MaturityBar({ currentMaturity }: MaturityBarProps) {
     return (
-        <div className={"py-[7%]"}>
+        <div className={"py-12"}>
             <div className="relative flex w-full items-center justify-between">
                 <div className="absolute h-1 w-full bg-muted" />
                 {stages.map((stage, index) => (

@@ -4,6 +4,11 @@ import { Button } from "@/components/ui/base/button";
 import { Check, ChevronsRight } from "lucide-react";
 import Link from "next/link";
 import { RemainingCardsGrid } from "@/components/ui/aggregate/remaining-cards-grid";
+import { LimitedTextSpan } from "@/components/ui/limited-text-span";
+import { DeckHealthBar } from "@/components/ui/resource-state/deck-health-bar";
+
+const MAX_DECK_NAME_LENGTH = 30;
+const MAX_DECK_NAME_LENGTH_MOBILE = 15;
 
 export interface DeckListCardProps {
     preview: DeckPreview;
@@ -17,10 +22,17 @@ export function DeckListCard({ preview }: DeckListCardProps) {
         <Card className={"flex justify-between overflow-hidden"}>
             <Link href={`/deck/${deck.id}`} className={"block grow"}>
                 <CardHeader>
-                    <h2 className={"text-center font-bold"}>{deck.name}</h2>
+                    <h2 className={"text-center font-bold"}>
+                        <LimitedTextSpan
+                            text={deck.name}
+                            maxLength={MAX_DECK_NAME_LENGTH}
+                            maxLengthMobile={MAX_DECK_NAME_LENGTH_MOBILE}
+                        />
+                    </h2>
                 </CardHeader>
-                <CardContent>
+                <CardContent className={"space-y-4"}>
                     <RemainingCardsGrid remaining={remaining} />
+                    <DeckHealthBar retrievability={deck.retrievability} withBarText />
                 </CardContent>
             </Link>
             <Button
@@ -31,11 +43,15 @@ export function DeckListCard({ preview }: DeckListCardProps) {
                     "h-auto w-20 shrink-0 rounded-l-none sm:w-32 [&_svg]:size-16 md:[&_svg]:size-20"
                 }
             >
-                <button>
+                {revisionCleared ? (
+                    <button>
+                        <Check />
+                    </button>
+                ) : (
                     <Link href={`/deck/${deck.id}/revise`}>
-                        {revisionCleared ? <Check /> : <ChevronsRight />}
+                        <ChevronsRight />
                     </Link>
-                </button>
+                )}
             </Button>
         </Card>
     );

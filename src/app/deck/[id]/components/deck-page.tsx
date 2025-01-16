@@ -22,6 +22,7 @@ import {
     ControlledModalCollection,
     ModalData,
 } from "@/components/ui/modal/controlled-modal-collection";
+import { DeckHealthBar } from "@/components/ui/resource-state/deck-health-bar";
 
 export interface DeckPageProps {
     user: SelectUser;
@@ -108,10 +109,11 @@ export function DeckPage({ user, preview, deckOptions }: DeckPageProps) {
         <PageTemplate title={deck.name} user={user} footerActions={footerActions}>
             <div
                 className={
-                    "mx-auto flex h-full max-w-screen-sm flex-col items-stretch justify-center space-y-6 p-6"
+                    "mx-auto flex h-full max-w-screen-sm flex-col items-stretch justify-center gap-y-6 p-6"
                 }
             >
-                <RemainingCardsGrid remaining={remaining} className={"p-6"} />
+                <RemainingCardsGrid remaining={remaining} className={"px-6"} />
+                <DeckHealthBar retrievability={deck.retrievability} withBarText />
                 <Button
                     asChild
                     disabled={revisionCleared}

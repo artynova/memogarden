@@ -30,26 +30,27 @@ export const colorForHealth = {
 };
 
 export const nameForHealth = {
-    [HealthState.Unknown]: "Not Yet Planted",
+    [HealthState.Unknown]: "Not yet planted",
     [HealthState.Withering]: "Withering",
     [HealthState.Neglected]: "Neglected",
     [HealthState.Lush]: "Lush",
-    [HealthState.FreshlyWatered]: "Freshly Watered",
+    [HealthState.FreshlyWatered]: "Freshly watered",
 };
 
 /**
  * Converts retrievability to the respective discrete health state.
  *
- * @param retrievability Retrievability integer between 0 and 100, or `null` if the object does not have a definite
- * health value (e.g., it is a Seed card).
+ * @param retrievabilityPercent Integer retrievability percentage between 0 and 100, or `null` if the object does not
+ * have a definite health value (e.g., it is a Seed card).
  * @return Health state corresponding to the given retrievability.
  */
-export function toHealthState(retrievability: number | null): HealthState {
-    if (retrievability === null) return HealthState.Unknown;
-    if (retrievability >= minRetrievabilityForHealth[HealthState.FreshlyWatered])
+export function toHealthState(retrievabilityPercent: number | null): HealthState {
+    if (retrievabilityPercent === null) return HealthState.Unknown;
+    if (retrievabilityPercent >= minRetrievabilityForHealth[HealthState.FreshlyWatered])
         return HealthState.FreshlyWatered;
-    if (retrievability >= minRetrievabilityForHealth[HealthState.Lush]) return HealthState.Lush;
-    if (retrievability >= minRetrievabilityForHealth[HealthState.Neglected])
+    if (retrievabilityPercent >= minRetrievabilityForHealth[HealthState.Lush])
+        return HealthState.Lush;
+    if (retrievabilityPercent >= minRetrievabilityForHealth[HealthState.Neglected])
         return HealthState.Neglected;
     return HealthState.Withering;
 }

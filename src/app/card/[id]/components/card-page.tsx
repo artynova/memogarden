@@ -2,7 +2,7 @@
 
 import { FooterActionData } from "@/components/ui/page/footer";
 import { Folder, Pencil, Trash } from "lucide-react";
-import { getTrimmedText, ignoreAsyncFnResult } from "@/lib/utils";
+import { ignoreAsyncFnResult } from "@/lib/utils";
 import { HOME } from "@/lib/routes";
 import { PageTemplate } from "@/components/ui/page/page-template";
 import { useRouter } from "next/navigation";
@@ -17,23 +17,16 @@ import {
     ModalData,
 } from "@/components/ui/modal/controlled-modal-collection";
 import { SelectCardDataView } from "@/server/data/services/card";
-import removeMd from "remove-markdown";
 import { MaturityBar } from "@/components/ui/resource-state/maturity-bar";
 import { getCardMaturity } from "@/lib/spaced-repetition";
-import { Card, CardContent, CardHeader } from "@/components/ui/base/card";
-import Markdown from "react-markdown";
-import { Separator } from "@/components/ui/base/separator";
-import { HealthBar } from "@/components/ui/resource-state/health-bar";
-import { DateTime } from "luxon";
+import { ContentWrapper } from "@/components/ui/page/content-wrapper";
+import { CardHealthBar } from "@/components/ui/resource-state/card-health-bar";
+import { CardCard } from "@/components/ui/card-card";
 
 export interface CardPageProps {
     user: SelectUser;
     card: SelectCardDataView;
     deckOptions: SelectOption[];
-}
-
-function getDateString(date: Date): string {
-    return DateTime.fromJSDate(date).toLocaleString(DateTime.DATE_SHORT);
 }
 
 export function CardPage({ user, card, deckOptions }: CardPageProps) {
@@ -86,30 +79,16 @@ export function CardPage({ user, card, deckOptions }: CardPageProps) {
 
     return (
         <PageTemplate title={card.front} user={user} footerActions={footerActions}>
-            <div
-                className={
-                    "mx-auto flex h-full max-w-screen-sm flex-col items-stretch justify-center space-y-6 p-6"
-                }
-            >
-                <span className={"text-center"}>{`Due: ${getDateString(card.due)}`}</span>
-                <HealthBar retrievability={card.retrievability} withText />
+            <ContentWrapper>
+                <CardHealthBar
+                    retrievability={card.retrievability}
+                    due={card.due}
+                    timezone={user.timezone}
+                    withBarText
+                />
                 <MaturityBar currentMaturity={getCardMaturity(card.stateId, card.scheduledDays)} />
-                <Card>
-                    <CardHeader>
-                        <h2 className={"text-center font-bold"}>{"Front:"}</h2>
-                    </CardHeader>
-                    <CardContent>
-                        <Markdown>{card.front}</Markdown>
-                    </CardContent>
-                    <Separator />
-                    <CardHeader>
-                        <h2 className={"text-center font-bold"}>{"Back:"}</h2>
-                    </CardHeader>
-                    <CardContent>
-                        <Markdown>{card.back}</Markdown>
-                    </CardContent>
-                </Card>
-            </div>
+                <CardCard card={card} />
+            </ContentWrapper>
             <ControlledModalCollection
                 modals={modals}
                 currentModalIndex={currentModalIndex}

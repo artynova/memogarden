@@ -19,6 +19,7 @@ import {
     ControlledModalCollection,
     ModalData,
 } from "@/components/ui/modal/controlled-modal-collection";
+import { ContentWrapper } from "@/components/ui/page/content-wrapper";
 
 export interface HomePageProps {
     user: SelectUser;
@@ -92,12 +93,12 @@ export function HomePage({ user, summary, decks }: HomePageProps) {
             hideHomeButton
             footerActions={footerActions}
         >
-            <div className={"mx-auto flex max-w-screen-lg flex-col gap-y-6 p-6"}>
+            <ContentWrapper>
                 <RemainingCardsGrid remaining={summary} className={"p-3"} />
                 {decks.map((preview) => (
                     <DeckListCard preview={preview} key={preview.deck.id} />
                 ))}
-            </div>
+            </ContentWrapper>
             <ControlledModalCollection
                 modals={modals}
                 currentModalIndex={currentModalIndex}

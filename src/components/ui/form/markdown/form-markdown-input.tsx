@@ -14,7 +14,7 @@ import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import { cn } from "@/lib/utils";
 import { markdown } from "@codemirror/lang-markdown";
 import { memoGarden } from "@/components/ui/form/markdown/codemirror-theme";
-import Markdown from "react-markdown";
+import { MarkdownProse } from "@/components/ui/markdown-prose";
 
 export interface FormMarkdownInputProps<
     TFieldValues extends FieldValues = FieldValues,
@@ -60,13 +60,15 @@ export function FormMarkdownInput<
                     <FormLabel>{label}</FormLabel>
                     <FormControl>
                         {preview ? (
-                            <Markdown
+                            <div
                                 className={
-                                    "prose min-h-9 max-w-full rounded-md border border-input px-3 py-1 text-base md:text-sm"
+                                    "flex min-h-9 max-w-full items-center rounded-md border border-input px-3 py-1"
                                 }
                             >
-                                {field.value}
-                            </Markdown>
+                                <MarkdownProse className={"max-w-full"}>
+                                    {field.value}
+                                </MarkdownProse>
+                            </div>
                         ) : (
                             <CodeMirrorAdapter {...field} />
                         )}
