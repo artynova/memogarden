@@ -1,6 +1,7 @@
 import { doublePrecision, integer, pgTable, smallint, varchar } from "drizzle-orm/pg-core";
 import { autoId, autoIdExternal, timestamps, timestampTz } from "@/server/data/schema/utils";
 import { deckReference } from "@/server/data/schema/deck";
+import { newCardStability } from "@/server/data/scheduler";
 
 /**
  * Decoupled lookup table for card state enum values, allowing to attach metadata (like arbitrary names).
@@ -39,7 +40,7 @@ export const card = pgTable("card", {
     front: varchar({ length: 300 }).notNull(),
     back: varchar({ length: 1000 }).notNull(),
     due: timestampTz().notNull().defaultNow(),
-    stability: doublePrecision().notNull().default(0),
+    stability: doublePrecision().notNull().default(newCardStability),
     difficulty: doublePrecision().notNull().default(0),
     elapsedDays: integer().notNull().default(0),
     scheduledDays: integer().notNull().default(0),
@@ -47,7 +48,7 @@ export const card = pgTable("card", {
     lapses: integer().notNull().default(0),
     stateId: cardStateReference().notNull().default(0), // State with index 0 is guaranteed to exist because it is part of an internal lookup table and not a user-managed record
     lastReview: timestampTz(),
-    retrievability: doublePrecision(), // Nullable, absent if the card is new (has not yet been reviewed) because judgements about retrievability cannot be made before the first review
+    retrievability: doublePrecision().notNull().default(1), // Initialized to 1 because the user most likely can remember the card right after they have created it
 });
 
 /**

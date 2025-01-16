@@ -1,15 +1,4 @@
-import {
-    and,
-    count,
-    eq,
-    getTableColumns,
-    InferInsertModel,
-    isNotNull,
-    lte,
-    or,
-    SQL,
-    sql,
-} from "drizzle-orm";
+import { and, count, eq, getTableColumns, InferInsertModel, lte, or, SQL, sql } from "drizzle-orm";
 import { card, cardState, reviewLog, reviewRating } from "@/server/data/schema/card";
 import db from "@/server/data/db";
 import { deck } from "@/server/data/schema/deck";
@@ -32,7 +21,7 @@ import {
 
 import { escapeRegex } from "@/lib/utils";
 import { Card, DECAY, FACTOR, Grade, ReviewLog } from "ts-fsrs";
-import { retrievabilityAfterReview, scheduler } from "@/server/data/scheduler";
+import { scheduler } from "@/server/data/scheduler";
 import { ReviewRating } from "@/lib/spaced-repetition";
 import { inArray } from "drizzle-orm/sql/expressions/conditions";
 import { forceSyncDeckHealth, getDeck } from "@/server/data/services/deck";
@@ -63,6 +52,8 @@ const cardMetadataColumns = [
     card.lastReview,
 ] as const;
 const cardSelectColumns = [...cardDataViewColumns, ...cardMetadataColumns] as const;
+
+const { id: _id, ...insertReviewLogColumnMapping } = getTableColumns(reviewLog);
 
 export type SelectCard = InferSelectModelFromGroup<typeof cardSelectColumns>;
 export type SelectCardPreview = InferSelectModelFromGroup<typeof cardPreviewColumns>;
@@ -148,7 +139,7 @@ const selectCardMetadata = db
     .prepare("select_card_metadata");
 
 /**
- * Placeholders: "deckId" = deck's ID, "anchor" = reference timestamp for the current moment.
+ * Placeholders: "deckId" = deck's ID, "anchor" = reference timestamp for the latest acceptable revision due date.
  */
 const selectNextCard = db
     .select(toColumnMapping(cardSelectColumns))
@@ -227,7 +218,7 @@ const selectReviewRatings = db.select().from(reviewRating).prepare("select_revie
  */
 const insertReviewLog = db
     .insert(reviewLog)
-    .values(makeInsertPlaceholders(getTableColumns(reviewLog)))
+    .values(makeInsertPlaceholders(insertReviewLogColumnMapping))
     .prepare("insert_review_log");
 
 /**
@@ -236,9 +227,9 @@ const insertReviewLog = db
 const updateCardsRetrievability = db
     .update(card)
     .set({
-        retrievability: sql`1 + (${FACTOR} * GREATEST(EXTRACT(DAY FROM ${sql.placeholder("anchor")} - ${card.lastReview}))) / ${card.stability})^(${DECAY}`, // This is safe because the WHERE clause ensures the card does have a last review date (i.e., it is not NULL)
+        retrievability: sql`(1 + (${FACTOR} * EXTRACT(DAY FROM (${sql.placeholder("anchor")} - COALESCE(${card.lastReview}, ${card.createdAt})))) / ${card.stability})^(${DECAY})`,
     })
-    .where(and(userCardTest, isNotNull(card.lastReview), isNotDeleted(card)))
+    .where(and(userCardTest, isNotDeleted(card)))
     .prepare("update_retrievabilities");
 
 /**
@@ -246,7 +237,7 @@ const updateCardsRetrievability = db
  */
 const updateCardRetrievabilityAfterReview = db
     .update(card)
-    .set({ retrievability: retrievabilityAfterReview })
+    .set({ retrievability: 1 })
     .where(and(eqPlaceholder(card.id), isNotDeleted(card)))
     .prepare("update_card_retrievability_after_review");
 
@@ -335,8 +326,11 @@ export function toInsertLog(cardId: string, answerAttempt: string, fsrsLog: Revi
  * @return Internal ID of the newly created card.
  */
 export async function createCard(data: UpdateCardData) {
-    // A newly created card has a retrievability of NULL, which is ignored during aggregate retrievability calculations, so there is no need to update the aggregates here because they are not impacted yet
-    return (await insertCard.execute({ ...data }).then(takeFirstOrNull))!.id;
+    const id = (await insertCard.execute({ ...data }).then(takeFirstOrNull))!.id;
+    const deck = (await getDeck(data.deckId))!;
+    await forceSyncDeckHealth(deck.id);
+    await forceSyncUserHealth(deck.userId);
+    return id;
 }
 
 /**
@@ -347,11 +341,7 @@ export async function createCard(data: UpdateCardData) {
  */
 export async function editCard(id: string, data: UpdateCardData) {
     const card = await getCard(id);
-    // If either the card does not exist or it does not have retrievability (i.e., is a new card), it does not impact aggregate health at all, so we do not need any extra deck manipulation
-    if (!card?.retrievability) {
-        await updateCardData.execute({ id, ...data });
-        return;
-    }
+    if (!card) return;
 
     const oldDeckId = card.deckId;
     await updateCardData.execute({ id, ...data });
@@ -371,11 +361,11 @@ export async function editCard(id: string, data: UpdateCardData) {
 export async function removeCard(id: string) {
     const card = await getCard(id);
     await deleteCard.execute({ id });
-    if (!card?.retrievability) return; // If the card did not exist, or it had NULL retrievability, there is no need to update the aggregate retrievabilities
+    if (!card) return; // If the card did not exist, there is no need to update the aggregate retrievabilities
 
     const deck = (await getDeck(card.deckId))!; // Retrieving the deck to get the user's ID. Since at this point we know that the card was valid and non-deleted, the deck it references is also valid
     await forceSyncDeckHealth(deck.id);
-    await forceSyncUserHealth(deck.userId); // Overall health is also affected by the deletion of a card with non-NULL retrievability
+    await forceSyncUserHealth(deck.userId);
 }
 
 /**
@@ -392,7 +382,8 @@ export async function getCard(id: string): Promise<SelectCard | null> {
  * Retrieves the next card that is due for revision in a deck.
  *
  * @param deckId Deck's ID.
- * @param anchor Reference moment in time (normally the current moment).
+ * @param anchor Last acceptable moment for the revision due date (normally the end of the current day in user's
+ * timezone).
  * @return Selected card, or `null` if there are no due cards in the deck at the given moment.
  */
 export async function getNextCard(deckId: string, anchor: Date): Promise<SelectCard | null> {
@@ -465,6 +456,7 @@ export async function getCardRevisionOptions(id: string, now: Date) {
  * @param id Card's ID.
  * @param answerAttempt User's attempt to reproduce the answer on the card's back (can be an empty string).
  * @param now Date at the time of answering (parametrized to allow syncing with other function calls).
+ * @param endOfDay Date at the end of the current day in the user's timezone.
  * @param rating Review rating selected by the user.
  * @return Updated card data, or `null` if the ID does not belong to a valid card.
  */
@@ -472,10 +464,11 @@ export async function reviewCard(
     id: string,
     answerAttempt: string,
     now: Date,
+    endOfDay: Date,
     rating: ReviewRating,
 ): Promise<SelectCard | null> {
     const metadata = await getCard(id);
-    if (!metadata || metadata.due < now) return null;
+    if (!metadata || metadata.due > endOfDay) return null;
     const scheduled = scheduler.next(toFsrsCard(metadata), now, rating as number as Grade); // The Grade enum is equivalent to MemoGarden's ReviewRating enum, so the cast is safe
     const newMetadata = toMetadata(scheduled.card);
     await updateCardMetadata.execute({ id, ...newMetadata });

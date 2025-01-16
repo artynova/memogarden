@@ -1,5 +1,5 @@
 import { auth } from "@/server/auth";
-import { getUser } from "@/server/data/services/user";
+import { getUser, maybeSyncUserHealth } from "@/server/data/services/user";
 
 /**
  * Convenience method that retrieves the currently authenticated user data from the JWT token in a type-safe way.
@@ -22,10 +22,12 @@ export async function getUserIDInProtectedRoute() {
 /**
  * Convenience method to retrieve the database profile data of the currently authenticated user in a type-safe way.
  * Designed to be used within Server Components in authentication-protected routes, where the presence of a JWT token
- * with valid user data is guaranteed.
+ * with valid user data is guaranteed. Also synchronizes the user's health state.
  */
-export async function getUserDataInProtectedRoute() {
-    return (await getUser(await getUserIDInProtectedRoute()))!;
+export async function getSyncedUserInProtectedRoute() {
+    const id = await getUserIDInProtectedRoute();
+    await maybeSyncUserHealth(id);
+    return (await getUser(id))!;
 }
 
 export type SearchParam = string | string[] | undefined;

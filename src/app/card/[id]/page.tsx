@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getDeckOptions } from "@/server/data/services/deck";
-import { getUserDataInProtectedRoute } from "@/lib/server-utils";
+import { getSyncedUserInProtectedRoute } from "@/lib/server-utils";
 import { getCardDataView, isCardAccessible } from "@/server/data/services/card";
 import { CardPage } from "@/app/card/[id]/components/card-page";
 
@@ -10,7 +10,7 @@ export interface PageProps {
 
 export default async function Page({ params }: PageProps) {
     const { id } = await params;
-    const user = await getUserDataInProtectedRoute();
+    const user = await getSyncedUserInProtectedRoute();
     const accessible = await isCardAccessible(user.id, id);
     if (!accessible) notFound(); // The card is only accessible if it both exists and belongs to the user, i.e., an inaccessible card may either not exist or belong to a different user. For security reasons, the application will not inform user about which of the two is the case, and will simply report that the resource was not found
 

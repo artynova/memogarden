@@ -1,4 +1,4 @@
-import { and, avg, eq, InferInsertModel, InferSelectModel } from "drizzle-orm";
+import { and, avg, eq, InferInsertModel, InferSelectModel, sql } from "drizzle-orm";
 import { user, userCredentials, userFacebook, userGoogle } from "@/server/data/schema/user";
 import db from "@/server/data/db";
 import {
@@ -81,12 +81,12 @@ const insertUserFacebook = db
 const updateUserRetrievability = db
     .update(user)
     .set({
-        retrievability: db
+        retrievability: sql`(${db
             .select({ average: avg(card.retrievability) })
             .from(card)
             .innerJoin(deck, eq(card.deckId, deck.id))
             .where(and(eqPlaceholder(deck.userId, "id"), isNotDeleted(card))) // NULL retrievabilities are ignored by the AVG function so no need to filter them out explicitly
-            .getSQL(),
+            .getSQL()})`, // Parentheses around the subquery are necessary to avoid syntax errors
     })
     .where(eqPlaceholder(user.id));
 
@@ -173,6 +173,7 @@ export async function maybeSyncUserHealth(id: string) {
         second: 0,
         millisecond: 0,
     });
+
     await forceSyncCardsHealth(id, sameDayNoonInTimezone.toJSDate());
     await forceSyncDecksHealth(id);
     await forceSyncUserHealth(id);

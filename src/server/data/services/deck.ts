@@ -166,11 +166,11 @@ const selectUserDecksPreview = db
 const updateDecksRetrievability = db
     .update(deck)
     .set({
-        retrievability: db
+        retrievability: sql`(${db
             .select({ average: avg(card.retrievability) })
             .from(card)
             .where(and(eq(card.deckId, deck.id), isNotDeleted(card))) // NULL retrievabilities are ignored by the AVG function so no need to filter them out explicitly
-            .getSQL(),
+            .getSQL()})`, // Parentheses around the subquery are necessary to avoid syntax errors
     })
     .where(and(eqPlaceholder(deck.userId), isNotDeleted(deck)))
     .prepare("update_decks_retrievability");
@@ -182,11 +182,11 @@ const updateDecksRetrievability = db
 const updateDeckRetrievability = db
     .update(deck)
     .set({
-        retrievability: db
+        retrievability: sql`(${db
             .select({ average: avg(card.retrievability) })
             .from(card)
             .where(and(eq(card.deckId, deck.id), isNotDeleted(card)))
-            .getSQL(),
+            .getSQL()})`, // Parentheses around the subquery are necessary to avoid syntax errors
     })
     .where(and(eqPlaceholder(deck.id), isNotDeleted(deck)))
     .prepare("update_deck_retrievability");

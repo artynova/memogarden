@@ -50,6 +50,13 @@
       "when": 1734652455517,
       "tag": "0006_medical_inertia",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1736902816536,
+      "tag": "0007_sour_wallow",
+      "breakpoints": true
     }
   ]
 }
