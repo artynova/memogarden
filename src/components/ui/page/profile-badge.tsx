@@ -12,6 +12,7 @@ export function ProfileBadge({ user, className }: ProfileProps) {
         <div className={cn("flex w-32 flex-col items-center space-y-2", className)}>
             <div className="size-16 rounded-full bg-black"></div>
             <HealthBar retrievability={user.retrievability} className="h-4 w-16" />
+            <span className={"sr-only"}>Profile</span>
         </div>
     );
 }

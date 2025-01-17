@@ -1,8 +1,8 @@
 import { HomeButton } from "@/components/ui/page/home-button";
-import { ProfileBadge } from "@/components/ui/page/profile-badge";
 import { cn } from "@/lib/utils";
 import { SelectUser } from "@/server/data/services/user";
 import { LimitedTextSpan } from "@/components/ui/limited-text-span";
+import { UserDropdown } from "@/components/ui/page/user-dropdown";
 
 export interface HeaderProps {
     title: string;
@@ -26,8 +26,8 @@ export function Header({ title, user, hideHomeButton, className }: HeaderProps) 
                         maxLengthMobile={MAX_TITLE_LENGTH_MOBILE}
                     />
                 </h1>
-                <ProfileBadge user={user} className={"px-6"} />
             </div>
+            <UserDropdown user={user}/>
         </header>
     );
 }
