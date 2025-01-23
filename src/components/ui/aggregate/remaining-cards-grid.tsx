@@ -12,17 +12,17 @@ export interface RemainingCardsForType {
 function getDeckRemainingRenderData(remaining: CardsRemaining): RemainingCardsForType[] {
     return [
         {
-            name: "New",
+            name: "Seeds",
             number: remaining.new,
             textColorClass: remaining.new ? textWarningClass : textUnimportantClass,
         },
         {
-            name: "Learning",
+            name: "Sprouts",
             number: remaining.learning,
             textColorClass: remaining.learning ? textProblemClass : textUnimportantClass,
         },
         {
-            name: "Review",
+            name: "Growing",
             number: remaining.review,
             textColorClass: remaining.review ? textFineClass : textUnimportantClass,
         },
