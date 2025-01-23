@@ -1,7 +1,19 @@
-import { and, avg, eq, InferInsertModel, InferSelectModel, sql } from "drizzle-orm";
+import {
+    and,
+    avg,
+    count,
+    eq,
+    gte,
+    InferInsertModel,
+    InferSelectModel,
+    lt,
+    lte,
+    sql,
+} from "drizzle-orm";
 import { user, userCredentials, userFacebook, userGoogle } from "@/server/data/schema/user";
 import db from "@/server/data/db";
 import {
+    eqOptionalPlaceholder,
     eqPlaceholder,
     isNotDeleted,
     makeInsertPlaceholders,
@@ -12,11 +24,21 @@ import {
 import bcrypt from "bcrypt";
 import { env } from "@/server/env";
 import { Account, Profile } from "next-auth";
-import { card } from "@/server/data/schema/card";
+import { card, reviewLog } from "@/server/data/schema/card";
 import { deck } from "@/server/data/schema/deck";
 import { DateTime } from "luxon";
 import { forceSyncCardsHealth } from "@/server/data/services/card";
 import { forceSyncDecksHealth } from "@/server/data/services/deck";
+
+import { PREDICTION_LIMIT, RETROSPECTION_LIMIT, toSparseDatesReviews } from "@/lib/statistics";
+import {
+    CardMaturity,
+    CardState,
+    HIGH_MATURITY_THRESHOLD,
+    MAX_MATURITY_THRESHOLD,
+    MID_MATURITY_THRESHOLD,
+} from "@/lib/spaced-repetition";
+import { inArray } from "drizzle-orm/sql/expressions/conditions";
 
 const insertUserColumns = [user.timezone] as const;
 const insertUserCredentialsColumns = [
@@ -107,6 +129,142 @@ const selectUserHealthSyncData = db
     .from(user)
     .where(eqPlaceholder(user.id))
     .prepare("select_last_sync_date");
+
+const retrospectionInterval = `${RETROSPECTION_LIMIT - 1} days`;
+
+/**
+ * Placeholders: "id" = user's ID, "anchor" = date from which to start retrospecting, "deckId" = optional ID of the
+ * deck to limit statistics to that deck instead of the entire account (ignored if NULL).
+ */
+const selectRetrospectionStatistics = db
+    .select({
+        date: sql<string>`((${reviewLog.review} AT TIME ZONE ${user.timezone})::date::timestamp AT TIME ZONE ${user.timezone}) AS date`,
+        reviews: count(),
+    })
+    .from(reviewLog)
+    .innerJoin(card, eq(card.id, reviewLog.cardId))
+    .innerJoin(deck, eq(deck.id, card.deckId))
+    .innerJoin(user, eq(user.id, deck.userId))
+    .where(
+        and(
+            eqOptionalPlaceholder(deck.id, "deckId"),
+            eqPlaceholder(user.id),
+            // Check whether the date is within the retrospection limit
+            gte(
+                reviewLog.review,
+                sql`((${sql.placeholder("anchor")} AT TIME ZONE ${user.timezone})::date - ${retrospectionInterval}::interval)::timestamp AT TIME ZONE ${user.timezone}`,
+            ),
+            // This query does NOT filter out deleted cards and decks, because they still contributed to daily review counts even if they were deleted
+        ),
+    )
+    .groupBy(sql`date`)
+    .prepare("select_retrospective_statistics");
+
+const predictionInterval = `${PREDICTION_LIMIT - 1} days`;
+
+/**
+ * Placeholders: "id" = user's ID, "anchor" = date from which to start predicting, "deckId" = optional ID of the
+ * deck to limit statistics to that deck instead of the entire account (ignored if NULL).
+ */
+const selectPredictionStatistics = db
+    .select({
+        date: sql<string>`((${card.due} AT TIME ZONE ${user.timezone})::date::timestamp AT TIME ZONE ${user.timezone}) AS date`,
+        reviews: count(),
+    })
+    .from(card)
+    .innerJoin(deck, eq(deck.id, card.deckId))
+    .innerJoin(user, eq(user.id, deck.userId))
+    .where(
+        and(
+            eqOptionalPlaceholder(deck.id, "deckId"),
+            eqPlaceholder(user.id),
+            lte(
+                card.due,
+                sql`((${sql.placeholder("anchor")} AT TIME ZONE ${user.timezone})::date + ${predictionInterval}::interval)::timestamp AT TIME ZONE ${user.timezone}`,
+            ),
+        ),
+    )
+    .groupBy(sql`date`)
+    .prepare("select_prediction_statistics");
+
+/**
+ * Counts non-deleted cards, providing information on the current state of the collection
+ * Placeholders: "id" = user's ID, "deckId" = optional ID of the deck to limit statistics to that deck instead of the
+ * entire account (ignored if NULL).
+ */
+const selectUserCardCount = db
+    .select({ count: count() })
+    .from(card)
+    .innerJoin(deck, eq(deck.id, card.deckId))
+    .where(
+        and(
+            eqPlaceholder(deck.userId, "id"),
+            eqOptionalPlaceholder(deck.id, "deckId"),
+            isNotDeleted(card),
+        ),
+    )
+    .prepare("select_user_card_count");
+
+/**
+ * Counts reviews of all cards, including previously deleted cards, thus providing more historical information.
+ */
+const selectUserReviewCount = db
+    .select({ count: count() })
+    .from(reviewLog)
+    .innerJoin(card, eq(card.id, reviewLog.cardId))
+    .innerJoin(deck, eq(deck.id, card.deckId))
+    .where(and(eqPlaceholder(deck.userId, "id"), eqOptionalPlaceholder(deck.id, "deckId")))
+    .prepare("select_user_review_count");
+
+/**
+ * Placeholders: "id" = user's ID, "deckId" = optional ID of the deck.
+ */
+const selectCardCounts = db
+    .select({
+        maturity: sql<number>`maturities.maturity`,
+        count: sql<number>`COALESCE(counts.count, 0)`,
+    })
+    .from(
+        // This subquery selects counts for all maturities where at least one card of said maturity exists in the selection
+        sql`(${db
+            .select({
+                maturity: sql<number>`(
+                    CASE
+                        WHEN ${eq(card.stateId, CardState.New)} THEN ${CardMaturity.Seed}
+                        WHEN ${inArray(card.stateId, [CardState.Learning, CardState.Relearning])} THEN ${CardMaturity.Sprout}
+                        WHEN ${lt(card.scheduledDays, MID_MATURITY_THRESHOLD)} THEN ${CardMaturity.Sapling}
+                        WHEN ${lt(card.scheduledDays, HIGH_MATURITY_THRESHOLD)} THEN ${CardMaturity.Budding}
+                        WHEN ${lt(card.scheduledDays, MAX_MATURITY_THRESHOLD)} THEN ${CardMaturity.Mature}
+                        ELSE ${CardMaturity.Mighty}
+                    END
+                ) AS maturity`,
+                count: sql<number>`${count(card.id)} AS count`,
+            })
+            .from(card)
+            .innerJoin(deck, eq(deck.id, card.deckId))
+            .where(
+                and(
+                    eqPlaceholder(deck.userId, "id"),
+                    eqOptionalPlaceholder(deck.id, "deckId"),
+                    isNotDeleted(card),
+                ),
+            )
+            .groupBy(sql`maturity`)}) as counts`,
+    )
+    .rightJoin(
+        // This subquery constructs a table with all possible maturities, and the right join ensures that each maturity has an entry in the result set
+        sql`
+            (VALUES
+                (${CardMaturity.Seed}),
+                (${CardMaturity.Sprout}),
+                (${CardMaturity.Sapling}),
+                (${CardMaturity.Budding}),
+                (${CardMaturity.Mature}),
+                (${CardMaturity.Mighty})
+            ) AS maturities(maturity)`,
+        eq(sql`counts.maturity`, sql`maturities.maturity`),
+    )
+    .prepare("select_card_counts");
 
 /**
  * Creates a new base user entry (without auth information).
@@ -285,4 +443,48 @@ export async function createOAuthUser(
     const userId = await createUser(timezone);
     await OAuthProviderToStatements[provider].insert.execute({ userId, sub });
     return userId;
+}
+
+/**
+ * Calculates statistics about past reviews for all dates within the last 30 days that have had at least one revision.
+ * The dates are represented by ISO date segments, and any non-present dates from the last thirty days can be safely
+ * assumed to have had 0 reviews.
+ *
+ * @param id User's ID.
+ * @param anchor Date from which to start retrospecting.
+ * @param deckId ID of the deck to limit the scope (or null).
+ *
+ * @return Mapping of date string segments to respective non-0 numbers of conducted reviews.
+ */
+export async function getSparseRetrospection(id: string, anchor: Date, deckId: string | null) {
+    return toSparseDatesReviews(
+        await selectRetrospectionStatistics.execute({ id, anchor, deckId }),
+    );
+}
+
+/**
+ * Calculates statistics about predicted future reviews for all dates within the upcoming 30 days that have at least one
+ * scheduled review. The dates are represented by ISO date segments, and any non-present dates from the interval can be
+ * safely assumed to have 0 scheduled reviews.
+ *
+ * @param id User's ID.
+ * @param anchor Date from which to start retrospecting.
+ * @param deckId ID of the deck to limit the scope (or null).
+ *
+ * @return Mapping of date string segments to respective non-0 numbers of scheduled reviews.
+ */
+export async function getSparsePrediction(id: string, anchor: Date, deckId: string | null) {
+    return toSparseDatesReviews(await selectPredictionStatistics.execute({ id, anchor, deckId }));
+}
+
+export async function countCards(id: string, deckId: string | null) {
+    return (await selectUserCardCount.execute({ id, deckId }).then(takeFirstOrNull))!.count;
+}
+
+export async function countReviews(id: string, deckId: string | null) {
+    return (await selectUserReviewCount.execute({ id, deckId }).then(takeFirstOrNull))!.count;
+}
+
+export async function countCardsByMaturities(id: string, deckId: string | null) {
+    return selectCardCounts.execute({ id, deckId });
 }
