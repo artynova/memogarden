@@ -31,7 +31,7 @@ export interface BrowsePageProps {
     deckOptions: SelectOption[];
 }
 
-const NO_DECK_FILTER_OPTION: string = "any";
+const NO_DECK_FILTER_OPTION = "any";
 
 export function BrowsePage({
     user,
