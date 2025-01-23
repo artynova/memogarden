@@ -1,5 +1,6 @@
 import { auth } from "@/server/auth";
-import { getUser, maybeSyncUserHealth } from "@/server/data/services/user";
+import { getUser, maybeSyncUserHealth, SelectUser } from "@/server/data/services/user";
+import { DateTime } from "luxon";
 
 /**
  * Convenience method that retrieves the currently authenticated user data from the JWT token in a type-safe way.
@@ -41,4 +42,8 @@ export function parseIntParam(param: SearchParam) {
     if (typeof param === "undefined") return null;
     const parsed = parseInt(Array.isArray(param) ? param[0] : param);
     return isNaN(parsed) ? null : parsed;
+}
+
+export function getUserDayEnd(user: SelectUser, date: Date) {
+    return DateTime.fromJSDate(date).setZone(user.timezone).endOf("day").toJSDate();
 }

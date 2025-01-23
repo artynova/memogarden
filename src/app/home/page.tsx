@@ -1,7 +1,6 @@
 import { getAllRemaining, getDecksPreview } from "@/server/data/services/deck";
-import { getSyncedUserInProtectedRoute } from "@/lib/server-utils";
+import { getSyncedUserInProtectedRoute, getUserDayEnd } from "@/lib/server-utils";
 import { HomePage } from "@/app/home/components/home-page";
-import { getUserDayEnd } from "@/lib/utils";
 
 export default async function Page() {
     const user = await getSyncedUserInProtectedRoute();

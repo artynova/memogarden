@@ -1,9 +1,8 @@
-import { getSyncedUserInProtectedRoute } from "@/lib/server-utils";
+import { getSyncedUserInProtectedRoute, getUserDayEnd } from "@/lib/server-utils";
 import { isDeckAccessible } from "@/server/data/services/deck";
 import { notFound, redirect } from "next/navigation";
 import { getNextCard } from "@/server/data/services/card";
 import { RevisePage } from "@/app/deck/[id]/revise/components/revise-page";
-import { getUserDayEnd } from "@/lib/utils";
 
 export interface PageProps {
     params: Promise<{ id: string }>;

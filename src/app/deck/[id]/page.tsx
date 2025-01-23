@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import { getDeckOptions, getDeckPreview, isDeckAccessible } from "@/server/data/services/deck";
-import { getSyncedUserInProtectedRoute } from "@/lib/server-utils";
+import { getSyncedUserInProtectedRoute, getUserDayEnd } from "@/lib/server-utils";
 import { DeckPage } from "@/app/deck/[id]/components/deck-page";
-import { getUserDayEnd } from "@/lib/utils";
 
 export interface PageProps {
     params: Promise<{ id: string }>;

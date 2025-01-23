@@ -1,8 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { UrlObject } from "url";
-import { SelectUser } from "@/server/data/services/user";
-import { DateTime } from "luxon";
 
 export type Url = string | UrlObject;
 
@@ -29,8 +27,4 @@ export function escapeRegex(input: string) {
 
 export function getTrimmedText(text: string, maxLength: number) {
     return text.length <= maxLength ? text : text.slice(0, maxLength) + "...";
-}
-
-export function getUserDayEnd(user: SelectUser, date: Date) {
-    return DateTime.fromJSDate(date).setZone(user.timezone).endOf("day").toJSDate();
 }

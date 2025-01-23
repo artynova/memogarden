@@ -1,7 +1,11 @@
 "use server";
 
 import { ModifyCardData, ModifyCardSchema } from "@/lib/validation-schemas";
-import { getSyncedUserInProtectedRoute, getUserIDInProtectedRoute } from "@/lib/server-utils";
+import {
+    getSyncedUserInProtectedRoute,
+    getUserDayEnd,
+    getUserIDInProtectedRoute,
+} from "@/lib/server-utils";
 import { isDeckAccessible } from "@/server/data/services/deck";
 import { ResponseNotFound } from "@/lib/responses";
 import {
@@ -12,7 +16,6 @@ import {
     reviewCard,
 } from "@/server/data/services/card";
 import { ReviewRating } from "@/lib/spaced-repetition";
-import { getUserDayEnd } from "@/lib/utils";
 
 /**
  * Creates a new deck using the given input data and assigns it to the currently logged-in user.
