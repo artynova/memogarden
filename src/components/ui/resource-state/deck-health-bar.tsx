@@ -1,5 +1,4 @@
 import { HealthBar } from "@/components/ui/resource-state/health-bar";
-import { cn } from "@/lib/utils";
 
 export interface DeckHealthBarProps {
     retrievability: number | null; // A deck's retrievability may be null if it does not have cards
@@ -19,13 +18,11 @@ export interface DeckHealthBarProps {
  */
 export function DeckHealthBar({ retrievability, className, withBarText }: DeckHealthBarProps) {
     return (
-        <div className={cn("space-y-2", className)}>
-            <div className={"text-center"}>Average health:</div>
-            <HealthBar
-                retrievability={retrievability}
-                className={className}
-                withText={withBarText}
-            />
-        </div>
+        <HealthBar
+            retrievability={retrievability}
+            className={className}
+            label={"Average health:"}
+            withText={withBarText}
+        />
     );
 }

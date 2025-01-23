@@ -1,5 +1,4 @@
 import { HealthBar } from "@/components/ui/resource-state/health-bar";
-import { cn } from "@/lib/utils";
 import { DateTime } from "luxon";
 
 export interface CardHealthBarProps {
@@ -34,13 +33,11 @@ export function CardHealthBar({
     withBarText,
 }: CardHealthBarProps) {
     return (
-        <div className={cn("space-y-2", className)}>
-            <div className={"text-center"}>{`Due: ${getDateString(due, timezone)}`}</div>
-            <HealthBar
-                retrievability={retrievability}
-                className={className}
-                withText={withBarText}
-            />
-        </div>
+        <HealthBar
+            retrievability={retrievability}
+            className={className}
+            label={`Due: ${getDateString(due, timezone)}`}
+            withText={withBarText}
+        />
     );
 }

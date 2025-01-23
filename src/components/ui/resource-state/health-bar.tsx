@@ -5,17 +5,20 @@ import { cn } from "@/lib/utils";
 export interface HealthBarProps {
     retrievability: number | null;
     className?: string;
+    label?: string;
     withText?: boolean;
 }
 
 /**
+ * Component for displaying an SRS retrievability value as a percent-based health bar.
  *
  * @param retrievability Object's retrievability.
  * @param className Custom classes.
+ * @param label Optional label above the health bar.
  * @param withText Whether to display the text equivalent of the health state shown by the health bar
  * (e.g., "Freshly watered, 100%").
  */
-export function HealthBar({ retrievability, className, withText }: HealthBarProps) {
+export function HealthBar({ retrievability, className, label, withText }: HealthBarProps) {
     const isSeed = retrievability === null;
     const retrievabilityPercent = isSeed ? null : Math.ceil(retrievability * 100);
     const state = toHealthState(retrievabilityPercent);
@@ -24,6 +27,7 @@ export function HealthBar({ retrievability, className, withText }: HealthBarProp
     const backColorClass = `${isSeed ? "bg-muted" : frontColorClass}/40`;
     return (
         <div className={"space-y-2"}>
+            {label && <div className={"text-center"}>{label}</div>}
             <div className={cn("h-6 overflow-hidden rounded-full border-4 border-ring", className)}>
                 <Progress
                     value={progress}
