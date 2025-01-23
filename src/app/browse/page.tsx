@@ -7,8 +7,8 @@ import {
 } from "@/lib/server-utils";
 import { Pagination } from "@/server/data/services/utils";
 import { BrowsePage } from "@/app/browse/components/browse-page";
-import { getDeckOptions } from "@/server/data/services/deck";
-import { redirect } from "next/navigation";
+import { getDeckOptions, isDeckAccessible } from "@/server/data/services/deck";
+import { notFound, redirect } from "next/navigation";
 
 const PAGE_SIZE = 20;
 
@@ -27,6 +27,7 @@ export default async function Page({ searchParams }: PageProps) {
     const parsedQuery = parseStringParam(queryRaw);
     const query = parsedQuery ?? "";
     const deckId = parseStringParam(deckIdRaw);
+    if (deckId && !(await isDeckAccessible(user.id, deckId))) notFound();
 
     // Perform the search against the database to determine whether the requested page is valid
     const searchResults = await searchCards(user.id, pagination, query, deckId);
