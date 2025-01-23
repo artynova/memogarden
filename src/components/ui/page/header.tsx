@@ -27,7 +27,7 @@ export function Header({ title, user, hideHomeButton, className }: HeaderProps) 
                     />
                 </h1>
             </div>
-            <UserDropdown user={user}/>
+            <UserDropdown user={user} />
         </header>
     );
 }
