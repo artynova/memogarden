@@ -1,44 +1,6 @@
-import React, { ElementType } from "react";
-import { CardMaturity } from "@/lib/spaced-repetition";
+import React from "react";
+import { cardMaturities, CardMaturity } from "@/lib/spaced-repetition";
 import { cn } from "@/lib/utils";
-import { CardSprout } from "@/components/ui/icons/card-sprout";
-import { CardSeed } from "@/components/ui/icons/card-seed";
-import { CardSapling } from "@/components/ui/icons/card-sapling";
-import { CardBudding } from "@/components/ui/icons/card-budding";
-import { CardMature } from "@/components/ui/icons/card-mature";
-import { CardMighty } from "@/components/ui/icons/card-mighty";
-
-interface CardMaturityRenderData {
-    icon: ElementType<{ className?: string | undefined }>;
-    name: string;
-}
-
-const stages: CardMaturityRenderData[] = [
-    {
-        icon: CardSeed,
-        name: "Seed",
-    },
-    {
-        icon: CardSprout,
-        name: "Sprout",
-    },
-    {
-        icon: CardSapling,
-        name: "Sapling",
-    },
-    {
-        icon: CardBudding,
-        name: "Budding",
-    },
-    {
-        icon: CardMature,
-        name: "Mature",
-    },
-    {
-        icon: CardMighty,
-        name: "Mighty",
-    },
-];
 
 export interface MaturityBarProps {
     currentMaturity: CardMaturity;
@@ -55,7 +17,7 @@ export function MaturityBar({ currentMaturity }: MaturityBarProps) {
         <div className={"py-12"}>
             <div className="relative flex w-full items-center justify-between">
                 <div className="absolute h-1 w-full bg-muted" />
-                {stages.map((stage, index) => (
+                {cardMaturities.map((maturity, index) => (
                     <div key={index} className="flex grow flex-col items-center">
                         <div
                             className={cn(
@@ -74,7 +36,7 @@ export function MaturityBar({ currentMaturity }: MaturityBarProps) {
                                 )}
                             />
                             <div className={"absolute top-[-85%]"}>
-                                <stage.icon
+                                <maturity.icon
                                     className={`size-6 transition-colors ${
                                         (index as CardMaturity) === currentMaturity
                                             ? "text-accent"
@@ -82,7 +44,7 @@ export function MaturityBar({ currentMaturity }: MaturityBarProps) {
                                     }`}
                                 />
                             </div>
-                            <div className={"absolute -bottom-3/4"}>{stage.name}</div>
+                            <div className={"absolute -bottom-3/4"}>{maturity.name}</div>
                         </div>
                     </div>
                 ))}

@@ -1,3 +1,11 @@
+import { CardSeed } from "@/components/ui/icons/card-seed";
+import { CardSprout } from "@/components/ui/icons/card-sprout";
+import { CardSapling } from "@/components/ui/icons/card-sapling";
+import { CardBudding } from "@/components/ui/icons/card-budding";
+import { CardMature } from "@/components/ui/icons/card-mature";
+import { CardMighty } from "@/components/ui/icons/card-mighty";
+import { ElementType } from "react";
+
 /**
  * Re-declaration of the SRS library's card state enum to use on the client without bundling the library.
  */
@@ -18,9 +26,9 @@ export enum ReviewRating {
     Easy = 4,
 }
 
-const MID_MATURITY_THRESHOLD = 16;
-const HIGH_MATURITY_THRESHOLD = 31;
-const MAX_MATURITY_THRESHOLD = 62;
+export const MID_MATURITY_THRESHOLD = 16;
+export const HIGH_MATURITY_THRESHOLD = 31;
+export const MAX_MATURITY_THRESHOLD = 62;
 
 /**
  * Enum of maturity states for cards (a combination of the card state and the most recent scheduled days interval).
@@ -35,6 +43,10 @@ export enum CardMaturity {
     Mature = 4,
     Mighty = 5,
 }
+
+export type CardMaturityCounts = {
+    [K in CardMaturity]: number;
+};
 
 /**
  * Determines a card's maturity based on its revision state and the last scheduled interval in days.
@@ -51,3 +63,35 @@ export function getCardMaturity(state: CardState, scheduledDays: number) {
     if (scheduledDays < MAX_MATURITY_THRESHOLD) return CardMaturity.Mature;
     return CardMaturity.Mighty;
 }
+
+export interface CardMaturityRenderData {
+    icon: ElementType<{ className?: string | undefined }>;
+    name: string;
+}
+
+export const cardMaturities: CardMaturityRenderData[] = [
+    {
+        icon: CardSeed,
+        name: "Seed",
+    },
+    {
+        icon: CardSprout,
+        name: "Sprout",
+    },
+    {
+        icon: CardSapling,
+        name: "Sapling",
+    },
+    {
+        icon: CardBudding,
+        name: "Budding",
+    },
+    {
+        icon: CardMature,
+        name: "Mature",
+    },
+    {
+        icon: CardMighty,
+        name: "Mighty",
+    },
+];
