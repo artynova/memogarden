@@ -11,7 +11,8 @@ import {
 import { Button } from "@/components/ui/base/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { ChartColumnIncreasing, CircleUser } from "lucide-react";
+import { ChartColumnIncreasing, CircleUser, LogOut } from "lucide-react";
+import { SignOutButton } from "@/components/ui/page/sign-out-button";
 
 export interface UserDropdownProps {
     user: SelectUser;
@@ -52,6 +53,11 @@ export function UserDropdown({ user, className }: UserDropdownProps) {
                             <CircleUser />
                         </Link>
                     </Button>
+                </DropdownMenuItem>
+                <DropdownMenuItem className={"p-0"}>
+                    <SignOutButton variant={"ghost"} className={"w-full justify-between px-4 py-2"}>
+                        Sign out <LogOut />
+                    </SignOutButton>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
