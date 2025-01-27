@@ -27,7 +27,7 @@ export function ControlledSelect({
     className,
 }: ControlledSelectProps) {
     return (
-        <Select onValueChange={onValueChange} defaultValue={value}>
+        <Select onValueChange={onValueChange} value={value}>
             <SelectTrigger className={className}>
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
