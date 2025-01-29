@@ -18,3 +18,7 @@ export const ROUTES_FORBIDDEN_WITH_AUTH = ["/signin", "/signup"];
  * Where the user with a session should be redirected if they visit a route that does not make sense for authenticated users (e.g., signin).
  */
 export const REDIRECT_WITH_AUTH_TO = "/home";
+/**
+ * Route to the page which, upon being visited, immediately initiates a user's sign-out.
+ */
+export const AUTO_SIGNOUT = "/signout";

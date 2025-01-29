@@ -1,6 +1,6 @@
 import { searchCards } from "@/server/data/services/card";
 import {
-    getSyncedUserInProtectedRoute,
+    getUserOrRedirectSC,
     parseIntParam,
     parseStringParam,
     SearchParam,
@@ -17,7 +17,7 @@ export interface PageProps {
 }
 
 export default async function Page({ searchParams }: PageProps) {
-    const user = await getSyncedUserInProtectedRoute();
+    const user = await getUserOrRedirectSC();
     const { page: pageRaw, query: queryRaw, deckId: deckIdRaw } = await searchParams;
     const parsedPage = parseIntParam(pageRaw);
     const pagination: Pagination = {

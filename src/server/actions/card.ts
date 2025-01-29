@@ -1,11 +1,7 @@
 "use server";
 
 import { ModifyCardData, ModifyCardSchema } from "@/lib/validation-schemas";
-import {
-    getSyncedUserInProtectedRoute,
-    getUserDayEnd,
-    getUserIDInProtectedRoute,
-} from "@/lib/server-utils";
+import { getUserDayEnd, getUserIdOrRedirect, getUserOrRedirect } from "@/lib/server-utils";
 import { isDeckAccessible } from "@/server/data/services/deck";
 import { ResponseNotFound } from "@/lib/responses";
 import {
@@ -26,7 +22,7 @@ import { ReviewRating } from "@/lib/spaced-repetition";
  */
 export async function createNewCard(data: ModifyCardData) {
     if (ModifyCardSchema.safeParse(data).error) return; // Under normal circumstances, the UI will not let the user submit a creation request for an invalid card. Therefore, if this branch is reached, the request was constructed maliciously and does not need proper error reporting
-    const userId = await getUserIDInProtectedRoute();
+    const userId = await getUserIdOrRedirect();
     if (!(await isDeckAccessible(userId, data.deckId))) return ResponseNotFound; // This can very rarely happen even with compliant use when the user deletes a deck on one device and then selects that deck in the card creation form on another device (which has stale data) and submits that request
     return createCard(data);
 }
@@ -39,7 +35,7 @@ export async function createNewCard(data: ModifyCardData) {
  */
 export async function updateCard(data: ModifyCardData, id: string) {
     if (ModifyCardSchema.safeParse(data).error) return;
-    const userId = await getUserIDInProtectedRoute();
+    const userId = await getUserIdOrRedirect();
     if (!(await isCardAccessible(userId, id))) return; // Under normal use, the client application will never request to update a card the currently logged-in user does not own. Therefore, if this branch is reached, the request was constructed maliciously and does not need proper error reporting
     await editCard(id, data);
 }
@@ -51,7 +47,7 @@ export async function updateCard(data: ModifyCardData, id: string) {
  * @param id Card's ID.
  */
 export async function deleteCard(id: string) {
-    const userId = await getUserIDInProtectedRoute();
+    const userId = await getUserIdOrRedirect();
     if (!(await isCardAccessible(userId, id))) return; // Under normal use, the client application will never request to delete a card the currently logged-in user does not own. Therefore, if this branch is reached, the request was constructed maliciously and does not need proper error reporting
     await removeCard(id);
 }
@@ -65,7 +61,7 @@ export async function deleteCard(id: string) {
  * @param rating Review ease rating given by the user.
  */
 export async function reviewCardWithRating(id: string, answer: string, rating: ReviewRating) {
-    const user = await getSyncedUserInProtectedRoute();
+    const user = await getUserOrRedirect();
     if (!(await isCardAccessible(user.id, id))) return; // Under normal use, the client application will never request to revise a card the currently logged-in user does not own. Therefore, if this branch is reached, the request was constructed maliciously and does not need proper
     const now = new Date();
     await reviewCard(id, answer, now, getUserDayEnd(user, now), rating);

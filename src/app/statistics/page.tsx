@@ -1,4 +1,4 @@
-import { getSyncedUserInProtectedRoute, parseStringParam, SearchParam } from "@/lib/server-utils";
+import { getUserOrRedirectSC, parseStringParam, SearchParam } from "@/lib/server-utils";
 import { PageTemplate } from "@/components/ui/page/page-template";
 import {
     countCards,
@@ -73,7 +73,7 @@ export interface PageProps {
 const MAX_DECK_NAME_LENGTH = 30;
 
 export default async function Page({ searchParams }: PageProps) {
-    const user = await getSyncedUserInProtectedRoute();
+    const user = await getUserOrRedirectSC();
 
     const { deckId: deckIdRaw } = await searchParams;
     const deckId = parseStringParam(deckIdRaw);

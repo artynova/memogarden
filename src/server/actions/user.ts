@@ -1,7 +1,7 @@
 "use server";
 
 import { signIn, signOut } from "@/server/auth";
-import { REDIRECT_WITH_AUTH_TO } from "@/lib/routes";
+import { REDIRECT_WITH_AUTH_TO, REDIRECT_WITHOUT_AUTH_TO } from "@/lib/routes";
 import {
     ChangePasswordData,
     ChangePasswordSchema,
@@ -21,7 +21,7 @@ import {
 } from "@/server/data/services/user";
 import { redirect } from "next/navigation";
 import bcrypt from "bcrypt";
-import { getUserIDInProtectedRoute } from "@/lib/server-utils";
+import { getUserIdOrRedirect } from "@/lib/server-utils";
 
 /**
  * Registers a user with credentials. Only for users with credentials because OAuth users
@@ -64,7 +64,7 @@ export async function signinWithFacebook() {
 }
 
 export async function signout() {
-    return await signOut();
+    return await signOut({ redirectTo: REDIRECT_WITHOUT_AUTH_TO });
 }
 
 /**
@@ -78,7 +78,7 @@ export async function signout() {
 export async function changePassword(data: ChangePasswordData) {
     if (ChangePasswordSchema.safeParse(data).error) return ResponseUnauthorized; // Can only really happen for abnormal requests
     const { oldPassword, password } = data;
-    const id = await getUserIDInProtectedRoute();
+    const id = await getUserIdOrRedirect();
     const oldHash = await getUserPasswordHash(id);
     if (!oldHash) return ResponseUnauthorized;
     if (!bcrypt.compareSync(oldPassword, oldHash)) return ResponseUnauthorized;
@@ -88,6 +88,6 @@ export async function changePassword(data: ChangePasswordData) {
 
 export async function updateUser(data: UpdateUserData) {
     if (UpdateUserSchema.safeParse(data).error) return; // Can only happen for abnormal requests
-    const id = await getUserIDInProtectedRoute();
+    const id = await getUserIdOrRedirect();
     await editUser(id, data);
 }

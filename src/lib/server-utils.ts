@@ -1,34 +1,60 @@
-import { auth } from "@/server/auth";
 import { getUser, maybeSyncUserHealth, SelectUser } from "@/server/data/services/user";
 import { DateTime } from "luxon";
+import { AUTO_SIGNOUT } from "@/lib/routes";
+import { redirect } from "next/navigation";
+import { auth } from "@/server/auth";
+import { signout } from "@/server/actions/user";
 
 /**
- * Convenience method that retrieves the currently authenticated user data from the JWT token in a type-safe way.
- * Designed to be used within Server Components in authentication-protected routes, where the presence of a JWT token
- * with valid user data is guaranteed.
+ * If the current session is valid, synchronizes the health of the associated user and returns the updated user data.
+ * Otherwise, redirects to the sign-in page (which is done by throwing an exception and interrupting the flow).
+ *
+ * This version of the method is meant for Server Components, which cannot modify cookies and need to rely on an
+ * intermediate page.
+ *
+ * @return User data after synchronization.
  */
-export async function getUserInProtectedRoute() {
-    return (await auth())!.user!;
+export async function getUserOrRedirectSC() {
+    const id = (await auth())?.user?.id;
+    if (!id) signoutSC(); // This triggers a redirect, which works by throwing an exception, so in subsequent code the id can be safely assumed to be truthy
+    const user = await getUser(id!);
+    if (!user) signoutSC(); // Again, this branch triggers an exception if the user object is falsy, so in subsequent code it can be assumed to be truthy
+    const syncHappened = await maybeSyncUserHealth(id!);
+    return syncHappened ? (await getUser(id!))! : user!; // Re-fetch the user only if the sync did occur
+}
+
+function signoutSC() {
+    redirect(AUTO_SIGNOUT);
 }
 
 /**
- * Convenience method to retrieve the user ID of the currently authenticated user in a type-safe way.
- * Designed to be used within Server Components in authentication-protected routes, where the presence of a JWT token
- * with valid user data is guaranteed.
+ * If the current session is valid, synchronizes the health of the associated user and returns the updated user data.
+ * Otherwise, redirects to the sign-in page (which is done by throwing an exception and interrupting the flow).
+ *
+ * This works in any server context where cookies can be modified, but does not work in Server Components.
+ *
+ * @return User data after synchronization.
+ * @see getUserOrRedirectSC
  */
-export async function getUserIDInProtectedRoute() {
-    return (await getUserInProtectedRoute()).id!;
+export async function getUserOrRedirect() {
+    const id = (await auth())?.user?.id;
+    if (!id) await signout(); // This triggers a redirect, which works by throwing an exception, so in subsequent code the id can be safely assumed to be truthy
+    const user = await getUser(id!);
+    if (!user) await signout(); // Again, this branch triggers an exception if the user object is falsy, so in subsequent code it can be assumed to be truthy
+    const syncHappened = await maybeSyncUserHealth(id!);
+    return syncHappened ? (await getUser(id!))! : user!; // Re-fetch the user only if the sync did occur
 }
 
 /**
- * Convenience method to retrieve the database profile data of the currently authenticated user in a type-safe way.
- * Designed to be used within Server Components in authentication-protected routes, where the presence of a JWT token
- * with valid user data is guaranteed. Also synchronizes the user's health state.
+ * If the current session is valid, synchronizes the health of the associated user and returns just the ID of the user.
+ * Otherwise, redirects to the sign-in page (which is done by throwing an exception and interrupting the flow).
+ *
+ * This is a convenience wrapper for {@link getUserOrRedirectSC} that is for cases when only an ID is needed.
+ *
+ * @return User's ID.
  */
-export async function getSyncedUserInProtectedRoute() {
-    const id = await getUserIDInProtectedRoute();
-    await maybeSyncUserHealth(id);
-    return (await getUser(id))!;
+export async function getUserIdOrRedirect() {
+    return (await getUserOrRedirect()).id;
 }
 
 export type SearchParam = string | string[] | undefined;

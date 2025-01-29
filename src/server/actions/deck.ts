@@ -1,7 +1,7 @@
 "use server";
 
 import { ModifyDeckData, ModifyDeckSchema } from "@/lib/validation-schemas";
-import { getUserIDInProtectedRoute } from "@/lib/server-utils";
+import { getUserIdOrRedirect } from "@/lib/server-utils";
 import { createDeck, editDeck, isDeckAccessible, removeDeck } from "@/server/data/services/deck";
 
 /**
@@ -12,7 +12,7 @@ import { createDeck, editDeck, isDeckAccessible, removeDeck } from "@/server/dat
  */
 export async function createNewDeck(data: ModifyDeckData) {
     if (ModifyDeckSchema.safeParse(data).error) return; // Under normal circumstances, the UI will not let the user submit a creation request for a deck with an empty name. Therefore, if this branch is reached, the request was constructed maliciously and does not need proper error reporting
-    const userId = await getUserIDInProtectedRoute();
+    const userId = await getUserIdOrRedirect();
     return createDeck({ userId, name: data.name });
 }
 
@@ -24,7 +24,7 @@ export async function createNewDeck(data: ModifyDeckData) {
  */
 export async function updateDeck(data: ModifyDeckData, id: string) {
     if (ModifyDeckSchema.safeParse(data).error) return;
-    const userId = await getUserIDInProtectedRoute();
+    const userId = await getUserIdOrRedirect();
     if (!(await isDeckAccessible(userId, id))) return; // Under normal use, the client application will never request to update a deck the currently logged-in user does not own. Therefore, if this branch is reached, the request was constructed maliciously and does not need proper error reporting
     await editDeck(id, data);
 }
@@ -36,7 +36,7 @@ export async function updateDeck(data: ModifyDeckData, id: string) {
  * @param id Deck's ID.
  */
 export async function deleteDeck(id: string) {
-    const userId = await getUserIDInProtectedRoute();
+    const userId = await getUserIdOrRedirect();
     if (!(await isDeckAccessible(userId, id))) return; // Under normal use, the client application will never request to delete a deck the currently logged-in user does not own. Therefore, if this branch is reached, the request was constructed maliciously and does not need proper
     await removeDeck(id);
 }

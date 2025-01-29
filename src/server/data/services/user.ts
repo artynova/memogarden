@@ -380,15 +380,16 @@ export async function forceSyncUserHealth(id: string) {
  * If the values have already been recalculated for the current date, the method does nothing.
  *
  * @param id User's ID.
+ * @return `true` if a sync operation did occur as a result of the call, `false` otherwise.
  */
 export async function maybeSyncUserHealth(id: string) {
     const syncData = await selectUserHealthSyncData.execute({ id: id }).then(takeFirstOrNull);
-    if (!syncData) return; // Since a user is guaranteed to have non-null lastHealthSync, this case means that the user ID itself was invalid and nothing can be done further
+    if (!syncData) return false; // Since a user is guaranteed to have non-null lastHealthSync, this case means that the user ID itself was invalid and nothing can be done further
 
     const { lastHealthSync, timezone } = syncData;
     const lastSyncInTimezone = DateTime.fromJSDate(lastHealthSync, { zone: timezone });
     const nowInTimezone = DateTime.now().setZone(timezone);
-    if (lastSyncInTimezone.hasSame(nowInTimezone, "day")) return; // If the check returns true, the sync has already occurred "today" from the user's perspective and a new sync is not needed
+    if (lastSyncInTimezone.hasSame(nowInTimezone, "day")) return false; // If the check returns true, the sync has already occurred "today" from the user's perspective and a new sync is not needed
 
     const sameDayNoonInTimezone = nowInTimezone.set({
         hour: 12, // Using noon, the median point of the day, to minimize the time gaps between the time of computed retrievability and the boundaries of the day it represents (i.e., at most 12 hours - interval to the start and to the end of the day)
@@ -401,6 +402,7 @@ export async function maybeSyncUserHealth(id: string) {
     await forceSyncDecksHealth(id);
     await forceSyncUserHealth(id);
     await updateUserHealthSyncDate(id, nowInTimezone.toUTC().toJSDate());
+    return true;
 }
 
 /**
