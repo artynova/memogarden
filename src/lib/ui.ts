@@ -1,7 +1,12 @@
-export const textFineClass = "text-fine";
-export const textWarningClass = "text-warning";
-export const textProblemClass = "text-problem";
-export const textUnimportantClass = "text-muted";
+export const textFineForegroundClass = "text-fine-foreground";
+export const textWarningForegroundClass = "text-warning-foreground";
+export const textProblemForegroundClass = "text-problem-foreground";
+export const textUnimportantForegroundClass = "text-muted-foreground";
+
+export const bgFineForegroundClass = "bg-fine-foreground";
+export const bgWarningForegroundClass = "bg-warning-foreground";
+export const bgProblemForegroundClass = "bg-problem-foreground";
+export const bgUnimportantForegroundClass = "bg-muted-foreground";
 
 export const bgFineClass = "bg-fine";
 export const bgWarningClass = "bg-warning";

@@ -3,7 +3,11 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { SelectCardPreview } from "@/server/data/services/card";
 import { DateTime } from "luxon";
-import { textFineClass, textProblemClass, textWarningClass } from "@/lib/ui";
+import {
+    textFineForegroundClass,
+    textProblemForegroundClass,
+    textWarningForegroundClass,
+} from "@/lib/ui";
 import { CardState } from "@/lib/spaced-repetition";
 import { LimitedTextSpan } from "@/components/ui/limited-text-span";
 import removeMd from "remove-markdown";
@@ -48,10 +52,10 @@ export const columns: ColumnDef<SelectCardPreview>[] = [
                         isNew
                             ? ""
                             : nowDate < dueDate
-                              ? textFineClass
+                              ? textFineForegroundClass
                               : nowDate === dueDate
-                                ? textWarningClass
-                                : textProblemClass
+                                ? textWarningForegroundClass
+                                : textProblemForegroundClass
                     }
                 >
                     {isNew ? "N/A" : dueDateTime.toLocaleString(DateTime.DATE_SHORT)}

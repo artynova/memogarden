@@ -1,4 +1,13 @@
-import { bgFineClass, bgProblemClass, bgUnimportantClass, bgWarningClass } from "@/lib/ui";
+import {
+    bgFineClass,
+    bgFineForegroundClass,
+    bgProblemClass,
+    bgProblemForegroundClass,
+    bgUnimportantClass,
+    bgUnimportantForegroundClass,
+    bgWarningClass,
+    bgWarningForegroundClass,
+} from "@/lib/ui";
 
 /**
  * Health state of any object with "health", individual or aggregated (i.e., cards, decks, and the collection).
@@ -21,7 +30,15 @@ export const minRetrievabilityForHealth = {
     [HealthState.FreshlyWatered]: 100,
 };
 
-export const colorForHealth = {
+export const bgForegroundForHealth = {
+    [HealthState.Unknown]: bgUnimportantForegroundClass,
+    [HealthState.Withering]: bgProblemForegroundClass,
+    [HealthState.Neglected]: bgWarningForegroundClass,
+    [HealthState.Lush]: bgFineForegroundClass,
+    [HealthState.FreshlyWatered]: bgFineForegroundClass,
+};
+
+export const bgForHealth = {
     [HealthState.Unknown]: bgUnimportantClass,
     [HealthState.Withering]: bgProblemClass,
     [HealthState.Neglected]: bgWarningClass,

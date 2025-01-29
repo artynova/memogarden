@@ -1,5 +1,10 @@
 import { Progress } from "@/components/ui/base/progress";
-import { colorForHealth, nameForHealth, toHealthState } from "@/lib/progression";
+import {
+    bgForegroundForHealth,
+    bgForHealth,
+    nameForHealth,
+    toHealthState,
+} from "@/lib/progression";
 import { cn } from "@/lib/utils";
 
 export interface HealthBarProps {
@@ -23,8 +28,8 @@ export function HealthBar({ retrievability, className, label, withText }: Health
     const retrievabilityPercent = isSeed ? null : Math.ceil(retrievability * 100);
     const state = toHealthState(retrievabilityPercent);
     const progress = retrievabilityPercent ?? 0;
-    const frontColorClass = colorForHealth[state]; // No need to check whether the object has valid health because the progress bar is rendered as empty in that case, i.e., the front color is unused
-    const backColorClass = `${isSeed ? "bg-muted" : frontColorClass}/40`; // TODO make the color fully opaque
+    const frontColorClass = bgForegroundForHealth[state]; // No need to check whether the object has valid health because the progress bar is rendered as empty in that case, i.e., the front color is unused
+    const backColorClass = bgForHealth[state];
     return (
         <div className={"space-y-2"}>
             {label && <div className={"text-center"}>{label}</div>}

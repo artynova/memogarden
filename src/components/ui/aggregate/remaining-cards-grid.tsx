@@ -1,7 +1,12 @@
 import { CardsRemaining } from "@/server/data/services/deck";
 import { Fragment } from "react";
 import { cn } from "@/lib/utils";
-import { textFineClass, textProblemClass, textUnimportantClass, textWarningClass } from "@/lib/ui";
+import {
+    textFineForegroundClass,
+    textProblemForegroundClass,
+    textUnimportantForegroundClass,
+    textWarningForegroundClass,
+} from "@/lib/ui";
 
 export interface RemainingCardsForType {
     name: string;
@@ -14,17 +19,23 @@ function getDeckRemainingRenderData(remaining: CardsRemaining): RemainingCardsFo
         {
             name: "Seeds",
             number: remaining.new,
-            textColorClass: remaining.new ? textWarningClass : textUnimportantClass,
+            textColorClass: remaining.new
+                ? textWarningForegroundClass
+                : textUnimportantForegroundClass,
         },
         {
             name: "Sprouts",
             number: remaining.learning,
-            textColorClass: remaining.learning ? textProblemClass : textUnimportantClass,
+            textColorClass: remaining.learning
+                ? textProblemForegroundClass
+                : textUnimportantForegroundClass,
         },
         {
             name: "Growing",
             number: remaining.review,
-            textColorClass: remaining.review ? textFineClass : textUnimportantClass,
+            textColorClass: remaining.review
+                ? textFineForegroundClass
+                : textUnimportantForegroundClass,
         },
     ];
 }
