@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/base/button";
-import { signinWithCredentials, signinWithFacebook, signinWithGoogle } from "@/server/actions/auth";
+import { signinWithCredentials, signinWithFacebook, signinWithGoogle } from "@/server/actions/user";
 import { Form } from "@/components/ui/base/form";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormProps } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CredentialsSigninData, CredentialsSigninSchema } from "@/lib/validation-schemas";
 import { FormInput } from "@/components/ui/form/form-input";
@@ -12,7 +12,7 @@ import React, { useEffect, useState } from "react";
 import { ResponseUnauthorized } from "@/lib/responses";
 import { ignoreAsyncFnResult } from "@/lib/utils";
 
-const formConfig = {
+const formConfig: UseFormProps<CredentialsSigninData> = {
     mode: "onBlur" as const,
     resolver: zodResolver(CredentialsSigninSchema),
     defaultValues: {

@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { SelectUser } from "@/server/data/services/user";
 import { Header } from "@/components/ui/page/header";
 import { Footer, FooterActionData } from "@/components/ui/page/footer";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
 export type { FooterActionData };
 
@@ -36,17 +37,20 @@ export function PageTemplate({
     footerActions,
     children,
 }: PageTemplateProps) {
+    const theme = user.darkMode === null ? "system" : user.darkMode ? "dark" : "light";
     // TODO potential improvement - add loading skeletons
     return (
-        <div className="flex h-screen w-full flex-col">
-            <Header
-                title={title}
-                user={user}
-                hideHomeButton={hideHomeButton}
-                className={"sticky top-0 z-10 shrink-0"}
-            />
-            <main className="grow">{children}</main>
-            <Footer buttons={footerActions} className={"sticky bottom-0 z-10 shrink-0"} />
-        </div>
+        <ThemeProvider theme={theme}>
+            <div className="flex h-screen w-full flex-col">
+                <Header
+                    title={title}
+                    user={user}
+                    hideHomeButton={hideHomeButton}
+                    className={"sticky top-0 z-10 shrink-0"}
+                />
+                <main className="grow">{children}</main>
+                <Footer buttons={footerActions} className={"sticky bottom-0 z-10 shrink-0"} />
+            </div>
+        </ThemeProvider>
     );
 }

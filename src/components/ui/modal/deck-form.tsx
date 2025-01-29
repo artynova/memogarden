@@ -2,21 +2,21 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ModifyDeckData, ModifyDeckSchema } from "@/lib/validation-schemas";
 import React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormProps } from "react-hook-form";
 import { Form } from "@/components/ui/base/form";
 import { FormInput } from "@/components/ui/form/form-input";
 import { Button } from "@/components/ui/base/button";
 import { Check, X } from "lucide-react";
 import { ignoreAsyncFnResult } from "@/lib/utils";
 
-const formConfig = {
+const formConfig: UseFormProps<ModifyDeckData> = {
     mode: "onBlur" as const,
     resolver: zodResolver(ModifyDeckSchema),
 };
 
 export type DeckFormProps = {
-    onSubmit?: (data: ModifyDeckData) => void;
-    onCancel?: () => void;
+    onSubmit: (data: ModifyDeckData) => void;
+    onCancel: () => void;
     /**
      * Default data for some fields in the form (e.g., when editing an already existing deck that has a name).
      */
@@ -28,7 +28,7 @@ export function DeckForm({ onSubmit, onCancel, deck }: DeckFormProps) {
     const form = useForm<ModifyDeckData>({ ...formConfig, defaultValues });
 
     function onSubmitInternal(data: ModifyDeckData) {
-        if (onSubmit) onSubmit(data);
+        onSubmit(data);
     }
 
     return (

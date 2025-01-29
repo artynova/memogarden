@@ -32,7 +32,7 @@ export function MaturityBar({ currentMaturity }: MaturityBarProps) {
                                     "size-5 rounded-full border-4 border-muted-foreground bg-transparent transition-all",
                                     (index as CardMaturity) === currentMaturity
                                         ? "border-accent-foreground"
-                                        : "border-ring",
+                                        : "border-foreground",
                                 )}
                             />
                             <div className={"absolute top-[-85%]"}>

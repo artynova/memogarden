@@ -24,11 +24,16 @@ export function HealthBar({ retrievability, className, label, withText }: Health
     const state = toHealthState(retrievabilityPercent);
     const progress = retrievabilityPercent ?? 0;
     const frontColorClass = colorForHealth[state]; // No need to check whether the object has valid health because the progress bar is rendered as empty in that case, i.e., the front color is unused
-    const backColorClass = `${isSeed ? "bg-muted" : frontColorClass}/40`;
+    const backColorClass = `${isSeed ? "bg-muted" : frontColorClass}/40`; // TODO make the color fully opaque
     return (
         <div className={"space-y-2"}>
             {label && <div className={"text-center"}>{label}</div>}
-            <div className={cn("h-6 overflow-hidden rounded-full border-4 border-ring", className)}>
+            <div
+                className={cn(
+                    "h-6 overflow-hidden rounded-full border-4 border-foreground",
+                    className,
+                )}
+            >
                 <Progress
                     value={progress}
                     className={cn("h-full", backColorClass, `[&>div]:${frontColorClass}`)}

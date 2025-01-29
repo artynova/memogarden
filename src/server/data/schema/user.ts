@@ -1,5 +1,15 @@
-import { char, doublePrecision, pgTable, varchar } from "drizzle-orm/pg-core";
+import { boolean, char, doublePrecision, pgTable, smallint, varchar } from "drizzle-orm/pg-core";
 import { autoId, autoIdExternal, timestampTz } from "@/server/data/schema/utils";
+
+/**
+ * Table with IDs of all valid avatars.
+ * The avatars are inserted manually via DB migrations.
+ */
+export const avatar = pgTable("avatar", {
+    id: smallint().primaryKey(),
+});
+
+export const avatarReference = () => smallint().references(() => avatar.id);
 
 /**
  * Table with common user data across all authentication methods.
@@ -9,6 +19,8 @@ export const user = pgTable("user", {
     lastHealthSync: timestampTz().notNull().defaultNow(), // When was the last automatic account-wide update of card retrievabilities (and thus "health")
     timezone: varchar({ length: 50 }).notNull(), // Canonical IANA timezone name, e.g., America/New_York
     retrievability: doublePrecision(), // Aggregated average retrievability of all active cards of the account
+    avatarId: avatarReference().notNull().default(0),
+    darkMode: boolean(), // Nullable, absence means that explicit preference in the app is not chosen and system light / dark mode setting should be used instead
 });
 
 /**

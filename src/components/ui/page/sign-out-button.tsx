@@ -2,7 +2,7 @@
 
 import { Button, ButtonProps } from "@/components/ui/base/button";
 import { ignoreAsyncFnResult } from "@/lib/utils";
-import { signout } from "@/server/actions/auth";
+import { signout } from "@/server/actions/user";
 
 export type SignOutButtonProps = Omit<ButtonProps, "onClick">;
 

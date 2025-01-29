@@ -11,36 +11,63 @@ export const CredentialsSigninSchema = z.object({
 
 export type CredentialsSigninData = z.infer<typeof CredentialsSigninSchema>;
 
+const passwordField = z
+    .string()
+    .min(8, { message: "Must be at least 8 characters" })
+    .max(32, { message: "Must be at most 32 characters" })
+    .regex(/^(?=.*[a-z]).+$/, {
+        message: "Must contain at least one lowercase latin letter",
+    })
+    .regex(/^(?=.*[A-Z]).+$/, {
+        message: "Must contain at least one uppercase latin letter",
+    })
+    .regex(/^(?=.*\d).+$/, {
+        message: "Must contain at least one digit",
+    })
+    .regex(/^(?=.*[\W_]).+$/, {
+        message: 'Must contain at least one special character, like "#"',
+    });
+
 /**
  * Schema for the credentials-based sign-up form, enforces password strength.
  */
 export const CredentialsSignupSchema = z
     .object({
         email: z.string().min(1, { message: "Required" }).email(),
-        password: z
-            .string()
-            .min(8, { message: "Must be at least 8 characters" })
-            .max(32, { message: "Must be at most 32 characters" })
-            .regex(/^(?=.*[a-z]).+$/, {
-                message: "Must contain at least one lowercase latin letter",
-            })
-            .regex(/^(?=.*[A-Z]).+$/, {
-                message: "Must contain at least one uppercase latin letter",
-            })
-            .regex(/^(?=.*\d).+$/, {
-                message: "Must contain at least one digit",
-            })
-            .regex(/^(?=.*[\W_]).+$/, {
-                message: 'Must contain at least one special character, like "#"',
-            }),
+        password: passwordField,
         confirmPassword: z.string(),
     })
     .refine((data) => data.password === data.confirmPassword, {
-        message: "Passwords must match",
+        message: "Confirmation must match the password",
         path: ["confirmPassword"],
     });
 
 export type CredentialsSignupData = z.infer<typeof CredentialsSignupSchema>;
+
+export const ChangePasswordSchema = z
+    .object({
+        oldPassword: z.string().min(1, { message: "Required" }),
+        password: passwordField,
+        confirmPassword: z.string(),
+    })
+    .refine((data) => data.oldPassword != data.password, {
+        message: "New password must be different from the old password",
+        path: ["password"],
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: "Confirmation must match the new password",
+        path: ["confirmPassword"],
+    });
+
+export type ChangePasswordData = z.infer<typeof ChangePasswordSchema>;
+
+export const UpdateUserSchema = z.object({
+    timezone: z.string(),
+    avatarId: z.number(),
+    darkMode: z.boolean().nullable(),
+});
+
+export type UpdateUserData = z.infer<typeof UpdateUserSchema>;
 
 /**
  * Schema for the user input required to modify a new deck.

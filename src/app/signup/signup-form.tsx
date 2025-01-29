@@ -1,16 +1,16 @@
 "use client";
 
 import { Button } from "@/components/ui/base/button";
-import { signup } from "@/server/actions/auth";
+import { signup } from "@/server/actions/user";
 import { Form } from "@/components/ui/base/form";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormProps } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CredentialsSignupData, CredentialsSignupSchema } from "@/lib/validation-schemas";
 import { FormInput } from "@/components/ui/form/form-input";
 import React from "react";
 import { ignoreAsyncFnResult } from "@/lib/utils";
 
-const formConfig = {
+const formConfig: UseFormProps<CredentialsSignupData> = {
     mode: "onBlur" as const,
     resolver: zodResolver(CredentialsSignupSchema),
     defaultValues: {

@@ -10,11 +10,12 @@ import {
     lte,
     sql,
 } from "drizzle-orm";
-import { user, userCredentials, userFacebook, userGoogle } from "@/server/data/schema/user";
+import { avatar, user, userCredentials, userFacebook, userGoogle } from "@/server/data/schema/user";
 import db from "@/server/data/db";
 import {
     eqOptionalPlaceholder,
     eqPlaceholder,
+    InferInsertModelFromGroup,
     isNotDeleted,
     makeInsertPlaceholders,
     makeUpdatePlaceholders,
@@ -39,8 +40,10 @@ import {
     MID_MATURITY_THRESHOLD,
 } from "@/lib/spaced-repetition";
 import { inArray } from "drizzle-orm/sql/expressions/conditions";
+import { UpdateUserData } from "@/lib/validation-schemas";
 
 const insertUserColumns = [user.timezone] as const;
+const updateUserColumns = [...insertUserColumns, user.avatarId, user.darkMode] as const;
 const insertUserCredentialsColumns = [
     userCredentials.userId,
     userCredentials.email,
@@ -52,8 +55,11 @@ const userHealthSyncDataColumns = [user.lastHealthSync, user.timezone] as const;
 
 export type SelectUser = InferSelectModel<typeof user>;
 export type InsertUser = InferInsertModel<typeof user>;
+export type UpdateUser = InferInsertModelFromGroup<typeof updateUserColumns>;
 export type SelectUserCredentials = InferSelectModel<typeof userCredentials>;
 export type InsertUserCredentials = InferSelectModel<typeof userCredentials>;
+
+export type SelectAvatar = InferSelectModel<typeof avatar>;
 
 /**
  * Placeholders: derived from insertUserColumns.
@@ -65,10 +71,27 @@ const insertUser = db
     .prepare("insert_user");
 
 /**
+ * Placeholders: "id" = user's ID, others derived from updateUserColumns.
+ */
+const updateUser = db
+    .update(user)
+    .set(makeUpdatePlaceholders(updateUserColumns))
+    .where(eqPlaceholder(user.id))
+    .prepare("update_user");
+
+/**
  * Placeholders: "id" = user's ID.
  */
 const selectUser = db.select().from(user).where(eqPlaceholder(user.id)).prepare("select_user");
 
+/**
+ * Placeholders: "id" = user's ID.
+ */
+const selectPasswordHash = db
+    .select(toColumnMapping([userCredentials.passwordHash]))
+    .from(userCredentials)
+    .where(eqPlaceholder(userCredentials.userId, "id"))
+    .prepare("select_credentials");
 const selectCredentialsByEmail = db
     .select()
     .from(userCredentials)
@@ -96,6 +119,8 @@ const insertUserFacebook = db
     .insert(userFacebook)
     .values(makeInsertPlaceholders(insertUserFacebookColumns))
     .prepare("insert_user_facebook");
+
+const selectAllAvatars = db.select().from(avatar).prepare("select_all_avatars");
 
 /**
  * Placeholders: "id" = user's ID.
@@ -138,7 +163,8 @@ const retrospectionInterval = `${RETROSPECTION_LIMIT - 1} days`;
  */
 const selectRetrospectionStatistics = db
     .select({
-        date: sql<string>`((${reviewLog.review} AT TIME ZONE ${user.timezone})::date::timestamp AT TIME ZONE ${user.timezone}) AS date`,
+        date: sql<string>`((${reviewLog.review} AT TIME ZONE ${user.timezone}):: date :: timestamp AT TIME ZONE ${user.timezone})
+                          AS date`,
         reviews: count(),
     })
     .from(reviewLog)
@@ -152,7 +178,9 @@ const selectRetrospectionStatistics = db
             // Check whether the date is within the retrospection limit
             gte(
                 reviewLog.review,
-                sql`((${sql.placeholder("anchor")} AT TIME ZONE ${user.timezone})::date - ${retrospectionInterval}::interval)::timestamp AT TIME ZONE ${user.timezone}`,
+                sql`((${sql.placeholder("anchor")} AT TIME ZONE ${user.timezone}):: date - ${retrospectionInterval}:: interval)
+                    ::timestamp AT TIME ZONE
+                    ${user.timezone}`,
             ),
             // This query does NOT filter out deleted cards and decks, because they still contributed to daily review counts even if they were deleted
         ),
@@ -168,7 +196,8 @@ const predictionInterval = `${PREDICTION_LIMIT - 1} days`;
  */
 const selectPredictionStatistics = db
     .select({
-        date: sql<string>`((${card.due} AT TIME ZONE ${user.timezone})::date::timestamp AT TIME ZONE ${user.timezone}) AS date`,
+        date: sql<string>`((${card.due} AT TIME ZONE ${user.timezone}):: date :: timestamp AT TIME ZONE ${user.timezone})
+                          AS date`,
         reviews: count(),
     })
     .from(card)
@@ -180,7 +209,9 @@ const selectPredictionStatistics = db
             eqPlaceholder(user.id),
             lte(
                 card.due,
-                sql`((${sql.placeholder("anchor")} AT TIME ZONE ${user.timezone})::date + ${predictionInterval}::interval)::timestamp AT TIME ZONE ${user.timezone}`,
+                sql`((${sql.placeholder("anchor")} AT TIME ZONE ${user.timezone}):: date + ${predictionInterval}:: interval)
+                    ::timestamp AT TIME ZONE
+                    ${user.timezone}`,
             ),
         ),
     )
@@ -221,7 +252,9 @@ const selectUserReviewCount = db
  */
 const selectCardCounts = db
     .select({
-        maturity: sql<number>`maturities.maturity`,
+        maturity: sql<number>`maturities
+        .
+        maturity`,
         count: sql<number>`COALESCE(counts.count, 0)`,
     })
     .from(
@@ -229,16 +262,17 @@ const selectCardCounts = db
         sql`(${db
             .select({
                 maturity: sql<number>`(
-                    CASE
-                        WHEN ${eq(card.stateId, CardState.New)} THEN ${CardMaturity.Seed}
-                        WHEN ${inArray(card.stateId, [CardState.Learning, CardState.Relearning])} THEN ${CardMaturity.Sprout}
-                        WHEN ${lt(card.scheduledDays, MID_MATURITY_THRESHOLD)} THEN ${CardMaturity.Sapling}
-                        WHEN ${lt(card.scheduledDays, HIGH_MATURITY_THRESHOLD)} THEN ${CardMaturity.Budding}
-                        WHEN ${lt(card.scheduledDays, MAX_MATURITY_THRESHOLD)} THEN ${CardMaturity.Mature}
-                        ELSE ${CardMaturity.Mighty}
-                    END
-                ) AS maturity`,
-                count: sql<number>`${count(card.id)} AS count`,
+                                              CASE
+                                              WHEN ${eq(card.stateId, CardState.New)} THEN ${CardMaturity.Seed}
+                                              WHEN ${inArray(card.stateId, [CardState.Learning, CardState.Relearning])} THEN ${CardMaturity.Sprout}
+                                              WHEN ${lt(card.scheduledDays, MID_MATURITY_THRESHOLD)} THEN ${CardMaturity.Sapling}
+                                              WHEN ${lt(card.scheduledDays, HIGH_MATURITY_THRESHOLD)} THEN ${CardMaturity.Budding}
+                                              WHEN ${lt(card.scheduledDays, MAX_MATURITY_THRESHOLD)} THEN ${CardMaturity.Mature}
+                                              ELSE ${CardMaturity.Mighty}
+                                              END)
+                                          AS maturity`,
+                count: sql<number>`${count(card.id)}
+                    AS count`,
             })
             .from(card)
             .innerJoin(deck, eq(deck.id, card.deckId))
@@ -249,22 +283,39 @@ const selectCardCounts = db
                     isNotDeleted(card),
                 ),
             )
-            .groupBy(sql`maturity`)}) as counts`,
+            .groupBy(sql`maturity`)})
+            as counts`,
     )
     .rightJoin(
         // This subquery constructs a table with all possible maturities, and the right join ensures that each maturity has an entry in the result set
         sql`
-            (VALUES
-                (${CardMaturity.Seed}),
-                (${CardMaturity.Sprout}),
-                (${CardMaturity.Sapling}),
-                (${CardMaturity.Budding}),
-                (${CardMaturity.Mature}),
-                (${CardMaturity.Mighty})
-            ) AS maturities(maturity)`,
-        eq(sql`counts.maturity`, sql`maturities.maturity`),
+            (VALUES (${CardMaturity.Seed}),
+                    (${CardMaturity.Sprout}),
+                    (${CardMaturity.Sapling}),
+                    (${CardMaturity.Budding}),
+                    (${CardMaturity.Mature}),
+                    (${CardMaturity.Mighty}))
+            AS maturities(maturity)`,
+        eq(
+            sql`counts
+            .
+            maturity`,
+            sql`maturities
+            .
+            maturity`,
+        ),
     )
     .prepare("select_card_counts");
+
+/**
+ * Only for users that do use platform-local credentials rather than OAuth.
+ * Placeholders: "id" = user's ID, "passwordHash" = new value for the password hash.
+ */
+const updateUserPasswordHash = db
+    .update(userCredentials)
+    .set(makeUpdatePlaceholders([userCredentials.passwordHash]))
+    .where(eqPlaceholder(userCredentials.userId, "id"))
+    .prepare("update_user_password_hash");
 
 /**
  * Creates a new base user entry (without auth information).
@@ -274,6 +325,20 @@ const selectCardCounts = db
  */
 async function createUser(timezone: string) {
     return (await insertUser.execute({ timezone }).then(takeFirstOrNull))!.id;
+}
+
+/**
+ * Updates user data that the user is allowed to modify directly (currently only timezone).
+ *
+ * @param id User's ID.
+ * @param data Updated data.
+ */
+export async function editUser(id: string, data: UpdateUserData) {
+    await updateUser.execute({ id, ...data });
+}
+
+export async function getAllAvatars() {
+    return selectAllAvatars.execute();
 }
 
 /**
@@ -339,6 +404,16 @@ export async function maybeSyncUserHealth(id: string) {
 }
 
 /**
+ * Retrieves a user's password hash by user ID (only works for credentials users).
+ *
+ * @param id User's ID.
+ */
+export async function getUserPasswordHash(id: string): Promise<string | null> {
+    const result = (await selectPasswordHash.execute({ id }).then(takeFirstOrNull))?.passwordHash;
+    return result === undefined ? null : result;
+}
+
+/**
  * Retrieves user's full credentials by email.
  *
  * @param email Email.
@@ -364,6 +439,30 @@ export async function createCredentialsUser(email: string, password: string, tim
     const passwordHash = bcrypt.hashSync(password, env.AUTH_PASSWORD_SALT_ROUNDS);
     await insertCredentials.execute({ userId, email, passwordHash });
     return userId;
+}
+
+/**
+ * Checks whether a user with a given ID uses credentials-based authentication.
+ *
+ * @param id User's ID.
+ * @return `true` if the ID is associated with a credentials-authenticated user, `false`
+ * otherwise (i.e., if the user does not exist or is not credentials-authenticated).
+ */
+export async function isCredentialsUser(id: string) {
+    const hash = (await selectPasswordHash.execute({ id }).then(takeFirstOrNull))?.passwordHash;
+    return !!hash; // If the hash was found, it means that the ID belongs to a valid credentials user. Otherwise, the user ID may not exist or may belong to an OAuth user
+}
+
+/**
+ * Hashes the given password and sets the stored password hash to the resulting value. This function assumes that
+ * all the necessary security checks have already been performed.
+ *
+ * @param id User's ID.
+ * @param newPassword New password that will be hashed.
+ */
+export async function updateUserPassword(id: string, newPassword: string) {
+    const passwordHash = bcrypt.hashSync(newPassword, env.AUTH_PASSWORD_SALT_ROUNDS);
+    await updateUserPasswordHash.execute({ id, passwordHash });
 }
 
 const OAuthProviderToStatements = {
@@ -420,7 +519,7 @@ export function usesSupportedOAuth(account: Account | null): account is Supporte
 export async function getOrCreateIdFromOAuth(account: SupportedAccount, profile: Profile) {
     const provider = account.provider;
     const sub = account.providerAccountId.toString();
-    const timezone = profile.zoneinfo ?? "Etc/UTC"; // Default to the UTC timezone
+    const timezone = profile.zoneinfo ?? "UTC"; // Default to the UTC timezone
     const internalId = await getUserIdBySub(provider, sub);
     if (internalId) return internalId; // User exists, just return the ID
     return createOAuthUser(provider, sub, timezone); // User lookup failed, create instead

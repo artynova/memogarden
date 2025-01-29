@@ -7,11 +7,18 @@ import {
 import { NextResponse } from "next/server";
 import NextAuth from "next-auth";
 
-const { auth } = NextAuth({ providers: [] }); // Configuration-less instance, only used as a convenience wrapper for NextAuth API calls. Full instance cannot be used because some libraries used in the implementation are not available in the edge (middleware) runtime
+const { auth } = NextAuth({
+    providers: [],
+    callbacks: {
+        session({ session, token }) {
+            return { ...session, user: { ...session.user, id: token.id } }; // The ID is present on the JWT token, but it still needs to be manually forwarded to the session's user object with this line
+        },
+    },
+}); // Lightweight instance, only used as a convenience wrapper for NextAuth API calls. Full instance cannot be used because some libraries used in the implementation are not available in the edge (middleware) runtime
 
 export default auth((req) => {
     const { nextUrl } = req;
-    const isAuthenticated = !!req.auth;
+    const isAuthenticated = !!req.auth?.user?.id;
 
     const isAllowedWithoutAuth = ROUTES_ALLOWED_WITHOUT_AUTH.includes(nextUrl.pathname);
     if (!isAuthenticated && !isAllowedWithoutAuth)

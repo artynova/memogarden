@@ -27,3 +27,7 @@ users.
 -   ShadcnUI (components imported from its collection are located at `src/components/ui/base`)
 -   Drizzle ORM
 -   PostgreSQL
+
+## Attribution
+
+-   User avatars created based on [Gardener Vectors by Vecteezy](https://www.vecteezy.com/free-vector/gardener).

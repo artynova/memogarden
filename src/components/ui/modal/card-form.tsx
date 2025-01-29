@@ -2,7 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ModifyCardData, ModifyCardSchema } from "@/lib/validation-schemas";
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormProps } from "react-hook-form";
 import { Form } from "@/components/ui/base/form";
 import { Button } from "@/components/ui/base/button";
 import { BookOpen, Check, Pencil, X } from "lucide-react";
@@ -12,14 +12,14 @@ import { FormMarkdownInput } from "@/components/ui/form/markdown/form-markdown-i
 import { Toggle } from "@/components/ui/base/toggle";
 import { SelectOption } from "@/lib/ui";
 
-const formConfig = {
+const formConfig: UseFormProps<ModifyCardData> = {
     mode: "onBlur" as const,
     resolver: zodResolver(ModifyCardSchema),
 };
 
 export type CardFormProps = {
-    onSubmit?: (data: ModifyCardData) => void;
-    onCancel?: () => void;
+    onSubmit: (data: ModifyCardData) => void;
+    onCancel: () => void;
     deckOptions: SelectOption[];
     /**
      * Default data for some fields in the form (e.g., when editing an already existing card).
@@ -37,7 +37,7 @@ export function CardForm({ onSubmit, onCancel, deckOptions, card }: CardFormProp
     const [preview, setPreview] = useState(false);
 
     function onSubmitInternal(data: ModifyCardData) {
-        if (onSubmit) onSubmit(data);
+        onSubmit(data);
     }
 
     return (
