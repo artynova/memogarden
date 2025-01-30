@@ -1,6 +1,6 @@
 "use server";
 
-import { signIn, signOut } from "@/server/auth";
+import { getUserIdOrRedirect, getUserOrRedirect, signIn, signOut } from "@/server/auth";
 import { REDIRECT_WITH_AUTH_TO, REDIRECT_WITHOUT_AUTH_TO } from "@/lib/routes";
 import {
     ChangePasswordData,
@@ -10,18 +10,18 @@ import {
     UpdateUserData,
     UpdateUserSchema,
 } from "@/lib/validation-schemas";
-import { Response, ResponseConflict, ResponseOK, ResponseUnauthorized } from "@/lib/responses";
+import { Response, ResponseConflict, ResponseUnauthorized } from "@/lib/responses";
 import { CredentialsSignin } from "next-auth";
 import {
     createCredentialsUser,
     editUser,
     getUserCredentialsByEmail,
     getUserPasswordHash,
+    invalidateAllTokens,
     updateUserPassword,
 } from "@/server/data/services/user";
 import { redirect } from "next/navigation";
 import bcrypt from "bcrypt";
-import { getUserIdOrRedirect } from "@/lib/server-utils";
 
 /**
  * Registers a user with credentials. Only for users with credentials because OAuth users
@@ -69,7 +69,8 @@ export async function signout() {
 
 /**
  * Changes the user's password to a new value, but only if the value they provided for the old password matches
- * successfully against the current hash stored in the database.
+ * successfully against the current hash stored in the database. Destroys all existing sessions of the user (including
+ * the current one) after the operation finishes successfully.
  *
  * @data Data required to change the password (namely, the old password - to confirm the identity once more - and
  * the new password).
@@ -83,7 +84,17 @@ export async function changePassword(data: ChangePasswordData) {
     if (!oldHash) return ResponseUnauthorized;
     if (!bcrypt.compareSync(oldPassword, oldHash)) return ResponseUnauthorized;
     await updateUserPassword(id, password);
-    return ResponseOK;
+    await invalidateAllTokens(id);
+    await signout(); // This is technically not necessary, but it allows to destroy the freshly invalid token immediately as opposed to waiting until the client fetches another auth-protected page and destroying the invalid token there
+}
+
+/**
+ * Destroys all sessions of the currently signed-in user.
+ */
+export async function signOutEverywhere() {
+    const user = await getUserOrRedirect();
+    await invalidateAllTokens(user.id);
+    await signout();
 }
 
 export async function updateUser(data: UpdateUserData) {

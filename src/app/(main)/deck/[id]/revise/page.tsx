@@ -1,8 +1,10 @@
-import { getUserOrRedirectSC, getUserDayEnd } from "@/lib/server-utils";
+import { getUserDayEnd } from "@/lib/server-utils";
 import { isDeckAccessible } from "@/server/data/services/deck";
 import { notFound, redirect } from "next/navigation";
 import { getNextCard } from "@/server/data/services/card";
 import { RevisePage } from "@/app/(main)/deck/[id]/revise/components/revise-page";
+
+import { getUserOrRedirectSC } from "@/server/auth";
 
 export interface PageProps {
     params: Promise<{ id: string }>;

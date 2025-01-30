@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import { getDeckOptions } from "@/server/data/services/deck";
-import { getUserOrRedirectSC } from "@/lib/server-utils";
 import { getCardDataView, isCardAccessible } from "@/server/data/services/card";
 import { CardPage } from "@/app/(main)/card/[id]/components/card-page";
+
+import { getUserOrRedirectSC } from "@/server/auth";
 
 export interface PageProps {
     params: Promise<{ id: string }>;

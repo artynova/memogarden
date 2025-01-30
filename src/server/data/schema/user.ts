@@ -21,6 +21,7 @@ export const user = pgTable("user", {
     retrievability: doublePrecision(), // Aggregated average retrievability of all active cards of the account
     avatarId: avatarReference().notNull().default(0),
     darkMode: boolean(), // Nullable, absence means that explicit preference in the app is not chosen and system light / dark mode setting should be used instead
+    acceptTokensAfter: timestampTz().notNull().defaultNow(), // Session tokens store the "issued at" date, and if they are issued before the date stored here, they are considered invalidated
 });
 
 /**

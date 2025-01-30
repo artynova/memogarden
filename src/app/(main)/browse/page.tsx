@@ -1,14 +1,11 @@
 import { searchCards } from "@/server/data/services/card";
-import {
-    getUserOrRedirectSC,
-    parseIntParam,
-    parseStringParam,
-    SearchParam,
-} from "@/lib/server-utils";
+import { parseIntParam, parseStringParam, SearchParam } from "@/lib/server-utils";
 import { Pagination } from "@/server/data/services/utils";
 import { BrowsePage } from "@/app/(main)/browse/components/browse-page";
 import { getDeckOptions, isDeckAccessible } from "@/server/data/services/deck";
 import { notFound, redirect } from "next/navigation";
+
+import { getUserOrRedirectSC } from "@/server/auth";
 
 const PAGE_SIZE = 20;
 

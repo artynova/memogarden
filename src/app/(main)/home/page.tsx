@@ -1,6 +1,8 @@
 import { getAllRemaining, getDecksPreview } from "@/server/data/services/deck";
-import { getUserOrRedirectSC, getUserDayEnd } from "@/lib/server-utils";
+import { getUserDayEnd } from "@/lib/server-utils";
 import { HomePage } from "@/app/(main)/home/components/home-page";
+
+import { getUserOrRedirectSC } from "@/server/auth";
 
 export default async function Page() {
     const user = await getUserOrRedirectSC();

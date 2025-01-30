@@ -1,6 +1,7 @@
-import { getUserOrRedirectSC } from "@/lib/server-utils";
 import { getAllAvatars, isCredentialsUser } from "@/server/data/services/user";
 import { AccountPage } from "@/app/(main)/account/components/account-page";
+
+import { getUserOrRedirectSC } from "@/server/auth";
 
 export default async function Page() {
     const user = await getUserOrRedirectSC();

@@ -120,6 +120,16 @@ const insertUserFacebook = db
     .values(makeInsertPlaceholders(insertUserFacebookColumns))
     .prepare("insert_user_facebook");
 
+/**
+ * Placeholders: "id" = user's ID, "acceptSessionsAfter" = new date such that all tokens issued before it are considered
+ * invalid.
+ */
+const updateAcceptTokensAfter = db
+    .update(user)
+    .set(makeUpdatePlaceholders([user.acceptTokensAfter]))
+    .where(eqPlaceholder(user.id))
+    .prepare("update_accept_tokens_after");
+
 const selectAllAvatars = db.select().from(avatar).prepare("select_all_avatars");
 
 /**
@@ -544,6 +554,15 @@ export async function createOAuthUser(
     const userId = await createUser(timezone);
     await OAuthProviderToStatements[provider].insert.execute({ userId, sub });
     return userId;
+}
+
+/**
+ * Invalidates all existing session tokens by moving forward the date tokens issued before which are considered invalid.
+ *
+ * @param id User's ID.
+ */
+export async function invalidateAllTokens(id: string) {
+    await updateAcceptTokensAfter.execute({ id, acceptTokensAfter: new Date() });
 }
 
 /**

@@ -1,4 +1,4 @@
-import { getUserOrRedirectSC, parseStringParam, SearchParam } from "@/lib/server-utils";
+import { parseStringParam, SearchParam } from "@/lib/server-utils";
 import { PageTemplate } from "@/components/ui/page/template/page-template";
 import {
     countCards,
@@ -19,6 +19,8 @@ import { HealthBar } from "@/components/ui/resource-state/health-bar";
 import { ContentWrapper } from "@/components/ui/page/template/content-wrapper";
 import { CardsMaturitiesCard } from "@/app/(main)/statistics/components/cards-maturities-card";
 import { DailyReviewsCard } from "@/app/(main)/statistics/components/daily-reviews-card";
+
+import { getUserOrRedirectSC } from "@/server/auth";
 
 /**
  * Generates an array of date-to-review-count entries starting in the past and ending at the given date in the specified

@@ -1,8 +1,9 @@
 "use server";
 
 import { ModifyDeckData, ModifyDeckSchema } from "@/lib/validation-schemas";
-import { getUserIdOrRedirect } from "@/lib/server-utils";
 import { createDeck, editDeck, isDeckAccessible, removeDeck } from "@/server/data/services/deck";
+
+import { getUserIdOrRedirect } from "@/server/auth";
 
 /**
  * Creates a new deck using the given input data and assigns it to the currently logged-in user.

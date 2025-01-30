@@ -11,9 +11,9 @@ import {
 import { ChangePasswordForm } from "@/app/(main)/account/components/change-password-form";
 import { Button } from "@/components/ui/base/button";
 import { ContentWrapper } from "@/components/ui/page/template/content-wrapper";
-import { updateUser } from "@/server/actions/user";
+import { signOutEverywhere, updateUser } from "@/server/actions/user";
 import { ignoreAsyncFnResult } from "@/lib/utils";
-import { Clock, SquareAsterisk } from "lucide-react";
+import { Clock, SquareAsterisk, TriangleAlert } from "lucide-react";
 import { ControlledSelectAvatar } from "@/app/(main)/account/components/controlled-select-avatar";
 import { useRouter } from "next/navigation";
 import { ThemeDropdown } from "@/app/(main)/account/components/theme-dropdown";
@@ -81,15 +81,26 @@ export function AccountPage({ user, usesCredentials, avatars }: AccountPageProps
                     onAvatarIndexChange={ignoreAsyncFnResult(onAvatarChange)}
                     avatars={avatars}
                 />
-                {usesCredentials && (
+                <div className={"flex flex-col items-center justify-center gap-6 md:flex-row"}>
+                    {usesCredentials && (
+                        <Button
+                            className={"w-full md:w-1/2"}
+                            onClick={() => setCurrentModalIndex(0)}
+                        >
+                            <span>Change password</span>
+                            <SquareAsterisk />
+                        </Button>
+                    )}
+
                     <Button
-                        className={"mx-auto w-full md:w-1/2"}
-                        onClick={() => setCurrentModalIndex(0)}
+                        className={"w-full md:w-1/2"}
+                        variant={"destructive"}
+                        onClick={ignoreAsyncFnResult(signOutEverywhere)}
                     >
-                        <span>Change password</span>
-                        <SquareAsterisk />
+                        <span>Sign out everywhere</span>
+                        <TriangleAlert />
                     </Button>
-                )}
+                </div>
             </ContentWrapper>
             <ControlledModalCollection
                 modals={modals}
