@@ -21,6 +21,17 @@ const config: Config = {
     ],
     theme: {
         extend: {
+            animation: {
+                ellipsis: "ellipsis 1.5s infinite",
+            },
+            keyframes: {
+                ellipsis: {
+                    "0%": { content: '"."' },
+                    "33%": { content: '".."' },
+                    "66%": { content: '"..."' },
+                    "100%": { content: '"."' },
+                },
+            },
             fontFamily: {
                 display: "var(--font-display)",
             },
