@@ -58,6 +58,7 @@ export function ResultsTable({ data, page, pageSize }: ResultsTableProps) {
                 {table.getRowModel().rows?.length ? (
                     table.getRowModel().rows.map((row) => (
                         <TableRow
+                            className={"focus-visible:bg-muted/50 focus-visible:outline-none"}
                             key={row.id}
                             data-state={row.getIsSelected() && "selected"}
                             tabIndex={0}

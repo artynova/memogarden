@@ -1,8 +1,3 @@
-export const textFineForegroundClass = "text-fine-foreground";
-export const textWarningForegroundClass = "text-warning-foreground";
-export const textProblemForegroundClass = "text-problem-foreground";
-export const textUnimportantForegroundClass = "text-muted-foreground";
-
 export const bgFineForegroundClass = "bg-fine-foreground";
 export const bgWarningForegroundClass = "bg-warning-foreground";
 export const bgProblemForegroundClass = "bg-problem-foreground";
@@ -19,3 +14,7 @@ export interface SelectOption {
 }
 
 export type Theme = "dark" | "light" | "system";
+
+export function darkModeToTheme(darkMode: boolean | null): Theme {
+    return darkMode === null ? "system" : darkMode ? "dark" : "light";
+}

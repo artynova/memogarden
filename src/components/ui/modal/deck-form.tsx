@@ -41,11 +41,11 @@ export function DeckForm({ onSubmit, onCancel, deck }: DeckFormProps) {
                 <div className={"flex justify-center space-x-2"}>
                     <Button size={"lg"}>
                         <span>Save</span>
-                        <Check />
+                        <Check aria-label={"Save icon"} />
                     </Button>
                     <Button size={"lg"} variant={"outline"} onClick={onCancel} type={"button"}>
                         <span>Cancel</span>
-                        <X />
+                        <X aria-label={"Cancel icon"} />
                     </Button>
                 </div>
             </form>

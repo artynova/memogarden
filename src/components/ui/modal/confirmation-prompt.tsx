@@ -20,11 +20,11 @@ export function ConfirmationPrompt({ onConfirm, onCancel }: ConfirmationPromptPr
         <div className={"flex justify-center space-x-2"}>
             <Button size={"lg"} variant={"destructive"} onClick={onConfirm}>
                 <span>Confirm</span>
-                <Check />
+                <Check aria-label={"Confirm icon"} />
             </Button>
             <Button size={"lg"} variant={"outline"} onClick={onCancel}>
                 <span>Cancel</span>
-                <X />
+                <X aria-label={"Cancel icon"} />
             </Button>
         </div>
     );

@@ -66,18 +66,22 @@ export function CardForm({ onSubmit, onCancel, deckOptions, card }: CardFormProp
                     name="back"
                     label="Back"
                 />
-                <Toggle className={""} pressed={preview} onPressedChange={setPreview}>
-                    <span>{preview ? "Disable Preview" : "Enable Preview"}</span>
-                    {preview ? <Pencil /> : <BookOpen />}
+                <Toggle pressed={preview} onPressedChange={setPreview}>
+                    <span>{preview ? "Disable preview" : "Enable preview"}</span>
+                    {preview ? (
+                        <Pencil aria-label={"Disable preview icon"} />
+                    ) : (
+                        <BookOpen aria-label={"Enable preview icon"} />
+                    )}
                 </Toggle>
                 <div className={"flex justify-center space-x-2"}>
                     <Button size={"lg"}>
                         <span>Save</span>
-                        <Check />
+                        <Check aria-label={"Save icon"} />
                     </Button>
                     <Button size={"lg"} variant={"outline"} onClick={onCancel} type={"button"}>
                         <span>Cancel</span>
-                        <X />
+                        <X aria-label={"Cancel icon"} />
                     </Button>
                 </div>
             </form>

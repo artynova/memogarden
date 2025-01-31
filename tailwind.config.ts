@@ -7,9 +7,6 @@ const config: Config = {
     darkMode: ["class"],
     content: ["./src/components/**/*.{js,ts,jsx,tsx,mdx}", "./src/app/**/*.{js,ts,jsx,tsx,mdx}"],
     safelist: [
-        "text-fine-foreground",
-        "text-warning-foreground",
-        "text-problem-foreground",
         "text-muted-foreground",
         "[&>div]:bg-fine-foreground",
         "bg-fine",

@@ -16,7 +16,7 @@ export function HomeButton({ className }: HomeButtonProps) {
             asChild
         >
             <Link href={HOME}>
-                <HomeIcon />
+                <HomeIcon aria-label={"Home icon"} />
                 <span className={"sr-only"}>Home</span>
             </Link>
         </Button>

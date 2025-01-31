@@ -3,6 +3,7 @@ import { SelectUser } from "@/server/data/services/user";
 import { Header } from "@/components/ui/page/template/header";
 import { Footer, FooterActionData } from "@/components/ui/page/template/footer";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import { darkModeToTheme } from "@/lib/ui";
 
 export type { FooterActionData };
 
@@ -37,7 +38,7 @@ export function PageTemplate({
     footerActions,
     children,
 }: PageTemplateProps) {
-    const theme = user.darkMode === null ? "system" : user.darkMode ? "dark" : "light";
+    const theme = darkModeToTheme(user.darkMode);
     return (
         <ThemeProvider theme={theme}>
             <div className="flex h-screen w-full flex-col">

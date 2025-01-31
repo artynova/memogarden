@@ -16,6 +16,7 @@ export interface ControlledSelectProps {
     value: string;
     onValueChange: (value: string) => void;
     className?: string;
+    id?: string;
 }
 
 export function ControlledSelect({
@@ -25,10 +26,11 @@ export function ControlledSelect({
     value,
     onValueChange,
     className,
+    id,
 }: ControlledSelectProps) {
     return (
         <Select onValueChange={onValueChange} value={value}>
-            <SelectTrigger className={className}>
+            <SelectTrigger id={id} className={className} aria-label={innerLabel}>
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>

@@ -42,6 +42,7 @@ export function HealthBar({ retrievability, className, label, withText }: Health
                 <Progress
                     value={progress}
                     className={cn("h-full", backColorClass, `[&>div]:${frontColorClass}`)}
+                    aria-label={label ?? "Health bar"}
                 />
             </div>
             {withText && (

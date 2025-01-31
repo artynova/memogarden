@@ -13,7 +13,7 @@ export function ProfileBadge({ user, className }: ProfileProps) {
     return (
         <div className={cn("flex w-32 flex-col items-center space-y-2", className)}>
             <Avatar className={"size-16 border-4 border-foreground"}>
-                <AvatarImage src={`/avatars/${user.avatarId}.png`} />
+                <AvatarImage src={`/avatars/${user.avatarId}.png`} alt={"Avatar"} />
                 <AvatarFallback>
                     <AvatarSkeleton className={"size-16"} />
                 </AvatarFallback>

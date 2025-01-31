@@ -124,6 +124,7 @@ export function BrowsePage({
                                 onSearchSubmit(query, deckFilter);
                             }
                         }}
+                        aria-label={"Search"}
                     />
                     <Button
                         onClick={() => {
@@ -131,7 +132,7 @@ export function BrowsePage({
                         }}
                     >
                         Search
-                        <Search />
+                        <Search aria-label={"Search icon"} />
                     </Button>
                 </div>
                 <div className={"flex items-center gap-x-8"}>

@@ -57,12 +57,12 @@ export function Footer({ buttons, className }: FooterProps) {
                 >
                     {isLinkAction(action) ? (
                         <Link href={action}>
-                            <Icon />
+                            <Icon aria-label={`${text} icon`} />
                             <span className={"sr-only"}>{text}</span>
                         </Link>
                     ) : (
                         <>
-                            <Icon />
+                            <Icon aria-label={`${text} icon`} />
                             <span className={"sr-only"}>{text}</span>
                         </>
                     )}

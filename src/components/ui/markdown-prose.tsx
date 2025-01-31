@@ -15,7 +15,12 @@ export interface MarkdownProseProps {
  */
 export function MarkdownProse({ children, className }: MarkdownProseProps) {
     return (
-        <Markdown className={cn("prose overflow-scroll text-base md:text-sm", className)}>
+        <Markdown
+            className={cn(
+                "prose overflow-scroll text-base dark:prose-invert md:text-sm",
+                className,
+            )}
+        >
             {children}
         </Markdown>
     );

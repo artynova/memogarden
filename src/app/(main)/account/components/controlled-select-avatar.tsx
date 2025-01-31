@@ -21,6 +21,7 @@ export interface ControlledSelectAvatarProps {
     onAvatarIndexChange: (id: number) => void;
     avatars: SelectAvatar[];
     className?: string;
+    id?: string;
 }
 
 /**
@@ -30,12 +31,14 @@ export interface ControlledSelectAvatarProps {
  * @param onAvatarIndexChange Callback to handle selection of a new avatar.
  * @param avatars List of available avatars for this selection.
  * @param className Custom classes.
+ * @param id ID to assign to the carousel element.
  */
 export function ControlledSelectAvatar({
     avatarIndex,
     onAvatarIndexChange,
     avatars,
     className,
+    id,
 }: ControlledSelectAvatarProps) {
     const [api, setApi] = useState<CarouselApi>();
     const [currentSnap, setCurrentSnap] = useState<number>(avatarIndex);
@@ -58,6 +61,7 @@ export function ControlledSelectAvatar({
                     setApi={setApi}
                     className={cn("mx-auto max-w-96", className)}
                     opts={{ startIndex: avatarIndex }}
+                    id={id}
                 >
                     <CarouselContent>
                         {avatars.map((avatar) => (
@@ -71,7 +75,10 @@ export function ControlledSelectAvatar({
                                                 : "border-muted",
                                         )}
                                     >
-                                        <AvatarImage src={`/avatars/${avatar.id}.png`} />
+                                        <AvatarImage
+                                            src={`/avatars/${avatar.id}.png`}
+                                            alt={`Avatar ${avatar.id + 1}`}
+                                        />
                                         <AvatarFallback>
                                             <AvatarSkeleton />
                                         </AvatarFallback>
@@ -87,7 +94,7 @@ export function ControlledSelectAvatar({
             {currentSnap === avatarIndex ? (
                 <Button className={"w-full sm:w-1/2"} disabled>
                     <span>Selected</span>
-                    <CheckCheck />
+                    <CheckCheck aria-label={"Selected icon"} />
                 </Button>
             ) : (
                 <Button
@@ -95,7 +102,7 @@ export function ControlledSelectAvatar({
                     onClick={() => onAvatarIndexChange(currentSnap)}
                 >
                     <span>Select</span>
-                    <Check />
+                    <Check aria-label={"Select icon"} />
                 </Button>
             )}
         </div>

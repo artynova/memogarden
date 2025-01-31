@@ -129,17 +129,21 @@ export function DeckPage({ user, preview, deckOptions }: DeckPageProps) {
                 <Button
                     asChild
                     disabled={revisionCleared}
-                    className={"h-24 w-full rounded-3xl [&_svg]:size-10"}
+                    className={
+                        "flex h-24 w-full items-center justify-center space-x-2 rounded-3xl text-xl [&_svg]:size-10"
+                    }
                 >
-                    <button>
-                        <Link
-                            href={`/deck/${encodeURIComponent(deck.id)}/revise`}
-                            className={"flex items-center space-x-2 text-xl"}
-                        >
+                    {revisionCleared ? (
+                        <button>
+                            <span className={"font-bold"}>Revision cleared</span>
+                            <Check aria-label={"Revision cleared icon"} />
+                        </button>
+                    ) : (
+                        <Link href={`/deck/${encodeURIComponent(deck.id)}/revise`}>
                             <span className={"font-bold"}>Revise</span>
-                            {revisionCleared ? <Check /> : <ChevronsRight />}
+                            <ChevronsRight aria-label={"Revise icon"} />
                         </Link>
-                    </button>
+                    )}
                 </Button>
             </div>
             <ControlledModalCollection

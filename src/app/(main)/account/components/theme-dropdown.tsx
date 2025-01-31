@@ -7,27 +7,67 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/base/dropdown-menu";
 import { Button } from "@/components/ui/base/button";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, SunMoon } from "lucide-react";
 import { Theme } from "@/lib/ui";
 
 export interface ThemeDropdownProps {
+    theme: Theme;
     onThemeChange: (theme: Theme) => void;
+    id?: string;
 }
 
-export function ThemeDropdown({ onThemeChange }: ThemeDropdownProps) {
+const themeToLabel = {
+    light: (
+        <>
+            <span>Light</span>
+            <Sun aria-label={"Light theme icon"} />
+        </>
+    ),
+    dark: (
+        <>
+            <span>Dark</span>
+            <Moon aria-label={"Dark theme icon"} />
+        </>
+    ),
+    system: (
+        <>
+            <span>System</span>
+            <SunMoon aria-label={"System theme icon"} />
+        </>
+    ),
+};
+
+export function ThemeDropdown({ theme, onThemeChange, id }: ThemeDropdownProps) {
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger className={"w-full"} id={id} asChild>
                 <Button variant="outline">
-                    <Sun className="size-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                    <Moon className="absolute size-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                    {themeToLabel[theme]}
                     <span className="sr-only">Toggle theme</span>
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onThemeChange("light")}>Light</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onThemeChange("dark")}>Dark</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onThemeChange("system")}>System</DropdownMenuItem>
+            <DropdownMenuContent align="end" className={"w-[--radix-dropdown-menu-trigger-width]"}>
+                <DropdownMenuItem
+                    disabled={theme === "light"}
+                    className={"flex justify-between"}
+                    onClick={() => onThemeChange("light")}
+                >
+                    {themeToLabel["light"]}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                    disabled={theme === "dark"}
+                    className={"flex justify-between"}
+                    onClick={() => onThemeChange("dark")}
+                >
+                    {themeToLabel["dark"]}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                    disabled={theme === "system"}
+                    className={"flex justify-between"}
+                    onClick={() => onThemeChange("system")}
+                >
+                    {themeToLabel["system"]}
+                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     );

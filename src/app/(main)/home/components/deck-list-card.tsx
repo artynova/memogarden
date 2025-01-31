@@ -45,11 +45,13 @@ export function DeckListCard({ preview }: DeckListCardProps) {
             >
                 {revisionCleared ? (
                     <button>
-                        <Check />
+                        <span className={"sr-only"}>Revision cleared</span>
+                        <Check aria-label={"Revision cleared icon"} />
                     </button>
                 ) : (
                     <Link href={`/deck/${deck.id}/revise`}>
-                        <ChevronsRight />
+                        <span className={"sr-only"}>Revise</span>
+                        <ChevronsRight aria-label={"Revise icon"} />
                     </Link>
                 )}
             </Button>

@@ -17,8 +17,10 @@ import { Clock, SquareAsterisk, TriangleAlert } from "lucide-react";
 import { ControlledSelectAvatar } from "@/app/(main)/account/components/controlled-select-avatar";
 import { useRouter } from "next/navigation";
 import { ThemeDropdown } from "@/app/(main)/account/components/theme-dropdown";
-import { Theme } from "@/lib/ui";
+import { darkModeToTheme, Theme } from "@/lib/ui";
 import { ConfirmationPrompt } from "@/components/ui/modal/confirmation-prompt";
+import { TitledCard } from "@/components/ui/titled-card";
+import { Label } from "@/components/ui/base/label";
 
 export interface AccountPageProps {
     user: SelectUser;
@@ -74,45 +76,72 @@ export function AccountPage({ user, usesCredentials, avatars }: AccountPageProps
     return (
         <PageTemplate title={"Account"} user={user} footerActions={[]}>
             <ContentWrapper variant={"compact"}>
-                <div className={"flex flex-col gap-6 sm:flex-row"}>
-                    <ControlledSelectTimezone
-                        value={user.timezone}
-                        onValueChange={ignoreAsyncFnResult(onTimezoneChange)}
-                    />
-                    <Button
-                        onClick={ignoreAsyncFnResult(onTimezoneChange.bind(null, inferredTimezone))}
-                        disabled={user.timezone === inferredTimezone}
-                    >
-                        <span>Decide for me</span>
-                        <Clock />
-                    </Button>
-                    <ThemeDropdown onThemeChange={ignoreAsyncFnResult(onThemeChange)} />
-                </div>
-                <ControlledSelectAvatar
-                    avatarIndex={user.avatarId}
-                    onAvatarIndexChange={ignoreAsyncFnResult(onAvatarChange)}
-                    avatars={avatars}
-                />
-                <div className={"flex flex-col items-center justify-center gap-6 sm:flex-row"}>
-                    {usesCredentials && (
-                        <Button
-                            className={"w-full sm:w-1/2"}
-                            onClick={() => setCurrentModalIndex(1)}
+                <TitledCard title={"Cosmetic"}>
+                    <div className={"space-y-3"}>
+                        <div className={"space-y-3"}>
+                            <Label htmlFor={"theme-dropdown"}>Theme:</Label>
+                            <ThemeDropdown
+                                theme={darkModeToTheme(user.darkMode)}
+                                onThemeChange={ignoreAsyncFnResult(onThemeChange)}
+                                id={"theme-dropdown"}
+                            />
+                        </div>
+                        <div className={"space-y-3"}>
+                            <Label htmlFor={"select-avatar"}>Avatar:</Label>
+                            <ControlledSelectAvatar
+                                avatarIndex={user.avatarId}
+                                onAvatarIndexChange={ignoreAsyncFnResult(onAvatarChange)}
+                                avatars={avatars}
+                                id={"select-avatar"}
+                            />
+                        </div>
+                    </div>
+                </TitledCard>
+                <TitledCard title={"Danger zone"}>
+                    <div className={"space-y-3"}>
+                        <Label htmlFor={"select-timezone"}>Your time zone:</Label>
+                        <div className={"flex flex-col gap-3 sm:flex-row"}>
+                            <ControlledSelectTimezone
+                                value={user.timezone}
+                                onValueChange={ignoreAsyncFnResult(onTimezoneChange)}
+                                id={"select-timezone"}
+                            />
+                            <Button
+                                onClick={ignoreAsyncFnResult(
+                                    onTimezoneChange.bind(null, inferredTimezone),
+                                )}
+                                disabled={user.timezone === inferredTimezone}
+                            >
+                                <span>Infer time zone</span>
+                                <Clock aria-label={"Infer time zone icon"} />
+                            </Button>
+                        </div>
+                        <div
+                            className={
+                                "flex flex-col items-center justify-center gap-3 sm:flex-row"
+                            }
                         >
-                            <span>Change password</span>
-                            <SquareAsterisk />
-                        </Button>
-                    )}
+                            {usesCredentials && (
+                                <Button
+                                    className={"w-full sm:w-1/2"}
+                                    onClick={() => setCurrentModalIndex(1)}
+                                >
+                                    <span>Change password</span>
+                                    <SquareAsterisk aria-label={"Change password icon"} />
+                                </Button>
+                            )}
 
-                    <Button
-                        className={"w-full sm:w-1/2"}
-                        variant={"destructive"}
-                        onClick={() => setCurrentModalIndex(0)}
-                    >
-                        <span>Sign out everywhere</span>
-                        <TriangleAlert />
-                    </Button>
-                </div>
+                            <Button
+                                className={"w-full sm:w-1/2"}
+                                variant={"destructive"}
+                                onClick={() => setCurrentModalIndex(0)}
+                            >
+                                <span>Sign out everywhere</span>
+                                <TriangleAlert aria-label={"Sign out everywhere icon"} />
+                            </Button>
+                        </div>
+                    </div>
+                </TitledCard>
             </ContentWrapper>
             <ControlledModalCollection
                 modals={modals}
