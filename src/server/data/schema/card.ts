@@ -8,7 +8,6 @@ import { newCardStability } from "@/server/data/scheduler";
  */
 export const cardState = pgTable("card_state", {
     id: smallint().primaryKey(), // Corresponds to the card state enum value
-    name: varchar({ length: 30 }).notNull(),
 });
 
 /**
@@ -21,7 +20,6 @@ export const cardStateReference = () => smallint().references(() => cardState.id
  */
 export const reviewRating = pgTable("review_rating", {
     id: smallint().primaryKey(), // Corresponds to the card rating enum value
-    name: varchar({ length: 30 }).notNull(),
 });
 
 /**
