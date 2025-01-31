@@ -74,7 +74,7 @@ export function AccountPage({ user, usesCredentials, avatars }: AccountPageProps
     return (
         <PageTemplate title={"Account"} user={user} footerActions={[]}>
             <ContentWrapper variant={"compact"}>
-                <div className={"flex flex-col gap-6 md:flex-row"}>
+                <div className={"flex flex-col gap-6 sm:flex-row"}>
                     <ControlledSelectTimezone
                         value={user.timezone}
                         onValueChange={ignoreAsyncFnResult(onTimezoneChange)}
@@ -93,10 +93,10 @@ export function AccountPage({ user, usesCredentials, avatars }: AccountPageProps
                     onAvatarIndexChange={ignoreAsyncFnResult(onAvatarChange)}
                     avatars={avatars}
                 />
-                <div className={"flex flex-col items-center justify-center gap-6 md:flex-row"}>
+                <div className={"flex flex-col items-center justify-center gap-6 sm:flex-row"}>
                     {usesCredentials && (
                         <Button
-                            className={"w-full md:w-1/2"}
+                            className={"w-full sm:w-1/2"}
                             onClick={() => setCurrentModalIndex(1)}
                         >
                             <span>Change password</span>
@@ -105,7 +105,7 @@ export function AccountPage({ user, usesCredentials, avatars }: AccountPageProps
                     )}
 
                     <Button
-                        className={"w-full md:w-1/2"}
+                        className={"w-full sm:w-1/2"}
                         variant={"destructive"}
                         onClick={() => setCurrentModalIndex(0)}
                     >

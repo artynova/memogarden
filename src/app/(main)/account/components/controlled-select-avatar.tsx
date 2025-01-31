@@ -65,7 +65,7 @@ export function ControlledSelectAvatar({
                                 <div className={"flex items-center justify-center"}>
                                     <Avatar
                                         className={cn(
-                                            "size-32 border-8 md:size-64",
+                                            "size-32 border-8 sm:size-64",
                                             avatarIndex === avatar.id
                                                 ? "border-accent"
                                                 : "border-muted",
@@ -85,13 +85,13 @@ export function ControlledSelectAvatar({
                 </Carousel>
             </div>
             {currentSnap === avatarIndex ? (
-                <Button className={"w-full md:w-1/2"} disabled>
+                <Button className={"w-full sm:w-1/2"} disabled>
                     <span>Selected</span>
                     <CheckCheck />
                 </Button>
             ) : (
                 <Button
-                    className={"w-full md:w-1/2"}
+                    className={"w-full sm:w-1/2"}
                     onClick={() => onAvatarIndexChange(currentSnap)}
                 >
                     <span>Select</span>
