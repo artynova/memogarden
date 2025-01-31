@@ -78,6 +78,13 @@
       "when": 1738103701217,
       "tag": "0010_nifty_tigra",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1738324329359,
+      "tag": "0011_legal_morlocks",
+      "breakpoints": true
     }
   ]
 }

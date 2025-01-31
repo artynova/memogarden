@@ -17,13 +17,9 @@ export const autoIdExternal = () => uuid();
 export const timestampTz = () => timestamp({ withTimezone: true });
 
 /**
- * Standard timestamps for managed data objets: when the object was created, last updated, and deleted.
+ * Standard timestamps for managed data objets: when the object was created and (optionally) deleted.
  */
 export const timestamps = {
     createdAt: timestampTz().notNull().defaultNow(),
-    /**
-     * When the row was last updated through a user interaction (does not include automatic updates, e.g., of health state).
-     */
-    updatedAt: timestampTz().notNull().defaultNow(),
     deletedAt: timestampTz(),
 };

@@ -319,19 +319,6 @@ export function isNotDeleted(table: TableWithSoftDelete) {
 }
 
 /**
- * Helper method to add automatic database-level update timestamp marking to update placeholders. Only intended
- * for updates to tables that support update timestamp tracking (i.e., have a field "updatedAt").
- *
- * @param updatePlaceholders Base update placeholders.
- * @return Base update placeholders with the added "updatedAt" field being set to the current timestamp.
- */
-export function addUpdatedAt<T extends Record<string, SQL>>(
-    updatePlaceholders: T,
-): T & { updatedAt: SQL } {
-    return { ...updatePlaceholders, updatedAt: sql`NOW()` };
-}
-
-/**
  * Creates a mapping for the "set" part of an update query that will assign the current timestamp to the "deletedAt"
  * timestamp field.
  */

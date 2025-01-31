@@ -3,7 +3,6 @@ import { card, cardState, reviewLog, reviewRating } from "@/server/data/schema/c
 import db from "@/server/data/db";
 import { deck } from "@/server/data/schema/deck";
 import {
-    addUpdatedAt,
     eqOptionalPlaceholder,
     eqPlaceholder,
     imatchPlaceholder,
@@ -94,7 +93,7 @@ const insertCard = db
  */
 const updateCardData = db
     .update(card)
-    .set(addUpdatedAt(makeUpdatePlaceholders(cardUpdateDataColumns)))
+    .set(makeUpdatePlaceholders(cardUpdateDataColumns))
     .where(and(eqPlaceholder(card.id), isNotDeleted(card)))
     .prepare("update_card_data");
 
@@ -103,7 +102,7 @@ const updateCardData = db
  */
 const updateCardMetadata = db
     .update(card)
-    .set(addUpdatedAt(makeUpdatePlaceholders(cardMetadataColumns))) // Adding the updatedAt timestamp because metadata (SRS data) updates are initiated by revision, which is a user interaction
+    .set(makeUpdatePlaceholders(cardMetadataColumns))
     .where(and(eqPlaceholder(card.id), isNotDeleted(card)))
     .prepare("update_card_metadata");
 
@@ -227,7 +226,10 @@ const insertReviewLog = db
 const updateCardsRetrievability = db
     .update(card)
     .set({
-        retrievability: sql`(1 + (${FACTOR} * EXTRACT(DAY FROM (${sql.placeholder("anchor")} - COALESCE(${card.lastReview}, ${card.createdAt})))) / ${card.stability})^(${DECAY})`,
+        retrievability: sql`(1 + (${FACTOR} * EXTRACT (DAY FROM (${sql.placeholder("anchor")} - COALESCE (${card.lastReview}, ${card.createdAt})))) / ${card.stability})
+                            ^(
+                            ${DECAY}
+                            )`,
     })
     .where(and(userCardTest, isNotDeleted(card)))
     .prepare("update_retrievabilities");
