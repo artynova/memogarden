@@ -10,13 +10,12 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/base/table";
-import { SelectCardPreview } from "@/server/data/services/card";
-import { columns } from "@/app/(main)/browse/components/columns";
+import { columns, SelectCardPreviewWithTimezone } from "@/app/(main)/browse/components/columns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export interface ResultsTableProps {
-    data: SelectCardPreview[];
+    data: SelectCardPreviewWithTimezone[];
     page: number;
     pageSize: number;
 }

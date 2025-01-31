@@ -1,5 +1,5 @@
 import { HealthBar } from "@/components/ui/resource-state/health-bar";
-import { DateTime } from "luxon";
+import { getLocaleDateString } from "@/lib/utils";
 
 export interface CardHealthBarProps {
     retrievability: number; // A single card's retrievability cannot be null
@@ -7,10 +7,6 @@ export interface CardHealthBarProps {
     timezone: string;
     className?: string;
     withBarText?: boolean;
-}
-
-function getDateString(date: Date, timezone: string): string {
-    return DateTime.fromJSDate(date).setZone(timezone).toLocaleString(DateTime.DATE_SHORT);
 }
 
 /**
@@ -36,7 +32,7 @@ export function CardHealthBar({
         <HealthBar
             retrievability={retrievability}
             className={className}
-            label={`Due: ${getDateString(due, timezone)}`}
+            label={`Due: ${getLocaleDateString(due, timezone)}`}
             withText={withBarText}
         />
     );

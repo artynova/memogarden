@@ -23,6 +23,7 @@ import {
     ControlledModalCollection,
     ModalData,
 } from "@/components/ui/modal/controlled-modal-collection";
+import { ContentWrapper } from "@/components/ui/page/template/content-wrapper";
 
 export interface BrowsePageProps {
     user: SelectUser;
@@ -112,7 +113,7 @@ export function BrowsePage({
 
     return (
         <PageTemplate title={"Search Cards"} user={user} footerActions={footerActions}>
-            <div className={"mx-auto flex max-w-screen-lg flex-col gap-y-6 p-6"}>
+            <ContentWrapper>
                 <div className={"flex gap-x-2"}>
                     <Input
                         placeholder={"Filter by front or back content"}
@@ -133,7 +134,7 @@ export function BrowsePage({
                         <Search />
                     </Button>
                 </div>
-                <div className={"flex gap-x-8"}>
+                <div className={"flex items-center gap-x-8"}>
                     <ControlledSelect
                         options={[
                             { value: NO_DECK_FILTER_OPTION, label: "All decks" },
@@ -151,7 +152,10 @@ export function BrowsePage({
                     >{`Cards found: ${searchResults.totalCards}`}</div>
                 </div>
                 <ResultsTable
-                    data={searchResults.pageCards}
+                    data={searchResults.pageCards.map((value) => ({
+                        ...value,
+                        timezone: user.timezone,
+                    }))}
                     page={searchResults.page}
                     pageSize={requestedPagination.pageSize}
                 />
@@ -160,7 +164,7 @@ export function BrowsePage({
                     totalPages={totalPages}
                     indexToHref={pageIndexToHref}
                 />
-            </div>
+            </ContentWrapper>
             <ControlledModalCollection
                 modals={modals}
                 currentModalIndex={currentModalIndex}

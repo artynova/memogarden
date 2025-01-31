@@ -2,22 +2,21 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { SelectCardPreview } from "@/server/data/services/card";
-import { DateTime } from "luxon";
-import {
-    textFineForegroundClass,
-    textProblemForegroundClass,
-    textWarningForegroundClass,
-} from "@/lib/ui";
-import { CardState } from "@/lib/spaced-repetition";
 import { LimitedTextSpan } from "@/components/ui/limited-text-span";
 import removeMd from "remove-markdown";
+import { HealthBar } from "@/components/ui/resource-state/health-bar";
+import { getLocaleDateString } from "@/lib/utils";
 
 const MAX_FRONT_PREVIEW_LENGTH_DESKTOP = 30;
-const MAX_FRONT_PREVIEW_LENGTH_MOBILE = 10;
+const MAX_FRONT_PREVIEW_LENGTH_MOBILE = 8;
 const MAX_DECK_NAME_LENGTH_DESKTOP = 30;
-const MAX_DECK_NAME_LENGTH_MOBILE = 10;
+const MAX_DECK_NAME_LENGTH_MOBILE = 8;
 
-export const columns: ColumnDef<SelectCardPreview>[] = [
+export interface SelectCardPreviewWithTimezone extends SelectCardPreview {
+    timezone: string;
+}
+
+export const columns: ColumnDef<SelectCardPreviewWithTimezone>[] = [
     {
         accessorKey: "front",
         header: "Front",
@@ -32,36 +31,19 @@ export const columns: ColumnDef<SelectCardPreview>[] = [
     {
         accessorKey: "retrievability",
         header: "Health",
-        cell: ({ row }) => {
-            const retrievability = row.getValue<number | null>("retrievability");
-            if (retrievability === null) return "N/A";
-            return retrievability;
-        },
+        cell: ({ row }) => (
+            <HealthBar
+                retrievability={row.original.retrievability}
+                className={"h-4 w-12 sm:w-16"}
+            />
+        ),
     },
     {
         accessorKey: "due",
-        header: "Due Date",
-        cell: ({ row }) => {
-            const dueDateTime = DateTime.fromJSDate(row.getValue("due"));
-            const dueDate = dueDateTime.startOf("day");
-            const nowDate = DateTime.now().startOf("day");
-            const isNew = (row.original.stateId as CardState) === CardState.New;
-            return (
-                <div
-                    className={
-                        isNew
-                            ? ""
-                            : nowDate < dueDate
-                              ? textFineForegroundClass
-                              : nowDate === dueDate
-                                ? textWarningForegroundClass
-                                : textProblemForegroundClass
-                    }
-                >
-                    {isNew ? "N/A" : dueDateTime.toLocaleString(DateTime.DATE_SHORT)}
-                </div>
-            );
-        },
+        header: "Due",
+        cell: ({ row }) => (
+            <span>{getLocaleDateString(row.original.due, row.original.timezone)}</span>
+        ),
     },
     {
         accessorKey: "deckName",
