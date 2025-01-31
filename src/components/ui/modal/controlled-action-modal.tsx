@@ -35,7 +35,7 @@ export function ControlledActionModal({
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent
                 side={"bottom"}
-                className={cn("max-h-screen overflow-y-scroll", className)}
+                className={cn("max-h-screen space-y-3 overflow-y-scroll", className)}
             >
                 <SheetHeader>
                     <SheetTitle className={"text-center font-bold"}>{title}</SheetTitle>

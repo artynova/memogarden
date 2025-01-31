@@ -23,6 +23,7 @@ import {
     ModalData,
 } from "@/components/ui/modal/controlled-modal-collection";
 import { DeckHealthBar } from "@/components/ui/resource-state/deck-health-bar";
+import { ConfirmationPrompt } from "@/components/ui/modal/confirmation-prompt";
 
 export interface DeckPageProps {
     user: SelectUser;
@@ -55,8 +56,8 @@ export function DeckPage({ user, preview, deckOptions }: DeckPageProps) {
 
     const modals: ModalData[] = [
         {
-            title: "Edit Deck",
-            description: "Edit the deck.",
+            title: "Edit the deck",
+            description: "Change the deck's name.",
             children: (
                 <DeckForm
                     onSubmit={ignoreAsyncFnResult(onEditSubmit)}
@@ -66,7 +67,7 @@ export function DeckPage({ user, preview, deckOptions }: DeckPageProps) {
             ),
         },
         {
-            title: "New Card",
+            title: "New card",
             description: "Create a new card.",
             children: (
                 <CardForm
@@ -77,27 +78,38 @@ export function DeckPage({ user, preview, deckOptions }: DeckPageProps) {
                 />
             ),
         },
+        {
+            title: "Delete the deck?",
+            description:
+                "You cannot undo deck deletion. All cards in the deck will be deleted as well.",
+            children: (
+                <ConfirmationPrompt
+                    onConfirm={ignoreAsyncFnResult(onDeckDelete)}
+                    onCancel={() => setCurrentModalIndex(null)}
+                />
+            ),
+        },
     ];
 
     const footerActions: FooterActionData[] = [
         {
             Icon: Pencil,
-            text: "Edit Deck",
+            text: "Edit deck",
             action: () => setCurrentModalIndex(0),
         },
         {
             Icon: SquarePlus,
-            text: "New Card",
+            text: "New card",
             action: () => setCurrentModalIndex(1),
         },
         {
             Icon: Trash,
-            text: "Delete Deck",
-            action: ignoreAsyncFnResult(onDeckDelete),
+            text: "Delete deck",
+            action: () => setCurrentModalIndex(2),
         },
         {
             Icon: SquareStack,
-            text: "Browse Deck Cards",
+            text: "Browse deck cards",
             action: `/browse?deckId=${encodeURIComponent(deck.id)}`,
         },
     ];

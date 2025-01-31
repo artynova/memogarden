@@ -43,7 +43,7 @@ export function CardForm({ onSubmit, onCancel, deckOptions, card }: CardFormProp
     return (
         <Form {...form}>
             <form
-                className={"space-y-2"}
+                className={"space-y-3"}
                 onSubmit={ignoreAsyncFnResult(form.handleSubmit(onSubmitInternal))}
             >
                 <FormSelect

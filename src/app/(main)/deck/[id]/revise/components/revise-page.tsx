@@ -52,7 +52,7 @@ function RevisePagePreAnswer({ user, card, onAnswerSubmit }: RevisePagePreAnswer
     const footerActions: FooterActionData[] = [
         {
             Icon: Check,
-            text: "New Deck",
+            text: "See answer",
             action: () => onAnswerSubmit(answer),
         },
     ];

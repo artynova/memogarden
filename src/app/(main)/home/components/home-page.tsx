@@ -50,7 +50,7 @@ export function HomePage({ user, summary, decks }: HomePageProps) {
 
     const modals: ModalData[] = [
         {
-            title: "New Deck",
+            title: "New deck",
             description: "Create a new deck.",
             children: (
                 <DeckForm
@@ -60,7 +60,7 @@ export function HomePage({ user, summary, decks }: HomePageProps) {
             ),
         },
         {
-            title: "New Card",
+            title: "New card",
             description: "Create a new card.",
             children: (
                 <CardForm
@@ -75,12 +75,12 @@ export function HomePage({ user, summary, decks }: HomePageProps) {
     const footerActions: FooterActionData[] = [
         {
             Icon: FolderPlus,
-            text: "New Deck",
+            text: "New deck",
             action: () => setCurrentModalIndex(0), // Index of the deck modal (first in the array)
         },
         {
             Icon: SquarePlus,
-            text: "New Card",
+            text: "New card",
             action: () => setCurrentModalIndex(1), // Index of the card modal (second in the array)
         },
         { Icon: Search, text: "Browse", action: "/browse" },
@@ -88,7 +88,7 @@ export function HomePage({ user, summary, decks }: HomePageProps) {
 
     return (
         <PageTemplate
-            title={"Your Garden"}
+            title={"Your garden"}
             user={user}
             hideHomeButton
             footerActions={footerActions}

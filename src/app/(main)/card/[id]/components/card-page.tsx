@@ -3,7 +3,6 @@
 import { FooterActionData } from "@/components/ui/page/template/footer";
 import { Folder, Pencil, Trash } from "lucide-react";
 import { ignoreAsyncFnResult } from "@/lib/utils";
-import { HOME } from "@/lib/routes";
 import { PageTemplate } from "@/components/ui/page/template/page-template";
 import { useRouter } from "next/navigation";
 import { SelectUser } from "@/server/data/services/user";
@@ -22,6 +21,7 @@ import { getCardMaturity } from "@/lib/spaced-repetition";
 import { ContentWrapper } from "@/components/ui/page/template/content-wrapper";
 import { CardHealthBar } from "@/components/ui/resource-state/card-health-bar";
 import { CardCard } from "@/components/ui/card-card";
+import { ConfirmationPrompt } from "@/components/ui/modal/confirmation-prompt";
 
 export interface CardPageProps {
     user: SelectUser;
@@ -41,13 +41,13 @@ export function CardPage({ user, card, deckOptions }: CardPageProps) {
 
     async function onCardDelete() {
         await deleteCard(card.id);
-        router.push(HOME);
+        router.push(`/deck/${card.deckId}`);
     }
 
     const modals: ModalData[] = [
         {
-            title: "Edit Card",
-            description: "Edit the card.",
+            title: "Edit the card",
+            description: "Change the card's content.",
             children: (
                 <CardForm
                     onSubmit={ignoreAsyncFnResult(onEditSubmit)}
@@ -57,23 +57,34 @@ export function CardPage({ user, card, deckOptions }: CardPageProps) {
                 />
             ),
         },
+        {
+            title: "Delete the card?",
+            description:
+                "You cannot undo card deletion. Your past revisions of this card will still contribute to account statistics.",
+            children: (
+                <ConfirmationPrompt
+                    onConfirm={ignoreAsyncFnResult(onCardDelete)}
+                    onCancel={() => setCurrentModalIndex(null)}
+                />
+            ),
+        },
     ];
 
     const footerActions: FooterActionData[] = [
         {
             Icon: Pencil,
-            text: "Edit Card",
+            text: "Edit card",
             action: () => setCurrentModalIndex(0),
         },
         {
             Icon: Folder,
-            text: "See Deck",
+            text: "See deck",
             action: `/deck/${card.deckId}`,
         },
         {
             Icon: Trash,
-            text: "Delete Card",
-            action: ignoreAsyncFnResult(onCardDelete),
+            text: "Delete card",
+            action: () => setCurrentModalIndex(1),
         },
     ];
 

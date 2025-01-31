@@ -75,7 +75,7 @@ export function BrowsePage({
 
     const modals: ModalData[] = [
         {
-            title: "New Deck",
+            title: "New deck",
             description: "Create a new deck.",
             children: (
                 <DeckForm
@@ -85,7 +85,7 @@ export function BrowsePage({
             ),
         },
         {
-            title: "New Card",
+            title: "New card",
             description: "Create a new card.",
             children: (
                 <CardForm

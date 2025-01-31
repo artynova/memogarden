@@ -18,6 +18,7 @@ import { ControlledSelectAvatar } from "@/app/(main)/account/components/controll
 import { useRouter } from "next/navigation";
 import { ThemeDropdown } from "@/app/(main)/account/components/theme-dropdown";
 import { Theme } from "@/lib/ui";
+import { ConfirmationPrompt } from "@/components/ui/modal/confirmation-prompt";
 
 export interface AccountPageProps {
     user: SelectUser;
@@ -30,15 +31,26 @@ export function AccountPage({ user, usesCredentials, avatars }: AccountPageProps
     const router = useRouter();
     const inferredTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    const modals: ModalData[] = usesCredentials
-        ? [
-              {
-                  title: "Change password",
-                  description: "Enter your current and new password.",
-                  children: <ChangePasswordForm onCancel={() => setCurrentModalIndex(null)} />,
-              },
-          ]
-        : [];
+    const modals: ModalData[] = [
+        {
+            title: "Sign out everywhere?",
+            description: "This will sign you out on all devices.",
+            children: (
+                <ConfirmationPrompt
+                    onConfirm={ignoreAsyncFnResult(signOutEverywhere)}
+                    onCancel={() => setCurrentModalIndex(null)}
+                />
+            ),
+        },
+    ];
+    if (usesCredentials) {
+        modals.push({
+            title: "Change password",
+            description:
+                "Enter your current and new password. Changing your password will also sign you out on all devices.",
+            children: <ChangePasswordForm onCancel={() => setCurrentModalIndex(null)} />,
+        });
+    }
 
     async function onTimezoneChange(value: string) {
         await updateUser({ timezone: value, avatarId: user.avatarId, darkMode: user.darkMode });
@@ -85,7 +97,7 @@ export function AccountPage({ user, usesCredentials, avatars }: AccountPageProps
                     {usesCredentials && (
                         <Button
                             className={"w-full md:w-1/2"}
-                            onClick={() => setCurrentModalIndex(0)}
+                            onClick={() => setCurrentModalIndex(1)}
                         >
                             <span>Change password</span>
                             <SquareAsterisk />
@@ -95,7 +107,7 @@ export function AccountPage({ user, usesCredentials, avatars }: AccountPageProps
                     <Button
                         className={"w-full md:w-1/2"}
                         variant={"destructive"}
-                        onClick={ignoreAsyncFnResult(signOutEverywhere)}
+                        onClick={() => setCurrentModalIndex(0)}
                     >
                         <span>Sign out everywhere</span>
                         <TriangleAlert />

@@ -34,7 +34,7 @@ export function DeckForm({ onSubmit, onCancel, deck }: DeckFormProps) {
     return (
         <Form {...form}>
             <form
-                className={"space-y-2"}
+                className={"space-y-3"}
                 onSubmit={ignoreAsyncFnResult(form.handleSubmit(onSubmitInternal))}
             >
                 <FormInput control={form.control} name="name" label="Name" />
