@@ -11,6 +11,9 @@ import { FieldsetWithErrorMessage } from "@/components/ui/form/fieldset/fieldset
 import React, { useEffect, useState } from "react";
 import { ResponseUnauthorized } from "@/lib/responses";
 import { ignoreAsyncFnResult } from "@/lib/utils";
+import { ChevronsRight } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
+import { FaFacebook } from "react-icons/fa";
 
 const formConfig: UseFormProps<CredentialsSigninData> = {
     mode: "onBlur" as const,
@@ -41,11 +44,11 @@ export function SigninForm() {
     }
 
     return (
-        <div className="space-y-2">
+        <div className="space-y-3">
             <Form {...form}>
                 <form
                     onSubmit={ignoreAsyncFnResult(form.handleSubmit(onSubmit))}
-                    className="w-full space-y-2"
+                    className="w-full space-y-3"
                 >
                     <FieldsetWithErrorMessage name="credentials" error={rootServerError}>
                         <FormInput control={form.control} name="email" label="Email:" />
@@ -58,23 +61,29 @@ export function SigninForm() {
                     </FieldsetWithErrorMessage>
                     <Button type="submit" className="w-full">
                         Sign in
+                        <ChevronsRight aria-label={"Sign in icon"} />
                     </Button>
                 </form>
             </Form>
             <div className="flex w-full justify-center text-sm text-muted-foreground">or</div>
             <Button
-                onClick={ignoreAsyncFnResult(() => signinWithGoogle())}
+                onClick={ignoreAsyncFnResult(signinWithGoogle)}
                 variant="outline"
-                className="w-full"
+                className="w-full hover:bg-background/50"
             >
-                Sign in with Google
+                Continue with Google
+                <FcGoogle aria-label={"Continue with Google icon"} />
             </Button>
             <Button
-                onClick={ignoreAsyncFnResult(() => signinWithFacebook())}
+                onClick={ignoreAsyncFnResult(signinWithFacebook)}
                 variant="outline"
-                className="w-full"
+                className="w-full hover:bg-background/50"
             >
-                Sign in with Facebook
+                Continue with Facebook
+                <FaFacebook
+                    aria-label={"Continue with Facebook icon"}
+                    className={"text-[#1877F2]"}
+                />
             </Button>
         </div>
     );

@@ -9,6 +9,7 @@ import { CredentialsSignupData, CredentialsSignupSchema } from "@/lib/validation
 import { FormInput } from "@/components/ui/form/form-input";
 import React from "react";
 import { ignoreAsyncFnResult } from "@/lib/utils";
+import { ChevronsRight } from "lucide-react";
 
 const formConfig: UseFormProps<CredentialsSignupData> = {
     mode: "onBlur" as const,
@@ -35,7 +36,7 @@ export function SignupForm() {
         <Form {...form}>
             <form
                 onSubmit={ignoreAsyncFnResult(form.handleSubmit(onSubmit))}
-                className="w-full space-y-2"
+                className="w-full space-y-3"
             >
                 <FormInput control={form.control} name="email" label="Email:" />
                 <FormInput
@@ -52,6 +53,7 @@ export function SignupForm() {
                 />
                 <Button type="submit" className="w-full">
                     Sign up
+                    <ChevronsRight aria-label={"Sign up icon"} />
                 </Button>
             </form>
         </Form>
