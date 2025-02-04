@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/modal/controlled-modal-collection";
 import { DeckHealthBar } from "@/components/ui/resource-state/deck-health-bar";
 import { ConfirmationPrompt } from "@/components/ui/modal/confirmation-prompt";
+import { ContentWrapper } from "@/components/ui/page/template/content-wrapper";
 
 export interface DeckPageProps {
     user: SelectUser;
@@ -119,11 +120,7 @@ export function DeckPage({ user, preview, deckOptions }: DeckPageProps) {
 
     return (
         <PageTemplate title={deck.name} user={user} footerActions={footerActions}>
-            <div
-                className={
-                    "mx-auto flex h-full max-w-screen-sm flex-col items-stretch justify-center gap-y-6 p-6"
-                }
-            >
+            <ContentWrapper variant={"compact"}>
                 <RemainingCardsGrid remaining={remaining} className={"px-6"} />
                 <DeckHealthBar retrievability={deck.retrievability} withBarText />
                 <Button
@@ -145,7 +142,7 @@ export function DeckPage({ user, preview, deckOptions }: DeckPageProps) {
                         </Link>
                     )}
                 </Button>
-            </div>
+            </ContentWrapper>
             <ControlledModalCollection
                 modals={modals}
                 currentModalIndex={currentModalIndex}
