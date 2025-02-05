@@ -15,6 +15,7 @@ import { card, cardState } from "@/server/data/schema/card";
 import { and, avg, count, eq, lte, sql } from "drizzle-orm";
 import { CardState } from "@/lib/spaced-repetition";
 import { inArray } from "drizzle-orm/sql/expressions/conditions";
+import { forceSyncUserHealth } from "@/server/data/services/user";
 
 const updateDeckColumns = [deck.name] as const;
 const insertDeckColumns = [...updateDeckColumns, deck.userId] as const;
@@ -233,8 +234,12 @@ export async function editDeck(id: string, data: UpdateDeck) {
  * @param id Deck's ID.
  */
 export async function removeDeck(id: string) {
+    const deck = await getDeck(id);
+    if (!deck) return;
     await deleteCardsInDeck.execute({ id });
     await deleteDeckSelf.execute({ id });
+    // Deleting a deck also deletes all of its cards, thus affecting the user health, but it does not affect other decks, so only the overall user health needs to be updated
+    await forceSyncUserHealth(deck.userId);
 }
 
 /**
