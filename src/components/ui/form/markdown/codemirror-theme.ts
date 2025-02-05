@@ -11,6 +11,7 @@ const config = {
     foldPlaceholderBackground: "hsl(var(--muted))",
     foldPlaceholderForeground: "hsl(var(--muted-foreground))",
     foldPlaceholderBorder: "hsl(var(--input))",
+    caret: "hsl(var(--foreground))",
     activeLine: "hsla(var(--secondary) / 0.25)",
     keyword: "hsl(var(--primary))",
     variable: "hsl(var(--chart-2))",
@@ -38,6 +39,7 @@ const memoGardenBaseStyles = {
         { backgroundColor: `${config.selection} !important` },
     "&.cm-focused": { outline: "0px" },
     "&.cm-editor .cm-scroller": { fontFamily: config.font },
+    "&.cm-editor .cm-cursor": { borderLeftColor: config.caret },
     "& .cm-gutterElement": { color: config.gutterElementForeground },
     "& .cm-foldPlaceholder": {
         backgroundColor: config.foldPlaceholderBackground,
