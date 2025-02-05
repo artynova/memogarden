@@ -30,5 +30,5 @@ export default auth((req) => {
 });
 
 export const config = {
-    matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"], // The middleware should not apply to API routes and static resources.
+    matcher: ["/((?!api|static|_next/static|_next/image|favicon.ico).*)"], // The middleware should not apply to API routes and static resources.
 };

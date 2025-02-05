@@ -20,13 +20,39 @@ const config: Config = {
         extend: {
             animation: {
                 ellipsis: "ellipsis 1.5s infinite",
+                "accordion-down": "accordion-down 0.2s ease-out",
+                "accordion-up": "accordion-up 0.2s ease-out",
             },
             keyframes: {
                 ellipsis: {
-                    "0%": { content: '"."' },
-                    "33%": { content: '".."' },
-                    "66%": { content: '"..."' },
-                    "100%": { content: '"."' },
+                    "0%": {
+                        content: '"."',
+                    },
+                    "33%": {
+                        content: '".."',
+                    },
+                    "66%": {
+                        content: '"..."',
+                    },
+                    "100%": {
+                        content: '"."',
+                    },
+                },
+                "accordion-down": {
+                    from: {
+                        height: "0",
+                    },
+                    to: {
+                        height: "var(--radix-accordion-content-height)",
+                    },
+                },
+                "accordion-up": {
+                    from: {
+                        height: "var(--radix-accordion-content-height)",
+                    },
+                    to: {
+                        height: "0",
+                    },
                 },
             },
             fontFamily: {

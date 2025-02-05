@@ -1,3 +1,5 @@
+import { StaticImageData } from "next/image";
+
 export const bgFineForegroundClass = "bg-fine-foreground";
 export const bgWarningForegroundClass = "bg-warning-foreground";
 export const bgProblemForegroundClass = "bg-problem-foreground";
@@ -17,4 +19,20 @@ export type Theme = "dark" | "light" | "system";
 
 export function darkModeToTheme(darkMode: boolean | null): Theme {
     return darkMode === null ? "system" : darkMode ? "dark" : "light";
+}
+
+export interface ThemedImageSrc {
+    light: StaticImageData;
+    dark: StaticImageData;
+}
+
+export type ImageSrc = ThemedImageSrc | StaticImageData;
+
+export function isThemedSrc(src: ImageSrc): src is ThemedImageSrc {
+    return (src as ThemedImageSrc)?.light != undefined;
+}
+
+export interface ImageData {
+    src: ImageSrc;
+    alt: string;
 }
