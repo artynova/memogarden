@@ -7,22 +7,24 @@ import { TitledCard } from "@/components/ui/titled-card";
 export default function Page() {
     return (
         <ThemeProvider theme={"system"} doNotPersistTheme>
-            <ContentWrapper variant={"compact"} className={"min-h-screen"}>
-                <TitledCard
-                    title={"Sign up"}
-                    description={"Enter your credentials below to create an account."}
-                >
-                    <div className="space-y-3">
-                        <SignupForm />
-                        <div className="mt-4 text-center text-sm">
-                            {"Already have an account? "}
-                            <Link href="/signin" className="underline">
-                                Sign in
-                            </Link>
+            <main>
+                <ContentWrapper variant={"compact"} className={"min-h-screen"}>
+                    <TitledCard
+                        title={"Sign up"}
+                        description={"Enter your credentials below to create an account."}
+                    >
+                        <div className="space-y-6">
+                            <SignupForm />
+                            <div className="mt-4 text-center text-sm">
+                                {"Already have an account? "}
+                                <Link href="/signin" className="underline">
+                                    Sign in
+                                </Link>
+                            </div>
                         </div>
-                    </div>
-                </TitledCard>
-            </ContentWrapper>
+                    </TitledCard>
+                </ContentWrapper>
+            </main>
         </ThemeProvider>
     );
 }
