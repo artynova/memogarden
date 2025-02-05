@@ -66,6 +66,7 @@ function RevisePagePreAnswer({ user, card, onAnswerSubmit }: RevisePagePreAnswer
                     defaultValue={answer}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setAnswer(e.target.value)}
                 />
+                <HealthBar retrievability={card.retrievability} />
             </ContentWrapper>
         </PageTemplate>
     );
