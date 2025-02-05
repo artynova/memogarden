@@ -24,8 +24,8 @@ export interface HealthBarProps {
  * (e.g., "Freshly watered, 100%").
  */
 export function HealthBar({ retrievability, className, label, withText }: HealthBarProps) {
-    const isSeed = retrievability === null;
-    const retrievabilityPercent = isSeed ? null : Math.ceil(retrievability * 100);
+    const retrievabilityMissing = retrievability === null;
+    const retrievabilityPercent = retrievabilityMissing ? null : Math.ceil(retrievability * 100);
     const state = toHealthState(retrievabilityPercent);
     const progress = retrievabilityPercent ?? 0;
     const frontColorClass = bgForegroundForHealth[state]; // No need to check whether the object has valid health because the progress bar is rendered as empty in that case, i.e., the front color is unused
