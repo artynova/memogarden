@@ -23,8 +23,14 @@ export function UserDropdown({ user, className }: UserDropdownProps) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant={"ghost"} className={cn("h-auto w-32 rounded-none", className)}>
-                    <ProfileBadge user={user} className={"px-6 py-3"} />
+                <Button
+                    variant={"ghost"}
+                    className={cn(
+                        "h-auto w-24 overflow-hidden rounded-none px-12 py-4 sm:w-32",
+                        className,
+                    )}
+                >
+                    <ProfileBadge user={user} />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className={"w-52"}>

@@ -11,11 +11,11 @@ export interface ProfileProps {
 
 export function ProfileBadge({ user, className }: ProfileProps) {
     return (
-        <div className={cn("flex w-32 flex-col items-center space-y-2", className)}>
-            <Avatar className={"size-16 border-4 border-foreground"}>
+        <div className={cn("flex w-full flex-col items-center space-y-2", className)}>
+            <Avatar className={"size-14 border-4 border-foreground"}>
                 <AvatarImage src={`/avatars/${user.avatarId}.png`} alt={"Avatar"} />
                 <AvatarFallback>
-                    <AvatarSkeleton className={"size-16"} />
+                    <AvatarSkeleton className={"size-14"} />
                 </AvatarFallback>
             </Avatar>
             <HealthBar retrievability={user.retrievability} className="h-4 w-16" />

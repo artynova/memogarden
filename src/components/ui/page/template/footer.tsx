@@ -49,7 +49,7 @@ export function Footer({ buttons, className }: FooterProps) {
             {buttons.map(({ Icon, text, action }, index) => (
                 <Button
                     size={"icon"}
-                    className={"h-28 w-auto grow rounded-none [&_svg]:size-16"}
+                    className={"h-28 w-auto grow rounded-none [&_svg]:size-14"}
                     variant={"ghost"}
                     key={index}
                     asChild={isLinkAction(action)}

@@ -34,7 +34,7 @@ export const columns: ColumnDef<SelectCardPreviewWithTimezone>[] = [
         cell: ({ row }) => (
             <HealthBar
                 retrievability={row.original.retrievability}
-                className={"h-4 w-12 sm:w-16"}
+                className={"h-4 w-10 sm:w-16"}
             />
         ),
     },

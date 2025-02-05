@@ -40,7 +40,7 @@ export function DeckListCard({ preview }: DeckListCardProps) {
                 disabled={revisionCleared}
                 aria-disabled={revisionCleared}
                 className={
-                    "h-auto w-20 shrink-0 rounded-l-none sm:w-32 [&_svg]:size-16 sm:[&_svg]:size-20"
+                    "h-auto w-20 shrink-0 rounded-l-none sm:w-32 [&_svg]:size-14 sm:[&_svg]:size-14"
                 }
             >
                 {revisionCleared ? (

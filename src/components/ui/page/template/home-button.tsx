@@ -12,7 +12,7 @@ export function HomeButton({ className }: HomeButtonProps) {
     return (
         <Button
             variant={"ghost"}
-            className={cn("h-auto w-32 rounded-none [&_svg]:size-16", className)}
+            className={cn("h-auto w-24 rounded-none sm:w-32 [&_svg]:size-14", className)}
             asChild
         >
             <Link href={HOME}>

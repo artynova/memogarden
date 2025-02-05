@@ -45,7 +45,7 @@ export function MaturityBar({ currentMaturity }: MaturityBarProps) {
                                     aria-label={`${maturity.name} icon`}
                                 />
                             </div>
-                            <div className={"absolute -bottom-3/4"}>{maturity.name}</div>
+                            <div className={"absolute -bottom-3/4 text-sm"}>{maturity.name}</div>
                         </div>
                     </div>
                 ))}
