@@ -1,0 +1,44 @@
+services:
+    nextjs:
+        build: .
+        container_name: nextjs_app
+        ports:
+            - "${PORT}:${PORT}"
+        env_file:
+            - .env
+        environment:
+            # Override these since they are managed by docker compose in the production environment
+            DB_HOST: postgres
+            DB_PORT: 5432
+        depends_on:
+            postgres:
+                condition: service_healthy
+        networks:
+            - app_network
+
+    postgres:
+        image: postgres:16
+        container_name: postgres_db
+        restart: unless-stopped
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_DB: ${DB_NAME}
+        volumes:
+            - pg_data:/var/lib/postgresql/data
+        networks:
+            - app_network
+        healthcheck: # Ensures Postgres is actually ready before Next.js starts
+            test: ["CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}"]
+            interval: 5s
+            retries: 5
+            start_period: 10s
+
+volumes:
+    pg_data:
+
+networks:
+    app_network:
+        driver: bridge

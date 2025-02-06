@@ -1,12 +1,12 @@
 import { z } from "zod";
-import dotenv from "dotenv";
 
-dotenv.config({ path: ".env.local" }); // Read environment variables for contexts where Next.js's import are not present (e.g., Drizzle config)
+process.env["AUTH_URL"] = `http://localhost:${process.env.PORT ?? 3000}`;
 
 const envSchema = z.object({
     ENV: z
         .union([z.literal("development"), z.literal("testing"), z.literal("production")])
         .default("development"),
+    PORT: z.coerce.number().min(80).max(65535).default(3000),
 
     // Database
     DB_USER: z.string().min(1).default("postgres"),

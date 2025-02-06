@@ -1,3 +1,4 @@
+import "@/scripts/load-dev-env";
 import { defineConfig } from "drizzle-kit";
 import { connectionURL } from "@/server/data/db";
 
