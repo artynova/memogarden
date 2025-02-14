@@ -1,57 +1,83 @@
 "use client";
 
-import { FooterActionData, PageTemplate } from "@/components/ui/page/template/page-template";
+import { FooterActionData, PageTemplate } from "@/components/page/template/page-template";
 import { SelectUser } from "@/server/data/services/user";
 import { ChangeEvent, KeyboardEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ModifyCardData, ModifyDeckData } from "@/lib/validation-schemas";
-import { ignoreAsyncFnResult } from "@/lib/utils";
-import { CardForm } from "@/components/ui/modal/card-form";
-import { createNewCard } from "@/server/actions/card";
+import { ModifyCardData } from "@/server/actions/card/schemas";
+import { ignoreAsyncFnResult } from "@/lib/utils/generic";
+import { CardForm } from "@/components/resource/card-form";
+import { createNewCard } from "@/server/actions/card/actions";
 import { PaginatedCardPreviews } from "@/server/data/services/card";
 import { ResultsTable } from "@/app/(main)/browse/components/results-table";
 import { Pagination } from "@/server/data/services/utils";
-import { Button } from "@/components/ui/base/button";
-import { Input } from "@/components/ui/base/input";
-import { ControlledSelect } from "@/components/ui/controlled-select";
-import { SelectOption } from "@/lib/ui";
+import { Button } from "@/components/shadcn/button";
+import { Input } from "@/components/shadcn/input";
+import { ControlledSelect } from "@/components/controlled-select";
 import { FolderPlus, Search, SquarePlus } from "lucide-react";
-import { PaginationControls } from "@/components/ui/aggregate/pagination-controls";
-import { createNewDeck } from "@/server/actions/deck";
-import { DeckForm } from "@/components/ui/modal/deck-form";
+import { PaginationControls } from "@/components/pagination-controls";
+import { createNewDeck } from "@/server/actions/deck/actions";
+import { DeckForm } from "@/components/resource/deck-form";
 import {
     ControlledModalCollection,
     ModalData,
-} from "@/components/ui/modal/controlled-modal-collection";
-import { ContentWrapper } from "@/components/ui/page/template/content-wrapper";
+} from "@/components/modal/controlled-modal-collection";
+import { ContentWrapper } from "@/components/page/content-wrapper";
+import { ModifyDeckData } from "@/server/actions/deck/schemas";
 
-export interface BrowsePageProps {
-    user: SelectUser;
-    requestedPagination: Pagination;
-    searchResults: PaginatedCardPreviews;
-    deckOptions: SelectOption[];
-}
+import { SelectOption } from "@/lib/utils/input";
 
 const NO_DECK_FILTER_OPTION = "any";
 
+/**
+ * Parsed and validated search parameters for the browsing page.
+ */
+export type ResolvedParams = {
+    /**
+     * Page number (1-indexed).
+     */
+    page: number;
+};
+
+/**
+ * Client part of the card browsing page.
+ *
+ * @param props Component properties.
+ * @param props.user User data.
+ * @param props.pagination Validated pagination settings.
+ * @param props.query Search query, or an empty string if none is provided.
+ * @param props.deckId Validated ID of the deck to filter by, or `null to search the entire collection.
+ * @param props.searchResults Results of the database search with the specified search parameters.
+ * @param props.deckOptions Options for the deck filter selection field.
+ * @returns The component.
+ */
 export function BrowsePage({
     user,
-    requestedPagination,
+    pagination,
+    query,
+    deckId,
     searchResults,
     deckOptions,
-}: BrowsePageProps) {
-    const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(null); // null value means that no modal is open
+}: {
+    user: SelectUser;
+    pagination: Pagination;
+    query: string;
+    deckId: string | null;
+    searchResults: PaginatedCardPreviews;
+    deckOptions: SelectOption[];
+}) {
+    const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(null);
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [query, setQuery] = useState(searchParams.get("query") ?? "");
+    const [inputQuery, setInputQuery] = useState(query);
 
-    const totalPages = Math.ceil(searchResults.totalCards / requestedPagination.pageSize);
-    const deckFilter = searchParams.get("deckId") ?? NO_DECK_FILTER_OPTION;
+    const totalPages = Math.ceil(searchResults.totalCards / pagination.pageSize);
+    const deckFilter = deckId ?? NO_DECK_FILTER_OPTION;
 
     function pageIndexToHref(index: number) {
         const params = new URLSearchParams(searchParams);
         if (index === 0) params.delete("page");
-        else params.set("page", (index + 1).toString());
+        else params.set("page", index.toString());
         return `/browse?${params}`;
     }
 
@@ -117,18 +143,20 @@ export function BrowsePage({
                 <div className={"flex gap-x-2"}>
                     <Input
                         placeholder={"Filter by front or back content"}
-                        defaultValue={query}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
+                        defaultValue={inputQuery}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                            setInputQuery(e.target.value)
+                        }
                         onKeyUp={(e: KeyboardEvent<HTMLInputElement>) => {
                             if (e.key === "Enter") {
-                                onSearchSubmit(query, deckFilter);
+                                onSearchSubmit(inputQuery, deckFilter);
                             }
                         }}
                         aria-label={"Search"}
                     />
                     <Button
                         onClick={() => {
-                            onSearchSubmit(query, deckFilter);
+                            onSearchSubmit(inputQuery, deckFilter);
                         }}
                     >
                         Search
@@ -144,7 +172,7 @@ export function BrowsePage({
                         innerLabel={"Filter by deck"}
                         value={deckFilter}
                         onValueChange={(value: string) => {
-                            onSearchSubmit(query, value);
+                            onSearchSubmit(inputQuery, value);
                         }}
                         className={"max-w-[35%] sm:max-w-[20%]"}
                     />
@@ -157,11 +185,10 @@ export function BrowsePage({
                         ...value,
                         timezone: user.timezone,
                     }))}
-                    page={searchResults.page}
-                    pageSize={requestedPagination.pageSize}
+                    pagination={pagination}
                 />
                 <PaginationControls
-                    pageIndex={searchResults.page - 1}
+                    pageIndex={searchResults.page}
                     totalPages={totalPages}
                     indexToHref={pageIndexToHref}
                 />

@@ -9,26 +9,35 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/base/table";
+} from "@/components/shadcn/table";
 import { columns, SelectCardPreviewWithTimezone } from "@/app/(main)/browse/components/columns";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Pagination } from "@/server/data/services/utils";
 
-export interface ResultsTableProps {
+/**
+ * Browsing results table showing the current results page with clickable rows that link to individual card pages.
+ *
+ * @param props Component properties.
+ * @param props.data Card data on the current page.
+ * @param props.pagination Validated pagination settings.
+ * @returns The component.
+ */
+export function ResultsTable({
+    data,
+    pagination,
+}: {
     data: SelectCardPreviewWithTimezone[];
-    page: number;
-    pageSize: number;
-}
-
-export function ResultsTable({ data, page, pageSize }: ResultsTableProps) {
+    pagination: Pagination;
+}) {
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         state: {
             pagination: {
-                pageIndex: page,
-                pageSize: pageSize,
+                pageIndex: pagination.page,
+                pageSize: pagination.pageSize,
             },
         },
     });

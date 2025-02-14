@@ -1,4 +1,4 @@
-// Strictly client component, does not have the "use client" directive because it needs to accept a callback
+// Strictly client component
 
 import {
     Carousel,
@@ -7,39 +7,39 @@ import {
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
-} from "@/components/ui/base/carousel";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/base/avatar";
-import { cn } from "@/lib/utils";
+} from "@/components/shadcn/carousel";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/avatar";
 import { SelectAvatar } from "@/server/data/services/user";
-import { Button } from "@/components/ui/base/button";
+import { Button } from "@/components/shadcn/button";
 import { useEffect, useState } from "react";
 import { Check, CheckCheck } from "lucide-react";
-import { AvatarSkeleton } from "@/components/ui/page/skeleton/avatar-skeleton";
+import { AvatarSkeleton } from "@/components/page/skeleton/avatar-skeleton";
+import { cn } from "@/lib/ui/generic";
 
-export interface ControlledSelectAvatarProps {
+/**
+ * Carousel-based selector of a user avatar image from the app's predefined options.
+ *
+ * @param props Component properties.
+ * @param props.avatars List of available avatars for this selection.
+ * @param props.avatarIndex Index of the user's current avatar in the provided array of avatars.
+ * @param props.onAvatarChange Avatar change callback, receives the index of the newly selected avatar.
+ * @param props.className Custom classes.
+ * @param props.id HTML ID for the carousel element.
+ * @returns The component.
+ */
+export function ControlledSelectAvatar({
+    avatars,
+    avatarIndex,
+    onAvatarChange,
+    className,
+    id,
+}: {
     avatarIndex: number;
-    onAvatarIndexChange: (id: number) => void;
+    onAvatarChange: (index: number) => void;
     avatars: SelectAvatar[];
     className?: string;
     id?: string;
-}
-
-/**
- * Carousel-based selector of a user avatar image from the app's predefiend options.
- *
- * @param avatarIndex Index of the user's current avatar in the provided array of avatars.
- * @param onAvatarIndexChange Callback to handle selection of a new avatar.
- * @param avatars List of available avatars for this selection.
- * @param className Custom classes.
- * @param id ID to assign to the carousel element.
- */
-export function ControlledSelectAvatar({
-    avatarIndex,
-    onAvatarIndexChange,
-    avatars,
-    className,
-    id,
-}: ControlledSelectAvatarProps) {
+}) {
     const [api, setApi] = useState<CarouselApi>();
     const [currentSnap, setCurrentSnap] = useState<number>(avatarIndex);
 
@@ -97,10 +97,7 @@ export function ControlledSelectAvatar({
                     <CheckCheck aria-label={"Selected icon"} />
                 </Button>
             ) : (
-                <Button
-                    className={"w-full sm:w-1/2"}
-                    onClick={() => onAvatarIndexChange(currentSnap)}
-                >
+                <Button className={"w-full sm:w-1/2"} onClick={() => onAvatarChange(currentSnap)}>
                     <span>Select</span>
                     <Check aria-label={"Select icon"} />
                 </Button>

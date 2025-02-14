@@ -7,9 +7,9 @@ import {
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent,
-} from "@/components/ui/base/chart";
-import { TitledCard } from "@/components/ui/titled-card";
-import { DailyReviewsEntry } from "@/lib/statistics";
+} from "@/components/shadcn/chart";
+import { TitledCard } from "@/components/titled-card";
+import { DailyReviewsEntry } from "@/lib/utils/statistics";
 
 const chartConfig = {
     reviews: {
@@ -18,17 +18,30 @@ const chartConfig = {
     },
 } satisfies ChartConfig;
 
-export interface DailyReviewsChartProps {
+/**
+ * UI card with a vertical bar chart showing numbers of reviews for specific dates.
+ *
+ * @param props Component properties.
+ * @param props.data Chart data.
+ * @param props.title Card title.
+ * @param props.retrospect Whether the chart starts in some moment in the past and ends on the current date. If true,
+ * the chart will prioritize showing a date label for the rightmost date. If false or unspecified, the chart will
+ * prioritize showing a label for the leftmost date instead (since that date will be considered the current date).
+ * @returns The component.
+ */
+export function DailyReviewsCard({
+    data,
+    title,
+    retrospect,
+}: {
     data: DailyReviewsEntry[];
-    label: string;
+    title: string;
     retrospect?: boolean;
-}
-
-export function DailyReviewsCard({ data, label, retrospect }: DailyReviewsChartProps) {
+}) {
     const total = data.reduce((acc, curr) => acc + curr.reviews, 0);
 
     return (
-        <TitledCard title={label}>
+        <TitledCard title={title}>
             <div className={"flex flex-col items-center gap-6"}>
                 <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
                     <BarChart

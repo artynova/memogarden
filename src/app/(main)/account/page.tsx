@@ -3,6 +3,11 @@ import { AccountPage } from "@/app/(main)/account/components/account-page";
 
 import { getUserOrRedirectSC } from "@/server/auth";
 
+/**
+ * Account settings page.
+ *
+ * @returns The component.
+ */
 export default async function Page() {
     const user = await getUserOrRedirectSC();
     const usesCredentials = await isCredentialsUser(user.id);

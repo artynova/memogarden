@@ -1,17 +1,27 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ControlledSelect } from "@/components/ui/controlled-select";
-import { SelectOption } from "@/lib/ui";
+import { ControlledSelect } from "@/components/controlled-select";
+
+import { SelectOption } from "@/lib/utils/input";
 
 const NO_DECK_FILTER_OPTION = "any";
 
-export interface StatisticsDeckSelectProps {
+/**
+ * Deck selector for the statistics page.
+ *
+ * @param props Component properties.
+ * @param props.deckId Current deck ID (or `null`).
+ * @param props.deckOptions Available deck options.
+ * @returns The component.
+ */
+export function StatisticsDeckSelect({
+    deckId,
+    deckOptions,
+}: {
     deckId: string | null;
     deckOptions: SelectOption[];
-}
-
-export function StatisticsDeckSelect({ deckId, deckOptions }: StatisticsDeckSelectProps) {
+}) {
     const router = useRouter();
 
     return (

@@ -25,9 +25,15 @@ const config = [
             "**/*.log",
             "docs",
             "**/.*",
+            "src/components/shadcn",
         ],
     },
-    ...compat.extends("next/core-web-vitals", "plugin:tailwindcss/recommended", "prettier"),
+    ...compat.extends(
+        "next/core-web-vitals",
+        "plugin:tailwindcss/recommended",
+        "prettier",
+        "plugin:jsdoc/recommended-typescript",
+    ),
     {
         plugins: {
             "@typescript-eslint": typescriptEslint,
@@ -41,6 +47,40 @@ const config = [
         rules: {
             "tailwindcss/classnames-order": "off",
             "@typescript-eslint/no-unused-vars": ["error", { ignoreRestSiblings: true }],
+            "jsdoc/require-jsdoc": [
+                "warn",
+                {
+                    contexts: [
+                        "TSTypeAliasDeclaration",
+                        "TSInterfaceDeclaration",
+                        "TSMethodSignature",
+                        "TSPropertySignature",
+                        "VariableDeclaration",
+                    ],
+                    publicOnly: { ancestorsOnly: true },
+                    require: {
+                        FunctionDeclaration: true,
+                        MethodDefinition: true,
+                        ArrowFunctionExpression: true,
+                    },
+                    exemptEmptyConstructors: true,
+                },
+            ],
+            "jsdoc/require-param": "warn",
+            "jsdoc/require-returns": "warn",
+            "jsdoc/require-description": "warn",
+            "jsdoc/check-tag-names": "warn",
+            "jsdoc/require-param-description": "warn",
+            "jsdoc/require-returns-description": "warn",
+            "jsdoc/require-param-type": "off",
+            "jsdoc/require-returns-type": "off",
+            "jsdoc/tag-lines": [
+                "warn",
+                "never",
+                {
+                    startLines: 1,
+                },
+            ],
         },
     },
     ...compat
@@ -63,7 +103,7 @@ const config = [
             parserOptions: {
                 project: ["./tsconfig.json"],
                 projectService: true,
-                tsconfigRootDir: "C:\\Code\\uni\\pjwd\\memogarden",
+                tsconfigRootDir: "./",
             },
         },
 

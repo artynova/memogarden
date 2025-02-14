@@ -4,12 +4,16 @@ import { getCardDataView, isCardAccessible } from "@/server/data/services/card";
 import { CardPage } from "@/app/(main)/card/[id]/components/card-page";
 
 import { getUserOrRedirectSC } from "@/server/auth";
+import { ResourceSpecificPageProps } from "@/lib/utils/server";
 
-export interface PageProps {
-    params: Promise<{ id: string }>;
-}
-
-export default async function Page({ params }: PageProps) {
+/**
+ * Individual card page.
+ *
+ * @param props Component properties.
+ * @param props.params Path parameters with the "id" parameter.
+ * @returns The component.
+ */
+export default async function Page({ params }: ResourceSpecificPageProps) {
     const { id } = await params;
     const user = await getUserOrRedirectSC();
     const accessible = await isCardAccessible(user.id, id);

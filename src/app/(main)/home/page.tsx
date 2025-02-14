@@ -1,9 +1,14 @@
 import { getAllRemaining, getDecksPreview } from "@/server/data/services/deck";
-import { getUserDayEnd } from "@/lib/server-utils";
 import { HomePage } from "@/app/(main)/home/components/home-page";
 
 import { getUserOrRedirectSC } from "@/server/auth";
+import { getUserDayEnd } from "@/lib/utils/generic";
 
+/**
+ * App home page with a dashboard showing an overview of the user's card collection.
+ *
+ * @returns The component.
+ */
 export default async function Page() {
     const user = await getUserOrRedirectSC();
     const now = new Date();

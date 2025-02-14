@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// Auth.js URL does not need to be parametrized via env files because it always runs on the same server as the main app
 process.env["AUTH_URL"] = `http://localhost:${process.env.PORT ?? 3000}`;
 
 const envSchema = z.object({

@@ -1,35 +1,47 @@
 "use client";
 
-import { FooterActionData } from "@/components/ui/page/template/footer";
+import { FooterActionData } from "@/components/page/template/footer";
 import { Folder, Pencil, Trash } from "lucide-react";
-import { ignoreAsyncFnResult } from "@/lib/utils";
-import { PageTemplate } from "@/components/ui/page/template/page-template";
+import { ignoreAsyncFnResult } from "@/lib/utils/generic";
+import { PageTemplate } from "@/components/page/template/page-template";
 import { useRouter } from "next/navigation";
 import { SelectUser } from "@/server/data/services/user";
 import { useState } from "react";
-import { ModifyCardData } from "@/lib/validation-schemas";
-import { deleteCard, updateCard } from "@/server/actions/card";
-import { CardForm } from "@/components/ui/modal/card-form";
-import { SelectOption } from "@/lib/ui";
+import { ModifyCardData } from "@/server/actions/card/schemas";
+import { deleteCard, updateCard } from "@/server/actions/card/actions";
+import { CardForm } from "@/components/resource/card-form";
 import {
     ControlledModalCollection,
     ModalData,
-} from "@/components/ui/modal/controlled-modal-collection";
+} from "@/components/modal/controlled-modal-collection";
 import { SelectCardDataView } from "@/server/data/services/card";
-import { MaturityBar } from "@/components/ui/resource-state/maturity-bar";
-import { getCardMaturity } from "@/lib/spaced-repetition";
-import { ContentWrapper } from "@/components/ui/page/template/content-wrapper";
-import { CardHealthBar } from "@/components/ui/resource-state/card-health-bar";
-import { CardCard } from "@/components/ui/card-card";
-import { ConfirmationPrompt } from "@/components/ui/modal/confirmation-prompt";
+import { MaturityBar } from "@/components/resource/bars/maturity-bar";
+import { getCardMaturity } from "@/lib/ui/maturity";
+import { ContentWrapper } from "@/components/page/content-wrapper";
+import { CardHealthBarWithLabel } from "@/components/resource/bars/card-health-bar-with-label";
+import { CardCard } from "@/components/resource/card-card";
+import { ConfirmationPrompt } from "@/components/confirmation-prompt";
+import { SelectOption } from "@/lib/utils/input";
+import removeMd from "remove-markdown";
 
-export interface CardPageProps {
+/**
+ * Client part of the individual card page.
+ *
+ * @param props Component properties.
+ * @param props.user User data.
+ * @param props.card Card data.
+ * @param props.deckOptions Options for the card deck selection field.
+ * @returns The component.
+ */
+export function CardPage({
+    user,
+    card,
+    deckOptions,
+}: {
     user: SelectUser;
     card: SelectCardDataView;
     deckOptions: SelectOption[];
-}
-
-export function CardPage({ user, card, deckOptions }: CardPageProps) {
+}) {
     const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(null); // null value means that no modal is open
     const router = useRouter();
 
@@ -89,9 +101,9 @@ export function CardPage({ user, card, deckOptions }: CardPageProps) {
     ];
 
     return (
-        <PageTemplate title={card.front} user={user} footerActions={footerActions}>
+        <PageTemplate title={removeMd(card.front)} user={user} footerActions={footerActions}>
             <ContentWrapper>
-                <CardHealthBar
+                <CardHealthBarWithLabel
                     retrievability={card.retrievability}
                     due={card.due}
                     timezone={user.timezone}

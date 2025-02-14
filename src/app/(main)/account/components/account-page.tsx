@@ -3,32 +3,44 @@
 import { SelectAvatar, SelectUser } from "@/server/data/services/user";
 import { ControlledSelectTimezone } from "@/app/(main)/account/components/controlled-select-timezone";
 import { useState } from "react";
-import { PageTemplate } from "@/components/ui/page/template/page-template";
+import { PageTemplate } from "@/components/page/template/page-template";
 import {
     ControlledModalCollection,
     ModalData,
-} from "@/components/ui/modal/controlled-modal-collection";
+} from "@/components/modal/controlled-modal-collection";
 import { ChangePasswordForm } from "@/app/(main)/account/components/change-password-form";
-import { Button } from "@/components/ui/base/button";
-import { ContentWrapper } from "@/components/ui/page/template/content-wrapper";
-import { signOutEverywhere, updateUser } from "@/server/actions/user";
-import { ignoreAsyncFnResult } from "@/lib/utils";
+import { Button } from "@/components/shadcn/button";
+import { ContentWrapper } from "@/components/page/content-wrapper";
+import { signOutEverywhere, updateUser } from "@/server/actions/user/actions";
+import { ignoreAsyncFnResult } from "@/lib/utils/generic";
 import { Clock, SquareAsterisk, TriangleAlert } from "lucide-react";
 import { ControlledSelectAvatar } from "@/app/(main)/account/components/controlled-select-avatar";
 import { useRouter } from "next/navigation";
 import { ThemeDropdown } from "@/app/(main)/account/components/theme-dropdown";
-import { darkModeToTheme, Theme } from "@/lib/ui";
-import { ConfirmationPrompt } from "@/components/ui/modal/confirmation-prompt";
-import { TitledCard } from "@/components/ui/titled-card";
-import { Label } from "@/components/ui/base/label";
+import { ConfirmationPrompt } from "@/components/confirmation-prompt";
+import { TitledCard } from "@/components/titled-card";
+import { Label } from "@/components/shadcn/label";
+import { darkModeToTheme, Theme } from "@/lib/ui/theme";
 
-export interface AccountPageProps {
+/**
+ * Client part of the account page.
+ *
+ * @param props Component properties.
+ * @param props.user General user data.
+ * @param props.usesCredentials Whether the user is credentials-authenticated and, as such, whether their account has
+ * an associated password that may be changed from this page.
+ * @param props.avatars Possible avatar selection options.
+ * @returns The component.
+ */
+export function AccountPage({
+    user,
+    usesCredentials,
+    avatars,
+}: {
     user: SelectUser;
     usesCredentials: boolean;
     avatars: SelectAvatar[];
-}
-
-export function AccountPage({ user, usesCredentials, avatars }: AccountPageProps) {
+}) {
     const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(null);
     const router = useRouter();
     const inferredTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -89,9 +101,9 @@ export function AccountPage({ user, usesCredentials, avatars }: AccountPageProps
                         <div className={"space-y-3"}>
                             <Label htmlFor={"select-avatar"}>Avatar:</Label>
                             <ControlledSelectAvatar
-                                avatarIndex={user.avatarId}
-                                onAvatarIndexChange={ignoreAsyncFnResult(onAvatarChange)}
                                 avatars={avatars}
+                                avatarIndex={user.avatarId}
+                                onAvatarChange={ignoreAsyncFnResult(onAvatarChange)}
                                 id={"select-avatar"}
                             />
                         </div>

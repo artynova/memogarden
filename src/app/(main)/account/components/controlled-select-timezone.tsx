@@ -1,17 +1,27 @@
 "use client";
 
-import { ControlledSelect, ControlledSelectProps } from "@/components/ui/controlled-select";
+import { ControlledSelect } from "@/components/controlled-select";
 import { useTimezoneSelect } from "react-timezone-select";
+import { ComponentProps } from "react";
 
-export type ControlledSelectTimezoneProps = Omit<ControlledSelectProps, "options">; // Options in this case are predefined
-
+/**
+ * Supported timezones.
+ */
 const timezones = Object.fromEntries(
     Intl.supportedValuesOf("timeZone")
         .filter((value) => value !== "UTC" && !value.startsWith("Etc/"))
         .map((value) => [value, value.replaceAll("_", " ").replaceAll("/", " / ")]),
 );
 
-export function ControlledSelectTimezone(props: ControlledSelectTimezoneProps) {
+/**
+ * Dropdown timezone selector based on {@link ControlledSelect}.
+ *
+ * @param props Component properties.
+ * @returns The component.
+ */
+export function ControlledSelectTimezone(
+    props: Omit<ComponentProps<typeof ControlledSelect>, "options">,
+) {
     const { options } = useTimezoneSelect({ labelStyle: "original", timezones });
     return <ControlledSelect {...props} options={options} />;
 }

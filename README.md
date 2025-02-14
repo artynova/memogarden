@@ -26,7 +26,7 @@ users.
 - React
 - Next.js
 - Tailwind CSS
-- ShadcnUI (components imported from its collection are located at `src/components/ui/base`)
+- ShadcnUI (components imported from its collection are located inside `src/components/ui/shadcn`)
 - Drizzle ORM
 - PostgreSQL
 

@@ -1,16 +1,16 @@
 // Strictly client component
 
-import { Button } from "@/components/ui/base/button";
-import { changePassword } from "@/server/actions/user";
-import { Form } from "@/components/ui/base/form";
+import { Button } from "@/components/shadcn/button";
+import { changePassword } from "@/server/actions/user/actions";
+import { Form } from "@/components/shadcn/form";
 import { useForm, UseFormProps } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChangePasswordData, ChangePasswordSchema } from "@/lib/validation-schemas";
-import { FormInput } from "@/components/ui/form/form-input";
+import { FormInput } from "@/components/form/form-input";
 import React from "react";
-import { ignoreAsyncFnResult } from "@/lib/utils";
+import { ignoreAsyncFnResult } from "@/lib/utils/generic";
 import { ResponseUnauthorized } from "@/lib/responses";
 import { Check, X } from "lucide-react";
+import { ChangePasswordData, ChangePasswordSchema } from "@/server/actions/user/schemas";
 
 const formConfig: UseFormProps<ChangePasswordData> = {
     mode: "onBlur" as const,
@@ -22,11 +22,14 @@ const formConfig: UseFormProps<ChangePasswordData> = {
     },
 };
 
-export interface ChangePasswordFormProps {
-    onCancel: () => void;
-}
-
-export function ChangePasswordForm({ onCancel }: ChangePasswordFormProps) {
+/**
+ * Password change form.
+ *
+ * @param props Component properties.
+ * @param props.onCancel Cancellation callback.
+ * @returns The component.
+ */
+export function ChangePasswordForm({ onCancel }: { onCancel: () => void }) {
     const form = useForm<ChangePasswordData>(formConfig);
 
     async function onSubmit(data: ChangePasswordData) {

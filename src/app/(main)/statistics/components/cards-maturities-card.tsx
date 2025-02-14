@@ -6,14 +6,16 @@ import {
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent,
-} from "@/components/ui/base/chart";
-import { cardMaturities, CardMaturity } from "@/lib/spaced-repetition";
+} from "@/components/shadcn/chart";
+import { cardMaturities } from "@/lib/ui/maturity";
 import * as React from "react";
-import { TitledCard } from "@/components/ui/titled-card";
-import { MaturityCountsEntry } from "@/lib/statistics";
+import { TitledCard } from "@/components/titled-card";
+import { MaturityCountsEntry } from "@/lib/utils/statistics";
+
+import { CardMaturity } from "@/lib/enums";
 
 const chartConfig = {
-    count: {
+    cards: {
         color: "hsl(var(--chart-1))",
         label: "Cards",
     },
@@ -22,17 +24,20 @@ const chartConfig = {
     },
 } satisfies ChartConfig;
 
-export interface CardsMaturitiesChartProps {
-    maturityCounts: MaturityCountsEntry[];
-}
-
-export function CardsMaturitiesCard({ maturityCounts }: CardsMaturitiesChartProps) {
+/**
+ * UI card with a horizontal flashcard maturity counts bar chart.
+ *
+ * @param props Component properties.
+ * @param props.data Chart data.
+ * @returns The component.
+ */
+export function CardsMaturitiesCard({ data }: { data: MaturityCountsEntry[] }) {
     return (
         <TitledCard title={"Card maturities"}>
             <ChartContainer config={chartConfig} className={"max-h-[300px] min-h-[100px] w-full"}>
                 <BarChart
                     accessibilityLayer
-                    data={maturityCounts}
+                    data={data}
                     layout="vertical"
                     margin={{
                         left: 72,
@@ -48,18 +53,21 @@ export function CardsMaturitiesCard({ maturityCounts }: CardsMaturitiesChartProp
                         axisLine={false}
                         hide
                     />
-                    <XAxis dataKey="count" type="number" hide />
+                    <XAxis dataKey="cards" type="number" hide />
                     <ChartTooltip
                         cursor={false}
                         content={
                             <ChartTooltipContent
                                 indicator="line"
-                                nameKey="count"
-                                labelFormatter={(value: CardMaturity) => cardMaturities[value].name}
+                                labelFormatter={(_value, payload) => {
+                                    return cardMaturities[
+                                        (payload[0].payload as MaturityCountsEntry).maturity
+                                    ].name;
+                                }}
                             />
                         }
                     />
-                    <Bar dataKey="count" layout="vertical" fill="var(--color-count)" radius={4}>
+                    <Bar dataKey="cards" layout="vertical" fill="var(--color-cards)" radius={4}>
                         <LabelList
                             dataKey="maturity"
                             position="left"
@@ -69,7 +77,7 @@ export function CardsMaturitiesCard({ maturityCounts }: CardsMaturitiesChartProp
                             formatter={(value: CardMaturity) => cardMaturities[value].name}
                         />
                         <LabelList
-                            dataKey="count"
+                            dataKey="cards"
                             position="right"
                             offset={8}
                             fontSize={16}

@@ -1,5 +1,10 @@
-import { PageSkeleton } from "@/components/ui/page/skeleton/page-skeleton";
+import { PageSkeleton } from "@/components/page/skeleton/page-skeleton";
 
+/**
+ * Loading skeleton for the route. Hides the home button.
+ *
+ * @returns The component.
+ */
 export default function Loading() {
     return <PageSkeleton hideHomeButton />;
 }

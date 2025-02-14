@@ -1,33 +1,46 @@
 "use client";
 
-import { FooterActionData, PageTemplate } from "@/components/ui/page/template/page-template";
-import { RemainingCardsGrid } from "@/components/ui/aggregate/remaining-cards-grid";
+import { FooterActionData, PageTemplate } from "@/components/page/template/page-template";
+import { RemainingCardsGrid } from "@/components/resource/remaining-cards-grid";
 import { DeckListCard } from "@/app/(main)/home/components/deck-list-card";
 import { CardsRemaining, DeckPreview } from "@/server/data/services/deck";
 import { SelectUser } from "@/server/data/services/user";
 import { FolderPlus, Search, SquarePlus } from "lucide-react";
 import { useState } from "react";
-import { DeckForm } from "@/components/ui/modal/deck-form";
+import { DeckForm } from "@/components/resource/deck-form";
 import { useRouter } from "next/navigation";
-import { ModifyCardData, ModifyDeckData } from "@/lib/validation-schemas";
-import { createNewDeck } from "@/server/actions/deck";
-import { ignoreAsyncFnResult } from "@/lib/utils";
-import { CardForm } from "@/components/ui/modal/card-form";
-import { createNewCard } from "@/server/actions/card";
-import { SelectOption } from "@/lib/ui";
+import { ModifyCardData } from "@/server/actions/card/schemas";
+import { createNewDeck } from "@/server/actions/deck/actions";
+import { ignoreAsyncFnResult } from "@/lib/utils/generic";
+import { CardForm } from "@/components/resource/card-form";
+import { createNewCard } from "@/server/actions/card/actions";
 import {
     ControlledModalCollection,
     ModalData,
-} from "@/components/ui/modal/controlled-modal-collection";
-import { ContentWrapper } from "@/components/ui/page/template/content-wrapper";
+} from "@/components/modal/controlled-modal-collection";
+import { ContentWrapper } from "@/components/page/content-wrapper";
+import { ModifyDeckData } from "@/server/actions/deck/schemas";
 
-export interface HomePageProps {
+import { SelectOption } from "@/lib/utils/input";
+
+/**
+ * Client part of the home page.
+ *
+ * @param props Component properties.
+ * @param props.user User data.
+ * @param props.summary Overall collection card summary.
+ * @param props.decks Previews for all collection decks.
+ * @returns The component.
+ */
+export function HomePage({
+    user,
+    summary,
+    decks,
+}: {
     user: SelectUser;
     summary: CardsRemaining;
     decks: DeckPreview[];
-}
-
-export function HomePage({ user, summary, decks }: HomePageProps) {
+}) {
     const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(null); // null value means that no modal is open
     const router = useRouter();
 

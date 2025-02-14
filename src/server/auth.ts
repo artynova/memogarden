@@ -9,12 +9,12 @@ import {
     maybeSyncUserHealth,
     usesSupportedOAuth,
 } from "@/server/data/services/user";
-import { CredentialsSigninSchema } from "@/lib/validation-schemas";
 import bcrypt from "bcrypt";
 import "next-auth/jwt";
-import { signout } from "@/server/actions/user";
+import { signout } from "@/server/actions/user/actions";
 import { redirect } from "next/navigation";
 import { AUTO_SIGNOUT } from "@/lib/routes";
+import { CredentialsSigninSchema } from "@/server/actions/user/schemas";
 
 declare module "next-auth/jwt" {
     interface JWT {
@@ -30,6 +30,9 @@ declare module "next-auth" {
     }
 }
 
+/**
+ * Auth.js config.
+ */
 export const authConfig: NextAuthConfig = {
     pages: {
         signIn: "/signin",
@@ -53,36 +56,50 @@ export const authConfig: NextAuthConfig = {
         FacebookProvider,
     ],
     callbacks: {
-        // Adds the user's internal ID to the token
         async jwt({ user, profile, account, token }) {
             if (!user) return token; // Handle subsequent calls after sign-in, when the user data is no longer accessible
-            if (!usesSupportedOAuth(account)) return { ...token, id: user.id }; // Case when the user uses credentials
+            if (!usesSupportedOAuth(account)) return { ...token, id: user.id }; // Case when the user uses credentials, the ID is already attached to the user object by the authorization process
             const internalId = await getOrCreateIdFromOAuth(account, profile!);
             return { ...token, id: internalId };
         },
 
-        // Adds the user's internal ID to the session user object
         session({ session, token }) {
             return { ...session, user: { ...session.user, id: token.id, tokenIat: token.iat } };
         },
     },
 };
 
+/**
+ * Auth.js setup results.
+ */
 export const {
+    /**
+     * Auth.js route handlers.
+     */
     handlers: { GET, POST },
+    /**
+     * Auth.js authentication function for server and edge.
+     */
     auth,
+    /**
+     * Auth.js server-side sign-in function.
+     */
     signIn,
+    /**
+     * Auth.js server-side sign-out function.
+     */
     signOut,
 } = NextAuth(authConfig);
 
 /**
- * If the current session is valid, synchronizes the health of the associated user and returns the updated user data.
- * Otherwise, redirects to the sign-in page (which is done by throwing an exception and interrupting the flow).
+ * If the current session is valid, synchronizes the health of the associated user and returns the
+ * updated user data. Otherwise, redirects to the automatic sign-out page (which is done by
+ * throwing an exception and interrupting the flow).
  *
- * This version of the method is meant for Server Components, which cannot modify cookies and need to rely on an
- * intermediate page.
+ * This version of the method is meant for Server Components, which cannot modify cookies and need
+ * to rely on the intermediate sign-out page to destroy any invalid cookies.
  *
- * @return User data after synchronization.
+ * @returns User data after synchronization.
  */
 export async function getUserOrRedirectSC() {
     const { id, tokenIat } = (await auth())?.user ?? {};
@@ -94,17 +111,22 @@ export async function getUserOrRedirectSC() {
     return syncHappened ? (await getUser(id!))! : user!; // Re-fetch the user only if the sync did occur
 }
 
+/**
+ * Redirects to the automatic sign-out route, allowing to trigger sign-out from Server Components.
+ */
 function signoutSC() {
     redirect(AUTO_SIGNOUT);
 }
 
 /**
- * If the current session is valid, synchronizes the health of the associated user and returns the updated user data.
- * Otherwise, redirects to the sign-in page (which is done by throwing an exception and interrupting the flow).
+ * If the current session is valid, synchronizes the health of the associated user and returns the
+ * updated user data. Otherwise, destroys any session cookies and redirects to the sign-in page
+ * (which is done by throwing an exception and interrupting the flow).
  *
- * This works in any server context where cookies can be modified, but does not work in Server Components.
+ * This works in any server context where cookies can be modified, but does not work in
+ * Server Components.
  *
- * @return User data after synchronization.
+ * @returns User data after synchronization.
  * @see getUserOrRedirectSC
  */
 export async function getUserOrRedirect() {
@@ -118,12 +140,14 @@ export async function getUserOrRedirect() {
 }
 
 /**
- * If the current session is valid, synchronizes the health of the associated user and returns just the ID of the user.
- * Otherwise, redirects to the sign-in page (which is done by throwing an exception and interrupting the flow).
+ * If the current session is valid, synchronizes the health of the associated user and returns just
+ * the user's ID. Otherwise, destroys any session cookies and redirects to the sign-in page (which
+ * is done by throwing an exception and interrupting the flow).
  *
- * This is a convenience wrapper for {@link getUserOrRedirectSC} that is for cases when only an ID is needed.
+ * This is a convenience wrapper for {@link getUserOrRedirect} that is for cases when only the ID
+ * is needed.
  *
- * @return User's ID.
+ * @returns User's ID.
  */
 export async function getUserIdOrRedirect() {
     return (await getUserOrRedirect()).id;

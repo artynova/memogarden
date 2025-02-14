@@ -1,21 +1,19 @@
-// Strictly client component, does not have the "use client" directive because a callback needs to be passed to it
+// Strictly client component
 
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from "@/components/ui/base/dropdown-menu";
-import { Button } from "@/components/ui/base/button";
+} from "@/components/shadcn/dropdown-menu";
+import { Button } from "@/components/shadcn/button";
 import { Moon, Sun, SunMoon } from "lucide-react";
-import { Theme } from "@/lib/ui";
 
-export interface ThemeDropdownProps {
-    theme: Theme;
-    onThemeChange: (theme: Theme) => void;
-    id?: string;
-}
+import { Theme } from "@/lib/ui/theme";
 
+/**
+ * Mapping of themes to labels in the theme select dropdown.
+ */
 const themeToLabel = {
     light: (
         <>
@@ -37,7 +35,24 @@ const themeToLabel = {
     ),
 };
 
-export function ThemeDropdown({ theme, onThemeChange, id }: ThemeDropdownProps) {
+/**
+ * Dropdown color theme selector.
+ *
+ * @param props Component properties.
+ * @param props.theme Current theme.
+ * @param props.onThemeChange Theme change callback.
+ * @param props.id HTML ID for the trigger button.
+ * @returns The component.
+ */
+export function ThemeDropdown({
+    theme,
+    onThemeChange,
+    id,
+}: {
+    theme: Theme;
+    onThemeChange: (theme: Theme) => void;
+    id?: string;
+}) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger className={"w-full"} id={id} asChild>

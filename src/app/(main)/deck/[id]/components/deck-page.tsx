@@ -1,38 +1,52 @@
 "use client";
 
-import { FooterActionData } from "@/components/ui/page/template/footer";
+import { FooterActionData } from "@/components/page/template/footer";
 import { Check, ChevronsRight, Pencil, SquarePlus, SquareStack, Trash } from "lucide-react";
-import { ignoreAsyncFnResult } from "@/lib/utils";
-import { deleteDeck, updateDeck } from "@/server/actions/deck";
+import { ignoreAsyncFnResult } from "@/lib/utils/generic";
+import { deleteDeck, updateDeck } from "@/server/actions/deck/actions";
 import { HOME } from "@/lib/routes";
-import { PageTemplate } from "@/components/ui/page/template/page-template";
-import { RemainingCardsGrid } from "@/components/ui/aggregate/remaining-cards-grid";
-import { Button } from "@/components/ui/base/button";
+import { PageTemplate } from "@/components/page/template/page-template";
+import { RemainingCardsGrid } from "@/components/resource/remaining-cards-grid";
+import { Button } from "@/components/shadcn/button";
 import Link from "next/link";
 import { DeckPreview } from "@/server/data/services/deck";
 import { useRouter } from "next/navigation";
 import { SelectUser } from "@/server/data/services/user";
 import { useState } from "react";
-import { DeckForm } from "@/components/ui/modal/deck-form";
-import { ModifyCardData, ModifyDeckData } from "@/lib/validation-schemas";
-import { createNewCard } from "@/server/actions/card";
-import { CardForm } from "@/components/ui/modal/card-form";
-import { SelectOption } from "@/lib/ui";
+import { DeckForm } from "@/components/resource/deck-form";
+import { ModifyCardData } from "@/server/actions/card/schemas";
+import { createNewCard } from "@/server/actions/card/actions";
+import { CardForm } from "@/components/resource/card-form";
 import {
     ControlledModalCollection,
     ModalData,
-} from "@/components/ui/modal/controlled-modal-collection";
-import { DeckHealthBar } from "@/components/ui/resource-state/deck-health-bar";
-import { ConfirmationPrompt } from "@/components/ui/modal/confirmation-prompt";
-import { ContentWrapper } from "@/components/ui/page/template/content-wrapper";
+} from "@/components/modal/controlled-modal-collection";
+import { DeckHealthBarWithLabel } from "@/components/resource/bars/deck-health-bar-with-label";
+import { ConfirmationPrompt } from "@/components/confirmation-prompt";
+import { ContentWrapper } from "@/components/page/content-wrapper";
+import { ModifyDeckData } from "@/server/actions/deck/schemas";
 
-export interface DeckPageProps {
+import { SelectOption } from "@/lib/utils/input";
+
+/**
+ * Client part of the individual deck page.
+ *
+ * @param props Component properties.
+ * @param props.user User data.
+ * @param props.preview Deck preview data.
+ * @param props.deckOptions Options for the card deck selection field (when opening the card creation modal from this
+ * page).
+ * @returns The component.
+ */
+export function DeckPage({
+    user,
+    preview,
+    deckOptions,
+}: {
     user: SelectUser;
     preview: DeckPreview;
     deckOptions: SelectOption[];
-}
-
-export function DeckPage({ user, preview, deckOptions }: DeckPageProps) {
+}) {
     const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(null); // null value means that no modal is open
     const router = useRouter();
 
@@ -122,7 +136,7 @@ export function DeckPage({ user, preview, deckOptions }: DeckPageProps) {
         <PageTemplate title={deck.name} user={user} footerActions={footerActions}>
             <ContentWrapper variant={"compact"}>
                 <RemainingCardsGrid remaining={remaining} className={"px-6"} />
-                <DeckHealthBar retrievability={deck.retrievability} withBarText />
+                <DeckHealthBarWithLabel retrievability={deck.retrievability} withBarText />
                 <Button
                     asChild
                     disabled={revisionCleared}
@@ -136,9 +150,9 @@ export function DeckPage({ user, preview, deckOptions }: DeckPageProps) {
                             <Check aria-label={"Revision cleared icon"} />
                         </button>
                     ) : (
-                        <Link href={`/deck/${encodeURIComponent(deck.id)}/revise`}>
-                            <span className={"font-bold"}>Revise</span>
-                            <ChevronsRight aria-label={"Revise icon"} />
+                        <Link href={`/deck/${encodeURIComponent(deck.id)}/review`}>
+                            <span className={"font-bold"}>Review</span>
+                            <ChevronsRight aria-label={"Review icon"} />
                         </Link>
                     )}
                 </Button>

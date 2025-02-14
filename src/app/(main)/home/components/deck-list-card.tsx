@@ -1,20 +1,23 @@
 import { DeckPreview } from "@/server/data/services/deck";
-import { Card, CardContent, CardHeader } from "@/components/ui/base/card";
-import { Button } from "@/components/ui/base/button";
+import { Card, CardContent, CardHeader } from "@/components/shadcn/card";
+import { Button } from "@/components/shadcn/button";
 import { Check, ChevronsRight } from "lucide-react";
 import Link from "next/link";
-import { RemainingCardsGrid } from "@/components/ui/aggregate/remaining-cards-grid";
-import { LimitedTextSpan } from "@/components/ui/limited-text-span";
-import { DeckHealthBar } from "@/components/ui/resource-state/deck-health-bar";
+import { RemainingCardsGrid } from "@/components/resource/remaining-cards-grid";
+import { LimitedTextSpan } from "@/components/limited-text-span";
+import { DeckHealthBarWithLabel } from "@/components/resource/bars/deck-health-bar-with-label";
 
 const MAX_DECK_NAME_LENGTH = 30;
 const MAX_DECK_NAME_LENGTH_MOBILE = 15;
 
-export interface DeckListCardProps {
-    preview: DeckPreview;
-}
-
-export function DeckListCard({ preview }: DeckListCardProps) {
+/**
+ * Single deck card in the home page dashboard.
+ *
+ * @param props Component properties.
+ * @param props.preview Deck preview data.
+ * @returns The component.
+ */
+export function DeckListCard({ preview }: { preview: DeckPreview }) {
     const { deck, remaining } = preview;
     const revisionCleared =
         remaining.new === 0 && remaining.learning === 0 && remaining.review === 0;
@@ -32,7 +35,7 @@ export function DeckListCard({ preview }: DeckListCardProps) {
                 </CardHeader>
                 <CardContent className={"space-y-4"}>
                     <RemainingCardsGrid remaining={remaining} />
-                    <DeckHealthBar retrievability={deck.retrievability} withBarText />
+                    <DeckHealthBarWithLabel retrievability={deck.retrievability} withBarText />
                 </CardContent>
             </Link>
             <Button
@@ -49,9 +52,9 @@ export function DeckListCard({ preview }: DeckListCardProps) {
                         <Check aria-label={"Revision cleared icon"} />
                     </button>
                 ) : (
-                    <Link href={`/deck/${deck.id}/revise`}>
-                        <span className={"sr-only"}>Revise</span>
-                        <ChevronsRight aria-label={"Revise icon"} />
+                    <Link href={`/deck/${deck.id}/review`}>
+                        <span className={"sr-only"}>Review</span>
+                        <ChevronsRight aria-label={"Review icon"} />
                     </Link>
                 )}
             </Button>
