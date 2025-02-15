@@ -35,15 +35,16 @@ export function escapeRegex(input: string) {
 }
 
 /**
- * Trims a string down to a specific max character length.
+ * Trims a string down to a specific max character length, replacing the rest with an ellipsis at the end if allowed
+ * length is exceeded.
  *
  * @param text Text string.
- * @param maxLength Maximum allowed number of characters.
- * @returns String itself if it is within the character boundary, trimmed string with "..." after it
- * if it exceeds the allowed length.
+ * @param maxLength Maximum allowed number of characters in the final string (with or without the ellipsis).
+ * @returns String itself if it is up to `maxLength` characters, string trimmed down to `maxLength - 3` characters with
+ * "..." after it if the string is longer than `maxLength` characters.
  */
 export function getTrimmedText(text: string, maxLength: number) {
-    return text.length <= maxLength ? text : text.slice(0, maxLength) + "...";
+    return text.length <= maxLength ? text : text.slice(0, maxLength - 3) + "...";
 }
 
 /**
