@@ -12,7 +12,7 @@ import { Footer } from "@/app/(static)/(landing)/components/footer";
  */
 export default function Page() {
     return (
-        <ThemeProvider theme={"system"} doNotPersistTheme>
+        <ThemeProvider theme="system" doNotPersistTheme>
             <Header />
             <main>
                 <HeroSection />

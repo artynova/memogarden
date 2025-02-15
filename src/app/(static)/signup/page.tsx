@@ -11,17 +11,17 @@ import { TitledCard } from "@/components/titled-card";
  */
 export default function Page() {
     return (
-        <ThemeProvider theme={"system"} doNotPersistTheme>
+        <ThemeProvider theme="system" doNotPersistTheme>
             <main>
-                <ContentWrapper variant={"compact"} className={"min-h-screen"}>
+                <ContentWrapper variant="compact" className="min-h-screen">
                     <TitledCard
-                        title={"Sign up"}
-                        description={"Enter your credentials below to create an account."}
+                        title="Sign up"
+                        description="Enter your credentials below to create an account."
                     >
                         <div className="space-y-6">
                             <SignupForm />
                             <div className="mt-4 text-center text-sm">
-                                {"Already have an account? "}
+                                Already have an account?{" "}
                                 <Link href="/signin" className="underline">
                                     Sign in
                                 </Link>

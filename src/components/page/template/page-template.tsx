@@ -51,11 +51,11 @@ export function PageTemplate({
                     title={title}
                     user={user}
                     hideHomeButton={hideHomeButton}
-                    className={"sticky top-0 z-10 shrink-0"}
+                    className="sticky top-0 z-10 shrink-0"
                 />
                 <main className="grow">{children}</main>
                 {footerActions?.length && (
-                    <Footer actions={footerActions} className={"sticky bottom-0 z-10 shrink-0"} />
+                    <Footer actions={footerActions} className="sticky bottom-0 z-10 shrink-0" />
                 )}
             </div>
         </ThemeProvider>

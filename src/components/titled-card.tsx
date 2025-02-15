@@ -22,7 +22,7 @@ export function TitledCard({
     return (
         <Card>
             <CardHeader>
-                <h2 className={"text-center font-bold"}>{title}</h2>
+                <h2 className="text-center font-bold">{title}</h2>
                 {description && <CardDescription>{description}</CardDescription>}
             </CardHeader>
             <CardContent>{children}</CardContent>

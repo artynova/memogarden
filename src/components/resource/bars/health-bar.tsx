@@ -32,8 +32,8 @@ export function HealthBar({
     const frontColorClass = bgForegroundForHealth[state]; // No need to check whether the object has valid health because the progress bar is rendered as empty in that case, i.e., the front color is unused
     const backColorClass = bgForHealth[state];
     return (
-        <div className={"space-y-2"}>
-            {label && <div className={"text-center"}>{label}</div>}
+        <div className="space-y-2">
+            {label && <div className="text-center">{label}</div>}
             <div
                 className={cn(
                     "h-6 overflow-hidden rounded-full border-4 border-foreground",
@@ -47,7 +47,7 @@ export function HealthBar({
                 />
             </div>
             {withText && (
-                <div className={"flex justify-center"}>
+                <div className="flex justify-center">
                     <span>{`${nameForHealth[state]}, ${progress}%`}</span>
                 </div>
             )}

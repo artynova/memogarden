@@ -60,16 +60,16 @@ export function CardForm({
     return (
         <Form {...form}>
             <form
-                className={"space-y-3"}
+                className="space-y-3"
                 onSubmit={ignoreAsyncFnResult(form.handleSubmit(onSubmitInternal))}
             >
                 <FormSelect
                     control={form.control}
                     name="deckId"
                     options={deckOptions}
-                    placeholder={"Select a deck"}
+                    placeholder="Select a deck"
                     label="Deck"
-                    innerLabel={"Your decks"}
+                    innerLabel="Your decks"
                 />
                 <FormMarkdownInput
                     preview={preview}
@@ -86,19 +86,19 @@ export function CardForm({
                 <Toggle pressed={preview} onPressedChange={setPreview}>
                     <span>{preview ? "Disable preview" : "Enable preview"}</span>
                     {preview ? (
-                        <Pencil aria-label={"Disable preview icon"} />
+                        <Pencil aria-label="Disable preview icon" />
                     ) : (
-                        <BookOpen aria-label={"Enable preview icon"} />
+                        <BookOpen aria-label="Enable preview icon" />
                     )}
                 </Toggle>
-                <div className={"flex justify-center space-x-2"}>
-                    <Button size={"lg"}>
+                <div className="flex justify-center space-x-2">
+                    <Button size="lg">
                         <span>Save</span>
-                        <Check aria-label={"Save icon"} />
+                        <Check aria-label="Save icon" />
                     </Button>
-                    <Button size={"lg"} variant={"outline"} onClick={onCancel} type={"button"}>
+                    <Button size="lg" variant="outline" onClick={onCancel} type="button">
                         <span>Cancel</span>
-                        <X aria-label={"Cancel icon"} />
+                        <X aria-label="Cancel icon" />
                     </Button>
                 </div>
             </form>

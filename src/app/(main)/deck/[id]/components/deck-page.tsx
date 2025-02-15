@@ -134,25 +134,23 @@ export function DeckPage({
 
     return (
         <PageTemplate title={deck.name} user={user} footerActions={footerActions}>
-            <ContentWrapper variant={"compact"}>
-                <RemainingCardsGrid remaining={remaining} className={"px-6"} />
+            <ContentWrapper variant="compact">
+                <RemainingCardsGrid remaining={remaining} className="px-6" />
                 <DeckHealthBarWithLabel retrievability={deck.retrievability} withBarText />
                 <Button
                     asChild
                     disabled={revisionCleared}
-                    className={
-                        "flex h-24 w-full items-center justify-center space-x-2 rounded-3xl text-xl [&_svg]:size-10"
-                    }
+                    className="flex h-24 w-full items-center justify-center space-x-2 rounded-3xl text-xl [&_svg]:size-10"
                 >
                     {revisionCleared ? (
                         <button>
-                            <span className={"font-bold"}>Revision cleared</span>
-                            <Check aria-label={"Revision cleared icon"} />
+                            <span className="font-bold">Revision cleared</span>
+                            <Check aria-label="Revision cleared icon" />
                         </button>
                     ) : (
                         <Link href={`/deck/${encodeURIComponent(deck.id)}/review`}>
-                            <span className={"font-bold"}>Review</span>
-                            <ChevronsRight aria-label={"Review icon"} />
+                            <span className="font-bold">Review</span>
+                            <ChevronsRight aria-label="Review icon" />
                         </Link>
                     )}
                 </Button>

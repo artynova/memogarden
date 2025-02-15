@@ -25,8 +25,8 @@ export function AdaptiveMockup({
 }) {
     return (
         <div className={cn("w-full", className)}>
-            <MobileMockup image={imageMobile} className={"block sm:hidden"} />
-            <DesktopMockup image={image} className={"hidden sm:block"} />
+            <MobileMockup image={imageMobile} className="block sm:hidden" />
+            <DesktopMockup image={image} className="hidden sm:block" />
         </div>
     );
 }

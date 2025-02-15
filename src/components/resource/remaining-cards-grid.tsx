@@ -48,7 +48,7 @@ export function RemainingCardsGrid({
         >
             {remainingArray.map((data) => (
                 <Fragment key={data.name}>
-                    <span className={"font-bold sm:text-center"}>{data.name}</span>
+                    <span className="font-bold sm:text-center">{data.name}</span>
                     <span className={cn(data.textColorClass, "text-right sm:text-center")}>
                         {data.number}
                     </span>

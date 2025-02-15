@@ -86,37 +86,37 @@ export function AccountPage({
     }
 
     return (
-        <PageTemplate title={"Account"} user={user}>
-            <ContentWrapper variant={"compact"}>
-                <TitledCard title={"Cosmetic"}>
-                    <div className={"space-y-3"}>
-                        <div className={"space-y-3"}>
-                            <Label htmlFor={"theme-dropdown"}>Theme:</Label>
+        <PageTemplate title="Account" user={user}>
+            <ContentWrapper variant="compact">
+                <TitledCard title="Cosmetic">
+                    <div className="space-y-3">
+                        <div className="space-y-3">
+                            <Label htmlFor="theme-dropdown">Theme:</Label>
                             <ThemeDropdown
                                 theme={darkModeToTheme(user.darkMode)}
                                 onThemeChange={ignoreAsyncFnResult(onThemeChange)}
-                                id={"theme-dropdown"}
+                                id="theme-dropdown"
                             />
                         </div>
-                        <div className={"space-y-3"}>
-                            <Label htmlFor={"select-avatar"}>Avatar:</Label>
+                        <div className="space-y-3">
+                            <Label htmlFor="select-avatar">Avatar:</Label>
                             <ControlledSelectAvatar
                                 avatars={avatars}
                                 avatarIndex={user.avatarId}
                                 onAvatarChange={ignoreAsyncFnResult(onAvatarChange)}
-                                id={"select-avatar"}
+                                id="select-avatar"
                             />
                         </div>
                     </div>
                 </TitledCard>
-                <TitledCard title={"Danger zone"}>
-                    <div className={"space-y-3"}>
-                        <Label htmlFor={"select-timezone"}>Your time zone:</Label>
-                        <div className={"flex flex-col gap-3 sm:flex-row"}>
+                <TitledCard title="Danger zone">
+                    <div className="space-y-3">
+                        <Label htmlFor="select-timezone">Your time zone:</Label>
+                        <div className="flex flex-col gap-3 sm:flex-row">
                             <ControlledSelectTimezone
                                 value={user.timezone}
                                 onValueChange={ignoreAsyncFnResult(onTimezoneChange)}
-                                id={"select-timezone"}
+                                id="select-timezone"
                             />
                             <Button
                                 onClick={ignoreAsyncFnResult(
@@ -125,31 +125,27 @@ export function AccountPage({
                                 disabled={user.timezone === inferredTimezone}
                             >
                                 <span>Infer time zone</span>
-                                <Clock aria-label={"Infer time zone icon"} />
+                                <Clock aria-label="Infer time zone icon" />
                             </Button>
                         </div>
-                        <div
-                            className={
-                                "flex flex-col items-center justify-center gap-3 sm:flex-row"
-                            }
-                        >
+                        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
                             {usesCredentials && (
                                 <Button
-                                    className={"w-full sm:w-1/2"}
+                                    className="w-full sm:w-1/2"
                                     onClick={() => setCurrentModalIndex(1)}
                                 >
                                     <span>Change password</span>
-                                    <SquareAsterisk aria-label={"Change password icon"} />
+                                    <SquareAsterisk aria-label="Change password icon" />
                                 </Button>
                             )}
 
                             <Button
-                                className={"w-full sm:w-1/2"}
-                                variant={"destructive"}
+                                className="w-full sm:w-1/2"
+                                variant="destructive"
                                 onClick={() => setCurrentModalIndex(0)}
                             >
                                 <span>Sign out everywhere</span>
-                                <TriangleAlert aria-label={"Sign out everywhere icon"} />
+                                <TriangleAlert aria-label="Sign out everywhere icon" />
                             </Button>
                         </div>
                     </div>

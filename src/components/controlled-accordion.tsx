@@ -48,7 +48,7 @@ export function ControlledAccordion({
 }) {
     return (
         <Accordion
-            type={"single"}
+            type="single"
             value={`${currentIndex}`}
             onValueChange={(value) => onCurrentIndexChange(parseInt(value))}
             className={className}

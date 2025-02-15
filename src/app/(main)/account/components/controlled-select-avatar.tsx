@@ -57,8 +57,8 @@ export function ControlledSelectAvatar({
     }, [api]);
 
     return (
-        <div className={"flex flex-col items-center gap-6"}>
-            <div className={"w-full px-14"}>
+        <div className="flex flex-col items-center gap-6">
+            <div className="w-full px-14">
                 <Carousel
                     setApi={setApi}
                     className={cn("mx-auto max-w-96", className)}
@@ -67,8 +67,8 @@ export function ControlledSelectAvatar({
                 >
                     <CarouselContent>
                         {avatars.map((avatar) => (
-                            <CarouselItem key={avatar.id} className={"basis-full"}>
-                                <div className={"flex items-center justify-center"}>
+                            <CarouselItem key={avatar.id} className="basis-full">
+                                <div className="flex items-center justify-center">
                                     <Avatar
                                         className={cn(
                                             "size-32 border-8 sm:size-64",
@@ -94,14 +94,14 @@ export function ControlledSelectAvatar({
                 </Carousel>
             </div>
             {currentSnap === avatarIndex ? (
-                <Button className={"w-full sm:w-1/2"} disabled>
+                <Button className="w-full sm:w-1/2" disabled>
                     <span>Selected</span>
-                    <CheckCheck aria-label={"Selected icon"} />
+                    <CheckCheck aria-label="Selected icon" />
                 </Button>
             ) : (
-                <Button className={"w-full sm:w-1/2"} onClick={() => onAvatarChange(currentSnap)}>
+                <Button className="w-full sm:w-1/2" onClick={() => onAvatarChange(currentSnap)}>
                     <span>Select</span>
-                    <Check aria-label={"Select icon"} />
+                    <Check aria-label="Select icon" />
                 </Button>
             )}
         </div>

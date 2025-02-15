@@ -84,9 +84,9 @@ export function Footer({
         >
             {actions.map(({ Icon, text, action }, index) => (
                 <Button
-                    size={"icon"}
-                    className={"h-28 w-auto grow rounded-none [&_svg]:size-14"}
-                    variant={"ghost"}
+                    size="icon"
+                    className="h-28 w-auto grow rounded-none [&_svg]:size-14"
+                    variant="ghost"
                     key={index}
                     asChild={isLinkAction(action)}
                     onClick={isCustomAction(action) ? action : undefined}
@@ -94,12 +94,12 @@ export function Footer({
                     {isLinkAction(action) ? (
                         <Link href={action}>
                             <Icon aria-label={`${text} icon`} />
-                            <span className={"sr-only"}>{text}</span>
+                            <span className="sr-only">{text}</span>
                         </Link>
                     ) : (
                         <>
                             <Icon aria-label={`${text} icon`} />
-                            <span className={"sr-only"}>{text}</span>
+                            <span className="sr-only">{text}</span>
                         </>
                     )}
                 </Button>

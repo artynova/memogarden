@@ -30,28 +30,28 @@ const benefits: Benefit[] = [
  */
 export function BenefitsSection() {
     return (
-        <Section className={"gap-y-12 px-6 pt-12 sm:px-12 md:px-16"}>
-            <h2 className={"flex justify-center text-center text-2xl"}>
+        <Section className="gap-y-12 px-6 pt-12 sm:px-12 md:px-16">
+            <h2 className="flex justify-center text-center text-2xl">
                 Flashcard app designed to keep you engaged!
             </h2>
-            <div className={"grid w-full grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3"}>
+            <div className="grid w-full grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3">
                 {benefits.map(({ Icon, title }) => (
                     <BenefitCard key={title} Icon={Icon} title={title} />
                 ))}
             </div>
 
-            <div className={"z-10 px-6"}>
-                <Card className={"px-6 py-3"}>
+            <div className="z-10 px-6">
+                <Card className="px-6 py-3">
                     <CardHeader>
-                        <h3 className={"text-center text-2xl"}>Your garden is waiting for you</h3>
-                        <CardDescription className={"text-center"}>
+                        <h3 className="text-center text-2xl">Your garden is waiting for you</h3>
+                        <CardDescription className="text-center">
                             Get started on building strong revision habits now!
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className={"pt-3"}>
-                        <div className={"flex w-full justify-center"}>
-                            <Button className={"h-14 px-12"} asChild>
-                                <Link href={"/signup"}>Sign up</Link>
+                    <CardContent className="pt-3">
+                        <div className="flex w-full justify-center">
+                            <Button className="h-14 px-12" asChild>
+                                <Link href="/signup">Sign up</Link>
                             </Button>
                         </div>
                     </CardContent>

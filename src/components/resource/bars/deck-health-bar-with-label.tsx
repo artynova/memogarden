@@ -23,7 +23,7 @@ export function DeckHealthBarWithLabel({
         <HealthBar
             retrievability={retrievability}
             className={className}
-            label={"Average health:"}
+            label="Average health:"
             withText={withBarText}
         />
     );

@@ -6,9 +6,9 @@
  */
 export default function AnimatedLoadingText() {
     return (
-        <span className={"inline-flex items-center"}>
+        <span className="inline-flex items-center">
             <span>Loading</span>
-            <span className={"inline-block w-[3ch] text-left after:animate-ellipsis"} />
+            <span className="inline-block w-[3ch] text-left after:animate-ellipsis" />
         </span>
     );
 }

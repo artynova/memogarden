@@ -138,11 +138,11 @@ export function BrowsePage({
     ];
 
     return (
-        <PageTemplate title={"Search Cards"} user={user} footerActions={footerActions}>
+        <PageTemplate title="Search Cards" user={user} footerActions={footerActions}>
             <ContentWrapper>
-                <div className={"flex gap-x-2"}>
+                <div className="flex gap-x-2">
                     <Input
-                        placeholder={"Filter by front or back content"}
+                        placeholder="Filter by front or back content"
                         defaultValue={inputQuery}
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
                             setInputQuery(e.target.value)
@@ -152,7 +152,7 @@ export function BrowsePage({
                                 onSearchSubmit(inputQuery, deckFilter);
                             }
                         }}
-                        aria-label={"Search"}
+                        aria-label="Search"
                     />
                     <Button
                         onClick={() => {
@@ -160,25 +160,23 @@ export function BrowsePage({
                         }}
                     >
                         Search
-                        <Search aria-label={"Search icon"} />
+                        <Search aria-label="Search icon" />
                     </Button>
                 </div>
-                <div className={"flex items-center gap-x-8"}>
+                <div className="flex items-center gap-x-8">
                     <ControlledSelect
                         options={[
                             { value: NO_DECK_FILTER_OPTION, label: "All decks" },
                             ...deckOptions,
                         ]}
-                        innerLabel={"Filter by deck"}
+                        innerLabel="Filter by deck"
                         value={deckFilter}
                         onValueChange={(value: string) => {
                             onSearchSubmit(inputQuery, value);
                         }}
-                        className={"max-w-[35%] sm:max-w-[20%]"}
+                        className="max-w-[35%] sm:max-w-[20%]"
                     />
-                    <div
-                        className={"grow text-right"}
-                    >{`Cards found: ${searchResults.totalCards}`}</div>
+                    <div className="grow text-right">{`Cards found: ${searchResults.totalCards}`}</div>
                 </div>
                 <ResultsTable
                     data={searchResults.pageCards.map((value) => ({

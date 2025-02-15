@@ -57,19 +57,19 @@ export default async function Page({ searchParams }: PageWithSearchParamsProps) 
     const maturityCounts = await countCardsByMaturities(user.id, deckId);
 
     return (
-        <PageTemplate title={"Statistics"} user={user}>
+        <PageTemplate title="Statistics" user={user}>
             <ContentWrapper>
-                <div className={"flex items-center justify-between gap-6 p-3"}>
+                <div className="flex items-center justify-between gap-6 p-3">
                     <StatisticsDeckSelect deckId={deckId} deckOptions={deckOptions} />
-                    <div className={"flex justify-end gap-6"}>
+                    <div className="flex justify-end gap-6">
                         <span>{`Cards: ${await countCards(user.id, deckId)}`}</span>
                         <span>{`Reviews: ${await countReviews(user.id, deckId)}`}</span>
                     </div>
                 </div>
                 {await getHealthBar(user, deckId)}
                 <CardsMaturitiesCard data={maturityCounts} />
-                <DailyReviewsCard title={"Recent reviews"} data={retrospectionStats} retrospect />
-                <DailyReviewsCard title={"Scheduled reviews"} data={predictionStats} />
+                <DailyReviewsCard title="Recent reviews" data={retrospectionStats} retrospect />
+                <DailyReviewsCard title="Scheduled reviews" data={predictionStats} />
             </ContentWrapper>
         </PageTemplate>
     );
@@ -84,7 +84,7 @@ export default async function Page({ searchParams }: PageWithSearchParamsProps) 
  */
 async function getHealthBar(user: SelectUser, deckId: string | null) {
     if (deckId === null) {
-        return <HealthBar retrievability={user.retrievability} label={"All decks"} withText />;
+        return <HealthBar retrievability={user.retrievability} label="All decks" withText />;
     }
     const deck = (await getDeck(deckId))!;
     return (

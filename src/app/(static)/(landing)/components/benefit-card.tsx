@@ -11,8 +11,8 @@ import { GenericIconType } from "@/lib/ui/generic";
  */
 export function BenefitCard({ Icon, title }: { Icon: GenericIconType; title: string }) {
     return (
-        <Card className={"rounded-xl"}>
-            <CardHeader className={"gap-4"}>
+        <Card className="rounded-xl">
+            <CardHeader className="gap-4">
                 <Icon aria-label={`${title} icon`} />
                 {title}
             </CardHeader>

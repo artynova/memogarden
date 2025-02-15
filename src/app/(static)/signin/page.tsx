@@ -11,17 +11,17 @@ import { ThemeProvider } from "@/components/theme/theme-provider";
  */
 export default function Page() {
     return (
-        <ThemeProvider theme={"system"} doNotPersistTheme>
+        <ThemeProvider theme="system" doNotPersistTheme>
             <main>
-                <ContentWrapper variant={"compact"} className={"min-h-screen"}>
+                <ContentWrapper variant="compact" className="min-h-screen">
                     <TitledCard
-                        title={"Sign in"}
-                        description={"Enter your credentials below to sign in."}
+                        title="Sign in"
+                        description="Enter your credentials below to sign in."
                     >
-                        <div className={"space-y-6"}>
+                        <div className="space-y-6">
                             <SigninForm />
                             <div className="mt-4 text-center text-sm">
-                                {"Don't have an account? "}
+                                Don&apos;t have an account?{" "}
                                 <Link href="/signup" className="underline">
                                     Sign up
                                 </Link>

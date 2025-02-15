@@ -24,7 +24,7 @@ export function CardCard({
     return (
         <Card className={className}>
             <CardHeader>
-                <h2 className={"text-center font-bold"}>{"Question:"}</h2>
+                <h2 className="text-center font-bold">Question:</h2>
             </CardHeader>
             <CardContent>
                 <MarkdownProse>{card.front}</MarkdownProse>
@@ -33,7 +33,7 @@ export function CardCard({
                 <>
                     <Separator />
                     <CardHeader>
-                        <h2 className={"text-center font-bold"}>{"Answer:"}</h2>
+                        <h2 className="text-center font-bold">Answer:</h2>
                     </CardHeader>
                     <CardContent>
                         <MarkdownProse>{card.back}</MarkdownProse>

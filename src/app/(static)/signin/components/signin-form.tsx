@@ -70,7 +70,7 @@ export function SigninForm() {
                     </FieldsetWithErrorMessage>
                     <Button type="submit" className="w-full">
                         Sign in
-                        <ChevronsRight aria-label={"Sign in icon"} />
+                        <ChevronsRight aria-label="Sign in icon" />
                     </Button>
                 </form>
             </Form>
@@ -81,7 +81,7 @@ export function SigninForm() {
                 className="w-full hover:bg-background/50"
             >
                 Continue with Google
-                <FcGoogle aria-label={"Continue with Google icon"} />
+                <FcGoogle aria-label="Continue with Google icon" />
             </Button>
             <Button
                 onClick={ignoreAsyncFnResult(signinWithFacebook)}
@@ -89,10 +89,7 @@ export function SigninForm() {
                 className="w-full hover:bg-background/50"
             >
                 Continue with Facebook
-                <FaFacebook
-                    aria-label={"Continue with Facebook icon"}
-                    className={"text-[#1877F2]"}
-                />
+                <FaFacebook aria-label="Continue with Facebook icon" className="text-[#1877F2]" />
             </Button>
         </div>
     );

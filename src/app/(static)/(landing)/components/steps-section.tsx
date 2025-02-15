@@ -47,7 +47,7 @@ interface StepItem extends AccordionItem {
 
 const items: StepItem[] = [
     {
-        heading: <h3 className={"text-xl"}>1. Create a deck</h3>,
+        heading: <h3 className="text-xl">1. Create a deck</h3>,
         content: (
             <p>
                 Create decks for different subjects or topics. Whether it&apos;s languages, science,
@@ -71,13 +71,13 @@ const items: StepItem[] = [
         },
     },
     {
-        heading: <h3 className={"text-xl"}>2. Add flashcards</h3>,
+        heading: <h3 className="text-xl">2. Add flashcards</h3>,
         content: (
             <p>
                 Each flashcard belongs to a deck and contains a question-answer pair. Markdown
                 formatting is directly supported &mdash; add italics, links, lists, and even code
                 blocks with ease!{" "}
-                <Link className={"underline"} href={"https://www.markdowntutorial.com"}>
+                <Link className="underline" href="https://www.markdowntutorial.com">
                     Learn Markdown
                 </Link>
                 .
@@ -99,7 +99,7 @@ const items: StepItem[] = [
         },
     },
     {
-        heading: <h3 className={"text-xl"}>3. Start reviewing!</h3>,
+        heading: <h3 className="text-xl">3. Start reviewing!</h3>,
         content: (
             <p>
                 Answer each card, then reveal the correct response. How well did you do? Easy cards
@@ -122,7 +122,7 @@ const items: StepItem[] = [
         },
     },
     {
-        heading: <h3 className={"text-xl"}>4. Stick to your schedule</h3>,
+        heading: <h3 className="text-xl">4. Stick to your schedule</h3>,
         content: (
             <p>
                 As cards fade from memory over time, their &quot;health&quot; declines. Review on
@@ -156,30 +156,26 @@ export function StepsSection() {
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
     const currentItem = items[currentItemIndex];
     return (
-        <Section
-            className={
-                "flex w-full flex-col gap-x-24 gap-y-12 bg-popover px-6 py-12 md:flex-row md:items-start md:justify-between md:px-16"
-            }
-        >
-            <div className={"flex w-11/12 flex-col items-center gap-6 md:w-3/4"}>
-                <h2 className={"flex w-full justify-center text-center text-2xl"}>
+        <Section className="flex w-full flex-col gap-x-24 gap-y-12 bg-popover px-6 py-12 md:flex-row md:items-start md:justify-between md:px-16">
+            <div className="flex w-11/12 flex-col items-center gap-6 md:w-3/4">
+                <h2 className="flex w-full justify-center text-center text-2xl">
                     How does it work?
                 </h2>
                 <ControlledAccordion
                     items={items}
                     currentIndex={currentItemIndex}
                     onCurrentIndexChange={setCurrentItemIndex}
-                    className={"w-full"}
+                    className="w-full"
                 />
             </div>
-            <div className={"flex w-full flex-col items-center gap-y-8 md:w-1/2"}>
+            <div className="flex w-full flex-col items-center gap-y-8 md:w-1/2">
                 <AdaptiveThemedImage
                     image={currentItem.image}
                     imageMobile={currentItem.imageMobile}
-                    className={"w-4/6 rounded-2xl border shadow sm:w-full"}
+                    className="w-4/6 rounded-2xl border shadow sm:w-full"
                 />
-                <Button className={"h-12 w-full px-8"} asChild>
-                    <Link href={"/signup"}>Sign up</Link>
+                <Button className="h-12 w-full px-8" asChild>
+                    <Link href="/signup">Sign up</Link>
                 </Button>
             </div>
         </Section>

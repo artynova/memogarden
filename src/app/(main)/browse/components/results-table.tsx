@@ -47,7 +47,7 @@ export function ResultsTable({
         <Table>
             <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id} className={"hover:bg-background"}>
+                    <TableRow key={headerGroup.id} className="hover:bg-background">
                         {headerGroup.headers.map((header) => {
                             return (
                                 <TableHead key={header.id}>
@@ -67,7 +67,7 @@ export function ResultsTable({
                 {table.getRowModel().rows?.length ? (
                     table.getRowModel().rows.map((row) => (
                         <TableRow
-                            className={"focus-visible:bg-muted/50 focus-visible:outline-none"}
+                            className="focus-visible:bg-muted/50 focus-visible:outline-none"
                             key={row.id}
                             data-state={row.getIsSelected() && "selected"}
                             tabIndex={0}
@@ -78,11 +78,11 @@ export function ResultsTable({
                             }}
                         >
                             {row.getVisibleCells().map((cell) => (
-                                <TableCell key={cell.id} className={"p-0"}>
+                                <TableCell key={cell.id} className="p-0">
                                     <Link
                                         key={cell.id}
                                         href={`/card/${row.original.id}`}
-                                        className={"block p-2"}
+                                        className="block p-2"
                                         tabIndex={-1}
                                     >
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}

@@ -40,7 +40,7 @@ export function SignupForm() {
     }
 
     return (
-        <div className={"space-y-3"}>
+        <div className="space-y-3">
             <Form {...form}>
                 <form
                     onSubmit={ignoreAsyncFnResult(form.handleSubmit(onSubmit))}
@@ -61,7 +61,7 @@ export function SignupForm() {
                     />
                     <Button type="submit" className="w-full">
                         Sign up
-                        <ChevronsRight aria-label={"Sign up icon"} />
+                        <ChevronsRight aria-label="Sign up icon" />
                     </Button>
                 </form>
             </Form>
@@ -72,7 +72,7 @@ export function SignupForm() {
                 className="w-full hover:bg-background/50"
             >
                 Continue with Google
-                <FcGoogle aria-label={"Continue with Google icon"} />
+                <FcGoogle aria-label="Continue with Google icon" />
             </Button>
             <Button
                 onClick={ignoreAsyncFnResult(signinWithFacebook)}
@@ -80,10 +80,7 @@ export function SignupForm() {
                 className="w-full hover:bg-background/50"
             >
                 Continue with Facebook
-                <FaFacebook
-                    aria-label={"Continue with Facebook icon"}
-                    className={"text-[#1877F2]"}
-                />
+                <FaFacebook aria-label="Continue with Facebook icon" className="text-[#1877F2]" />
             </Button>
         </div>
     );

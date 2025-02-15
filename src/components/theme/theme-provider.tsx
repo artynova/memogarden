@@ -28,8 +28,8 @@ export function ThemeProvider({
 }) {
     return (
         <NextThemesProvider
-            attribute={"class"}
-            defaultTheme={"system"}
+            attribute="class"
+            defaultTheme="system"
             forcedTheme={theme ?? undefined}
             enableSystem
             disableTransitionOnChange

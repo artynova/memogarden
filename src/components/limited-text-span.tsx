@@ -22,10 +22,8 @@ export function LimitedTextSpan({
 }) {
     return (
         <>
-            <span className={"hidden sm:inline"}>{getTrimmedText(text, maxLength)}</span>
-            <span className={"sm:hidden"}>
-                {getTrimmedText(text, maxLengthMobile ?? maxLength)}
-            </span>
+            <span className="hidden sm:inline">{getTrimmedText(text, maxLength)}</span>
+            <span className="sm:hidden">{getTrimmedText(text, maxLengthMobile ?? maxLength)}</span>
         </>
     );
 }

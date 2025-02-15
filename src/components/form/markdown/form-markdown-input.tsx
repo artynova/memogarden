@@ -57,14 +57,8 @@ export function FormMarkdownInput<
                     <FormLabel>{label}</FormLabel>
                     <FormControl>
                         {preview ? (
-                            <div
-                                className={
-                                    "flex min-h-9 max-w-full items-center rounded-md border border-input px-3 py-1"
-                                }
-                            >
-                                <MarkdownProse className={"max-w-full"}>
-                                    {field.value}
-                                </MarkdownProse>
+                            <div className="flex min-h-9 max-w-full items-center rounded-md border border-input px-3 py-1">
+                                <MarkdownProse className="max-w-full">{field.value}</MarkdownProse>
                             </div>
                         ) : (
                             <CodeMirrorAdapter {...field} />

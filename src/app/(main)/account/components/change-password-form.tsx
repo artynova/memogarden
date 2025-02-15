@@ -64,12 +64,12 @@ export function ChangePasswordForm({ onCancel }: { onCancel: () => void }) {
                     label="Confirm new password:"
                     type="password"
                 />
-                <div className={"flex justify-center space-x-2"}>
-                    <Button size={"lg"}>
+                <div className="flex justify-center space-x-2">
+                    <Button size="lg">
                         <span>Confirm</span>
                         <Check />
                     </Button>
-                    <Button size={"lg"} variant={"outline"} onClick={onCancel} type={"button"}>
+                    <Button size="lg" variant="outline" onClick={onCancel} type="button">
                         <span>Cancel</span>
                         <X />
                     </Button>

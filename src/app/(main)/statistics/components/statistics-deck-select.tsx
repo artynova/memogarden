@@ -27,14 +27,14 @@ export function StatisticsDeckSelect({
     return (
         <ControlledSelect
             options={[{ value: NO_DECK_FILTER_OPTION, label: "All decks" }, ...deckOptions]}
-            innerLabel={"Select deck to view"}
+            innerLabel="Select deck to view"
             value={deckId ?? NO_DECK_FILTER_OPTION}
             onValueChange={(value: string) => {
                 router.push(
                     `/statistics${value === NO_DECK_FILTER_OPTION ? "" : "?deckId=" + value}`,
                 );
             }}
-            className={"max-w-[35%] sm:max-w-[20%]"}
+            className="max-w-[35%] sm:max-w-[20%]"
         />
     );
 }

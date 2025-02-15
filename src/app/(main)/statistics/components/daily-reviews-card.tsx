@@ -42,7 +42,7 @@ export function DailyReviewsCard({
 
     return (
         <TitledCard title={title}>
-            <div className={"flex flex-col items-center gap-6"}>
+            <div className="flex flex-col items-center gap-6">
                 <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
                     <BarChart
                         accessibilityLayer
@@ -86,7 +86,7 @@ export function DailyReviewsCard({
                                 />
                             }
                         />
-                        <Bar dataKey={"reviews"} fill={"var(--color-reviews)"} />
+                        <Bar dataKey="reviews" fill="var(--color-reviews)" />
                     </BarChart>
                 </ChartContainer>
                 <span>{`Total: ${total}`}</span>

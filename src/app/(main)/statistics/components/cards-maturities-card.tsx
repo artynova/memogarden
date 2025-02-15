@@ -33,8 +33,8 @@ const chartConfig = {
  */
 export function CardsMaturitiesCard({ data }: { data: MaturityCountsEntry[] }) {
     return (
-        <TitledCard title={"Card maturities"}>
-            <ChartContainer config={chartConfig} className={"max-h-[300px] min-h-[100px] w-full"}>
+        <TitledCard title="Card maturities">
+            <ChartContainer config={chartConfig} className="max-h-[300px] min-h-[100px] w-full">
                 <BarChart
                     accessibilityLayer
                     data={data}

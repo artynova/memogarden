@@ -100,14 +100,9 @@ export function HomePage({
     ];
 
     return (
-        <PageTemplate
-            title={"Your garden"}
-            user={user}
-            hideHomeButton
-            footerActions={footerActions}
-        >
+        <PageTemplate title="Your garden" user={user} hideHomeButton footerActions={footerActions}>
             <ContentWrapper>
-                <RemainingCardsGrid remaining={summary} className={"p-3"} />
+                <RemainingCardsGrid remaining={summary} className="p-3" />
                 {decks.map((preview) => (
                     <DeckListCard preview={preview} key={preview.deck.id} />
                 ))}

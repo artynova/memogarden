@@ -27,7 +27,7 @@ export function UserDropdown({ user, className }: { user: SelectUser; className?
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button
-                    variant={"ghost"}
+                    variant="ghost"
                     className={cn(
                         "h-auto w-24 overflow-hidden rounded-none px-12 py-4 sm:w-32",
                         className,
@@ -36,35 +36,27 @@ export function UserDropdown({ user, className }: { user: SelectUser; className?
                     <ProfileBadge user={user} />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className={"w-52"}>
-                <DropdownMenuLabel className={"px-4 py-2"}>Menu</DropdownMenuLabel>
+            <DropdownMenuContent className="w-52">
+                <DropdownMenuLabel className="px-4 py-2">Menu</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className={"p-0"}>
-                    <Button
-                        variant={"ghost"}
-                        className={"w-full justify-between px-4 py-2"}
-                        asChild
-                    >
-                        <Link href={"/statistics"}>
+                <DropdownMenuItem className="p-0">
+                    <Button variant="ghost" className="w-full justify-between px-4 py-2" asChild>
+                        <Link href="/statistics">
                             Statistics
                             <ChartColumnIncreasing />
                         </Link>
                     </Button>
                 </DropdownMenuItem>
-                <DropdownMenuItem className={"p-0"}>
-                    <Button
-                        variant={"ghost"}
-                        className={"w-full justify-between px-4 py-2"}
-                        asChild
-                    >
-                        <Link href={"/account"}>
+                <DropdownMenuItem className="p-0">
+                    <Button variant="ghost" className="w-full justify-between px-4 py-2" asChild>
+                        <Link href="/account">
                             Account
                             <CircleUser />
                         </Link>
                     </Button>
                 </DropdownMenuItem>
-                <DropdownMenuItem className={"p-0"}>
-                    <SignOutButton variant={"ghost"} className={"w-full justify-between px-4 py-2"}>
+                <DropdownMenuItem className="p-0">
+                    <SignOutButton variant="ghost" className="w-full justify-between px-4 py-2">
                         Sign out <LogOut />
                     </SignOutButton>
                 </DropdownMenuItem>

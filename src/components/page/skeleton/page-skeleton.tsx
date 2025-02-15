@@ -26,14 +26,14 @@ export function PageSkeleton({
             <div className="flex h-screen w-full flex-col">
                 <HeaderSkeleton
                     hideHomeButton={hideHomeButton}
-                    className={"sticky top-0 z-10 shrink-0"}
+                    className="sticky top-0 z-10 shrink-0"
                 />
                 <main className="grow">
-                    <div className={"flex size-full items-center justify-center"}>
-                        <LoadingSpinner className={"size-24 border-8"} />
+                    <div className="flex size-full items-center justify-center">
+                        <LoadingSpinner className="size-24 border-8" />
                     </div>
                 </main>
-                {!hideFooter && <FooterSkeleton className={"sticky bottom-0 z-10 shrink-0"} />}
+                {!hideFooter && <FooterSkeleton className="sticky bottom-0 z-10 shrink-0" />}
             </div>
         </ThemeProvider>
     );

@@ -15,13 +15,13 @@ import { cn } from "@/lib/ui/generic";
 export function HomeButton({ className }: { className?: string }) {
     return (
         <Button
-            variant={"ghost"}
+            variant="ghost"
             className={cn("h-auto w-24 rounded-none sm:w-32 [&_svg]:size-14", className)}
             asChild
         >
             <Link href={HOME}>
-                <HomeIcon aria-label={"Home icon"} />
-                <span className={"sr-only"}>Home</span>
+                <HomeIcon aria-label="Home icon" />
+                <span className="sr-only">Home</span>
             </Link>
         </Button>
     );

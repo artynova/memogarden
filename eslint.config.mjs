@@ -47,6 +47,14 @@ const config = [
         rules: {
             "tailwindcss/classnames-order": "off",
             "@typescript-eslint/no-unused-vars": ["error", { ignoreRestSiblings: true }],
+            "react/jsx-curly-brace-presence": [
+                "error",
+                {
+                    props: "never",
+                    children: "never",
+                    propElementValues: "always",
+                },
+            ],
             "jsdoc/require-jsdoc": [
                 "warn",
                 {

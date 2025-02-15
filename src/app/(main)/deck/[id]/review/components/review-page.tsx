@@ -74,7 +74,7 @@ function ReviewPagePreAnswer({
             <ContentWrapper>
                 <CardCard card={card} onlyFront />
                 <Textarea
-                    placeholder={"Input your answer to self-check later (optional)"}
+                    placeholder="Input your answer to self-check later (optional)"
                     defaultValue={answer}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setAnswer(e.target.value)}
                 />
@@ -142,7 +142,7 @@ function ReviewPagePostAnswer({
             <ContentWrapper>
                 <Card>
                     <CardHeader>
-                        <h2 className={"text-center font-bold"}>Your answer:</h2>
+                        <h2 className="text-center font-bold">Your answer:</h2>
                     </CardHeader>
                     <CardContent>{answer}</CardContent>
                 </Card>

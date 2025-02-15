@@ -23,14 +23,14 @@ export function ConfirmationPrompt({
     onCancel: () => void;
 }) {
     return (
-        <div className={"flex justify-center space-x-2"}>
-            <Button size={"lg"} variant={"destructive"} onClick={onConfirm}>
+        <div className="flex justify-center space-x-2">
+            <Button size="lg" variant="destructive" onClick={onConfirm}>
                 <span>Confirm</span>
-                <Check aria-label={"Confirm icon"} />
+                <Check aria-label="Confirm icon" />
             </Button>
-            <Button size={"lg"} variant={"outline"} onClick={onCancel}>
+            <Button size="lg" variant="outline" onClick={onCancel}>
                 <span>Cancel</span>
-                <X aria-label={"Cancel icon"} />
+                <X aria-label="Cancel icon" />
             </Button>
         </div>
     );

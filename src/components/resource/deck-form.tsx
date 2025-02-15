@@ -48,18 +48,18 @@ export function DeckForm({
     return (
         <Form {...form}>
             <form
-                className={"space-y-3"}
+                className="space-y-3"
                 onSubmit={ignoreAsyncFnResult(form.handleSubmit(onSubmitInternal))}
             >
                 <FormInput control={form.control} name="name" label="Name" />
-                <div className={"flex justify-center space-x-2"}>
-                    <Button size={"lg"}>
+                <div className="flex justify-center space-x-2">
+                    <Button size="lg">
                         <span>Save</span>
-                        <Check aria-label={"Save icon"} />
+                        <Check aria-label="Save icon" />
                     </Button>
-                    <Button size={"lg"} variant={"outline"} onClick={onCancel} type={"button"}>
+                    <Button size="lg" variant="outline" onClick={onCancel} type="button">
                         <span>Cancel</span>
-                        <X aria-label={"Cancel icon"} />
+                        <X aria-label="Cancel icon" />
                     </Button>
                 </div>
             </form>

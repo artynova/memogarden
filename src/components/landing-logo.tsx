@@ -12,10 +12,10 @@ import { cn } from "@/lib/ui/generic";
 export function LandingLogo({ className }: { className?: string }) {
     return (
         <Link
-            href={"/public"}
+            href="/public"
             className={cn("flex items-center justify-center gap-2 p-2", className)}
         >
-            <Leaf aria-label={"MemoGarden icon"} className={"size-4 shrink-0"} />
+            <Leaf aria-label="MemoGarden icon" className="size-4 shrink-0" />
             MemoGarden
         </Link>
     );

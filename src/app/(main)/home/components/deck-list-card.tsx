@@ -22,10 +22,10 @@ export function DeckListCard({ preview }: { preview: DeckPreview }) {
     const revisionCleared =
         remaining.new === 0 && remaining.learning === 0 && remaining.review === 0;
     return (
-        <Card className={"flex justify-between overflow-hidden"}>
-            <Link href={`/deck/${deck.id}`} className={"block grow"}>
+        <Card className="flex justify-between overflow-hidden">
+            <Link href={`/deck/${deck.id}`} className="block grow">
                 <CardHeader>
-                    <h2 className={"text-center font-bold"}>
+                    <h2 className="text-center font-bold">
                         <LimitedTextSpan
                             text={deck.name}
                             maxLength={MAX_DECK_NAME_LENGTH}
@@ -33,7 +33,7 @@ export function DeckListCard({ preview }: { preview: DeckPreview }) {
                         />
                     </h2>
                 </CardHeader>
-                <CardContent className={"space-y-4"}>
+                <CardContent className="space-y-4">
                     <RemainingCardsGrid remaining={remaining} />
                     <DeckHealthBarWithLabel retrievability={deck.retrievability} withBarText />
                 </CardContent>
@@ -42,19 +42,17 @@ export function DeckListCard({ preview }: { preview: DeckPreview }) {
                 asChild
                 disabled={revisionCleared}
                 aria-disabled={revisionCleared}
-                className={
-                    "h-auto w-20 shrink-0 rounded-l-none sm:w-32 [&_svg]:size-14 sm:[&_svg]:size-14"
-                }
+                className="h-auto w-20 shrink-0 rounded-l-none sm:w-32 [&_svg]:size-14 sm:[&_svg]:size-14"
             >
                 {revisionCleared ? (
                     <button>
-                        <span className={"sr-only"}>Revision cleared</span>
-                        <Check aria-label={"Revision cleared icon"} />
+                        <span className="sr-only">Revision cleared</span>
+                        <Check aria-label="Revision cleared icon" />
                     </button>
                 ) : (
                     <Link href={`/deck/${deck.id}/review`}>
-                        <span className={"sr-only"}>Review</span>
-                        <ChevronsRight aria-label={"Review icon"} />
+                        <span className="sr-only">Review</span>
+                        <ChevronsRight aria-label="Review icon" />
                     </Link>
                 )}
             </Button>

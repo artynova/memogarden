@@ -40,11 +40,11 @@ export function ControlledActionModal({
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent
-                side={"bottom"}
+                side="bottom"
                 className={cn("max-h-screen space-y-3 overflow-y-scroll", className)}
             >
                 <SheetHeader>
-                    <SheetTitle className={"text-center font-bold"}>{title}</SheetTitle>
+                    <SheetTitle className="text-center font-bold">{title}</SheetTitle>
                     {description && <SheetDescription>{description}</SheetDescription>}
                 </SheetHeader>
                 {children}

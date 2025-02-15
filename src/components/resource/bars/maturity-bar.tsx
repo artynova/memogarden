@@ -14,7 +14,7 @@ import { CardMaturity } from "@/lib/enums";
  */
 export function MaturityBar({ currentMaturity }: { currentMaturity: CardMaturity }) {
     return (
-        <div className={"py-12"}>
+        <div className="py-12">
             <div className="relative flex w-full items-center justify-between">
                 <div className="absolute h-1 w-full bg-muted" />
                 {cardMaturities.map((maturity, index) => (
@@ -35,7 +35,7 @@ export function MaturityBar({ currentMaturity }: { currentMaturity: CardMaturity
                                         : "border-foreground",
                                 )}
                             />
-                            <div className={"absolute top-[-85%]"}>
+                            <div className="absolute top-[-85%]">
                                 <maturity.icon
                                     className={`size-6 transition-colors ${
                                         (index as CardMaturity) === currentMaturity
@@ -45,7 +45,7 @@ export function MaturityBar({ currentMaturity }: { currentMaturity: CardMaturity
                                     aria-label={`${maturity.name} icon`}
                                 />
                             </div>
-                            <div className={"absolute -bottom-3/4 text-sm"}>{maturity.name}</div>
+                            <div className="absolute -bottom-3/4 text-sm">{maturity.name}</div>
                         </div>
                     </div>
                 ))}

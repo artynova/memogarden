@@ -41,10 +41,7 @@ export const columns: ColumnDef<SelectCardPreviewWithTimezone>[] = [
         accessorKey: "retrievability",
         header: "Health",
         cell: ({ row }) => (
-            <HealthBar
-                retrievability={row.original.retrievability}
-                className={"h-4 w-10 sm:w-16"}
-            />
+            <HealthBar retrievability={row.original.retrievability} className="h-4 w-10 sm:w-16" />
         ),
     },
     {

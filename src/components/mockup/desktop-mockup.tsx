@@ -16,7 +16,7 @@ export function DesktopMockup({ image, className }: DeviceMockupProps) {
         <div className={className}>
             <div className="relative mx-auto w-[90%] max-w-[600px] rounded-t-xl border-[16px] border-gray-800 bg-gray-800 dark:border-gray-800">
                 <div className="overflow-hidden rounded-xl bg-white dark:bg-gray-800">
-                    <ThemedImage image={image} className={"rounded-lg"} />
+                    <ThemedImage image={image} className="rounded-lg" />
                 </div>
             </div>
             <div className="relative mx-auto h-[42px] w-[90%] max-w-[600px] rounded-b-xl bg-gray-900 dark:bg-gray-700" />
