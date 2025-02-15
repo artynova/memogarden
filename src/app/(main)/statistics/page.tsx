@@ -57,7 +57,7 @@ export default async function Page({ searchParams }: PageWithSearchParamsProps) 
     const maturityCounts = await countCardsByMaturities(user.id, deckId);
 
     return (
-        <PageTemplate title={"Statistics"} user={user} footerActions={[]}>
+        <PageTemplate title={"Statistics"} user={user}>
             <ContentWrapper>
                 <div className={"flex items-center justify-between gap-6 p-3"}>
                     <StatisticsDeckSelect deckId={deckId} deckOptions={deckOptions} />

@@ -86,7 +86,7 @@ export function AccountPage({
     }
 
     return (
-        <PageTemplate title={"Account"} user={user} footerActions={[]}>
+        <PageTemplate title={"Account"} user={user}>
             <ContentWrapper variant={"compact"}>
                 <TitledCard title={"Cosmetic"}>
                     <div className={"space-y-3"}>
