@@ -11,7 +11,7 @@ import {
 import { ChangePasswordForm } from "@/app/(main)/account/components/change-password-form";
 import { Button } from "@/components/shadcn/button";
 import { ContentWrapper } from "@/components/page/content-wrapper";
-import { signOutEverywhere, updateUser } from "@/server/actions/user/actions";
+import { signoutEverywhere, updateUser } from "@/server/actions/user/actions";
 import { ignoreAsyncFnResult } from "@/lib/utils/generic";
 import { Clock, SquareAsterisk, TriangleAlert } from "lucide-react";
 import { ControlledSelectAvatar } from "@/app/(main)/account/components/controlled-select-avatar";
@@ -51,7 +51,7 @@ export function AccountPage({
             description: "This will sign you out on all devices.",
             children: (
                 <ConfirmationPrompt
-                    onConfirm={ignoreAsyncFnResult(signOutEverywhere)}
+                    onConfirm={ignoreAsyncFnResult(signoutEverywhere)}
                     onCancel={() => setCurrentModalIndex(null)}
                 />
             ),

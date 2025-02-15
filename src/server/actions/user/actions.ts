@@ -116,7 +116,7 @@ export async function changePassword(data: ChangePasswordData) {
 /**
  * Destroys all sessions of the currently signed-in user, redirecting them to sign-in afterward.
  */
-export async function signOutEverywhere() {
+export async function signoutEverywhere() {
     const user = await getUserOrRedirect();
     await invalidateAllTokens(user.id);
     await signout();
