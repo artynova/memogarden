@@ -38,6 +38,8 @@ const themeToLabel = {
 /**
  * Dropdown color theme selector.
  *
+ * Strictly client component, must be used within the client boundary.
+ *
  * @param props Component properties.
  * @param props.theme Current theme.
  * @param props.onThemeChange Theme change callback.

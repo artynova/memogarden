@@ -18,6 +18,8 @@ const formConfig: UseFormProps<ModifyDeckData> = {
 /**
  * Form for inputting information necessary to modify (create or update) a deck.
  *
+ * Strictly client component, must be used within the client boundary.
+ *
  * @param props Component properties.
  * @param props.onSubmit Submission callback.
  * @param props.onCancel Cancellation callback.

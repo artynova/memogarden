@@ -8,6 +8,8 @@ import React from "react";
  * Confirmation prompt with "confirm" and "cancel" buttons, proceeding with some action only if the user confirms their
  * intent.
  *
+ * Strictly client component, must be used within the client boundary.
+ *
  * @param props Component properties.
  * @param props.onConfirm Confirmation callback (executed if the user selects the "confirm" option).
  * @param props.onCancel Cancellation callback (executed if the user selects the "cancel" option).

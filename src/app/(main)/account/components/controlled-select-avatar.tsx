@@ -19,6 +19,8 @@ import { cn } from "@/lib/ui/generic";
 /**
  * Carousel-based selector of a user avatar image from the app's predefined options.
  *
+ * Strictly client component, must be used within the client boundary.
+ *
  * @param props Component properties.
  * @param props.avatars List of available avatars for this selection.
  * @param props.avatarIndex Index of the user's current avatar in the provided array of avatars.

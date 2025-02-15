@@ -25,6 +25,8 @@ const formConfig: UseFormProps<ChangePasswordData> = {
 /**
  * Password change form.
  *
+ * Strictly client component, must be used within the client boundary.
+ *
  * @param props Component properties.
  * @param props.onCancel Cancellation callback.
  * @returns The component.

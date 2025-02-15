@@ -22,6 +22,8 @@ const formConfig: UseFormProps<ModifyCardData> = {
 /**
  * Form for inputting information necessary to modify (create or update) a card.
  *
+ * Strictly client component, must be used within the client boundary.
+ *
  * @param props Component properties.
  * @param props.onSubmit Submission callback.
  * @param props.onCancel Cancellation callback.

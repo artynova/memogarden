@@ -25,6 +25,8 @@ export interface AccordionItem {
 /**
  * Accordion with externally managed state.
  *
+ * Strictly client component, must be used within the client boundary.
+ *
  * @param props Component properties.
  * @param props.items Accordion items.
  * @param props.currentIndex Index of the currently expanded item in the items array.
