@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ContentWrapper } from "@/components/page/content-wrapper";
 import { TitledCard } from "@/components/titled-card";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { InvalidTokenHandler } from "@/app/(static)/signin/components/invalid-token-handler";
 
 /**
  * Static sign-in page.
@@ -12,6 +13,7 @@ import { ThemeProvider } from "@/components/theme/theme-provider";
 export default function Page() {
     return (
         <ThemeProvider theme="system" doNotPersistTheme>
+            <InvalidTokenHandler />
             <main>
                 <ContentWrapper variant="compact" className="min-h-screen">
                     <TitledCard

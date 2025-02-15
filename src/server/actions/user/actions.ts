@@ -1,7 +1,7 @@
 "use server";
 
 import { getUserIdOrRedirect, getUserOrRedirect, signIn, signOut } from "@/server/auth";
-import { REDIRECT_WITH_AUTH_TO, REDIRECT_WITHOUT_AUTH_TO } from "@/lib/routes";
+import { REDIRECT_WITH_TOKEN_TO, REDIRECT_WITHOUT_TOKEN_TO } from "@/lib/routes";
 import { ResponseBadRequest, ResponseConflict, ResponseUnauthorized } from "@/lib/responses";
 import { CredentialsSignin } from "next-auth";
 import {
@@ -65,28 +65,28 @@ export async function signinWithCredentials(data: CredentialsSigninData) {
     } catch (error) {
         if (error instanceof CredentialsSignin) return ResponseUnauthorized;
     }
-    return redirect(REDIRECT_WITH_AUTH_TO);
+    return redirect(REDIRECT_WITH_TOKEN_TO);
 }
 
 /**
  * Initiates the OAuth sign-in process through the Google provider, redirecting to app home upon success.
  */
 export async function signinWithGoogle() {
-    await signIn("google", { redirectTo: REDIRECT_WITH_AUTH_TO });
+    await signIn("google", { redirectTo: REDIRECT_WITH_TOKEN_TO });
 }
 
 /**
  * Initiates the OAuth sign-in process through the Facebook provider, redirecting to app home upon success.
  */
 export async function signinWithFacebook() {
-    await signIn("facebook", { redirectTo: REDIRECT_WITH_AUTH_TO });
+    await signIn("facebook", { redirectTo: REDIRECT_WITH_TOKEN_TO });
 }
 
 /**
  * Signs the user out, destroying the session cookie and redirecting to sign-in afterward.
  */
 export async function signout() {
-    await signOut({ redirectTo: REDIRECT_WITHOUT_AUTH_TO });
+    await signOut({ redirectTo: REDIRECT_WITHOUT_TOKEN_TO });
 }
 
 /**

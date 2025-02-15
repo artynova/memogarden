@@ -13,7 +13,6 @@ import bcrypt from "bcrypt";
 import "next-auth/jwt";
 import { signout } from "@/server/actions/user/actions";
 import { redirect } from "next/navigation";
-import { AUTO_SIGNOUT } from "@/lib/routes";
 import { CredentialsSigninSchema } from "@/server/actions/user/schemas";
 
 declare module "next-auth/jwt" {
@@ -92,9 +91,9 @@ export const {
 } = NextAuth(authConfig);
 
 /**
- * If the current session is valid, synchronizes the health of the associated user and returns the
- * updated user data. Otherwise, redirects to the automatic sign-out page (which is done by
- * throwing an exception and interrupting the flow).
+ * If the current session is valid, synchronizes the health of the associated user and returns the updated user data.
+ * Otherwise, redirects to the sign-in page with the invalid token flag in search parameters (which is done by throwing
+ * an exception and interrupting the flow).
  *
  * This version of the method is meant for Server Components, which cannot modify cookies and need
  * to rely on the intermediate sign-out page to destroy any invalid cookies.
@@ -112,10 +111,11 @@ export async function getUserOrRedirectSC() {
 }
 
 /**
- * Redirects to the automatic sign-out route, allowing to trigger sign-out from Server Components.
+ * Redirects to the sign-in route with the search parameters flag to trigger token destruction, allowing to trigger a
+ * seamless sign-out from Server Components.
  */
 function signoutSC() {
-    redirect(AUTO_SIGNOUT);
+    redirect("/signin?invalidToken");
 }
 
 /**

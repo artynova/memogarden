@@ -1,8 +1,8 @@
 import {
-    REDIRECT_WITH_AUTH_TO,
-    REDIRECT_WITHOUT_AUTH_TO,
-    ROUTES_ALLOWED_WITHOUT_AUTH,
-    ROUTES_FORBIDDEN_WITH_AUTH,
+    REDIRECT_WITH_TOKEN_TO,
+    REDIRECT_WITHOUT_TOKEN_TO,
+    shouldAllowWithToken,
+    shouldAllowWithoutToken,
 } from "@/lib/routes";
 import { NextResponse } from "next/server";
 import NextAuth from "next-auth";
@@ -24,15 +24,13 @@ const { auth } = NextAuth({
  */
 export default auth((req) => {
     const { nextUrl } = req;
-    const isAuthenticated = !!req.auth?.user?.id;
+    const hasToken = !!req.auth?.user?.id; // The existence of a valid user ID on the token proves that it was a valid token at some point, but it may have been become invalid since then, so this is not a full proof of authentication
 
-    const isAllowedWithoutAuth = ROUTES_ALLOWED_WITHOUT_AUTH.includes(nextUrl.pathname);
-    if (!isAuthenticated && !isAllowedWithoutAuth)
-        return NextResponse.redirect(new URL(REDIRECT_WITHOUT_AUTH_TO, nextUrl));
+    if (!hasToken && !shouldAllowWithoutToken(nextUrl))
+        return NextResponse.redirect(new URL(REDIRECT_WITHOUT_TOKEN_TO, nextUrl));
 
-    const isForbiddenWithAuth = ROUTES_FORBIDDEN_WITH_AUTH.includes(nextUrl.pathname);
-    if (isAuthenticated && isForbiddenWithAuth)
-        return NextResponse.redirect(new URL(REDIRECT_WITH_AUTH_TO, nextUrl));
+    if (hasToken && !shouldAllowWithToken(nextUrl))
+        return NextResponse.redirect(new URL(REDIRECT_WITH_TOKEN_TO, nextUrl));
 });
 
 /**
