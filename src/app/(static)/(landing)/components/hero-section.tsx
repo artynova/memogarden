@@ -17,7 +17,7 @@ import { AdaptiveMockup } from "@/components/mockup/adaptive-mockup";
  */
 export function HeroSection() {
     return (
-        <Section className="gap-y-6 bg-background pt-12">
+        <Section className="gap-y-6 bg-background pt-6">
             <div className="flex flex-col items-center gap-y-6 px-6">
                 <div className="text-center">
                     <h1 className="flex justify-center text-4xl font-bold">
