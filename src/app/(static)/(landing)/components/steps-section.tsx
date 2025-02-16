@@ -47,7 +47,7 @@ interface StepItem extends AccordionItem {
 
 const items: StepItem[] = [
     {
-        heading: <h3 className="text-xl">1. Create a deck</h3>,
+        heading: <span className="text-xl">1. Create a deck</span>,
         content: (
             <p>
                 Create decks for different subjects or topics. Whether it&apos;s languages, science,
@@ -71,7 +71,7 @@ const items: StepItem[] = [
         },
     },
     {
-        heading: <h3 className="text-xl">2. Add flashcards</h3>,
+        heading: <span className="text-xl">2. Add flashcards</span>,
         content: (
             <p>
                 Each flashcard belongs to a deck and contains a question-answer pair. Markdown
@@ -99,7 +99,7 @@ const items: StepItem[] = [
         },
     },
     {
-        heading: <h3 className="text-xl">3. Start reviewing!</h3>,
+        heading: <span className="text-xl">3. Start reviewing!</span>,
         content: (
             <p>
                 Answer each card, then reveal the correct response. How well did you do? Easy cards
@@ -122,7 +122,7 @@ const items: StepItem[] = [
         },
     },
     {
-        heading: <h3 className="text-xl">4. Stick to your schedule</h3>,
+        heading: <span className="text-xl">4. Stick to your schedule</span>,
         content: (
             <p>
                 As cards fade from memory over time, their &quot;health&quot; declines. Review on
