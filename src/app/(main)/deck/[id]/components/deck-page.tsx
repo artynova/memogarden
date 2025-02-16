@@ -1,11 +1,11 @@
 "use client";
 
-import { FooterActionData } from "@/components/page/template/footer";
+import { FooterActionData } from "@/components/page/main/template/footer";
 import { Check, ChevronsRight, Pencil, SquarePlus, SquareStack, Trash } from "lucide-react";
 import { ignoreAsyncFnResult } from "@/lib/utils/generic";
 import { deleteDeck, updateDeck } from "@/server/actions/deck/actions";
 import { HOME } from "@/lib/routes";
-import { PageTemplate } from "@/components/page/template/page-template";
+import { PageTemplate } from "@/components/page/main/template/page-template";
 import { RemainingCardsGrid } from "@/components/resource/remaining-cards-grid";
 import { Button } from "@/components/shadcn/button";
 import Link from "next/link";

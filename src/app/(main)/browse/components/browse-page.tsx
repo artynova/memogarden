@@ -1,6 +1,6 @@
 "use client";
 
-import { FooterActionData, PageTemplate } from "@/components/page/template/page-template";
+import { FooterActionData, PageTemplate } from "@/components/page/main/template/page-template";
 import { SelectUser } from "@/server/data/services/user";
 import { ChangeEvent, KeyboardEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";

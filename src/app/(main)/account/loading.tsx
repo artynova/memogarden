@@ -1,4 +1,4 @@
-import { PageSkeleton } from "@/components/page/skeleton/page-skeleton";
+import { PageSkeleton } from "@/components/page/main/skeleton/page-skeleton";
 
 /**
  * Loading skeleton for the route. Hides the footer.

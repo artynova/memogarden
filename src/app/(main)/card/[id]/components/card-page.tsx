@@ -1,9 +1,9 @@
 "use client";
 
-import { FooterActionData } from "@/components/page/template/footer";
+import { FooterActionData } from "@/components/page/main/template/footer";
 import { Folder, Pencil, Trash } from "lucide-react";
 import { ignoreAsyncFnResult } from "@/lib/utils/generic";
-import { PageTemplate } from "@/components/page/template/page-template";
+import { PageTemplate } from "@/components/page/main/template/page-template";
 import { useRouter } from "next/navigation";
 import { SelectUser } from "@/server/data/services/user";
 import { useState } from "react";

@@ -1,6 +1,6 @@
 "use client";
 
-import { FooterActionData, PageTemplate } from "@/components/page/template/page-template";
+import { FooterActionData, PageTemplate } from "@/components/page/main/template/page-template";
 import { RemainingCardsGrid } from "@/components/resource/remaining-cards-grid";
 import { DeckListCard } from "@/app/(main)/home/components/deck-list-card";
 import { CardsRemaining, DeckPreview } from "@/server/data/services/deck";

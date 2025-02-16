@@ -3,7 +3,7 @@
 import { SelectAvatar, SelectUser } from "@/server/data/services/user";
 import { ControlledSelectTimezone } from "@/app/(main)/account/components/controlled-select-timezone";
 import { useState } from "react";
-import { PageTemplate } from "@/components/page/template/page-template";
+import { PageTemplate } from "@/components/page/main/template/page-template";
 import {
     ControlledModalCollection,
     ModalData,

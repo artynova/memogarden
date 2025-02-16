@@ -1,7 +1,7 @@
 import { SelectUser } from "@/server/data/services/user";
 import { HealthBar } from "@/components/resource/bars/health-bar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/avatar";
-import { AvatarSkeleton } from "@/components/page/skeleton/avatar-skeleton";
+import { AvatarSkeleton } from "@/components/page/main/skeleton/avatar-skeleton";
 import { cn } from "@/lib/ui/generic";
 
 /**

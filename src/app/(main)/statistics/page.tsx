@@ -1,5 +1,5 @@
 import { PageWithSearchParamsProps, parseStringParam } from "@/lib/utils/server";
-import { PageTemplate } from "@/components/page/template/page-template";
+import { PageTemplate } from "@/components/page/main/template/page-template";
 import {
     countCards,
     countCardsByMaturities,

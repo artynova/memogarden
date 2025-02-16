@@ -13,7 +13,7 @@ import { SelectAvatar } from "@/server/data/services/user";
 import { Button } from "@/components/shadcn/button";
 import { useEffect, useState } from "react";
 import { Check, CheckCheck } from "lucide-react";
-import { AvatarSkeleton } from "@/components/page/skeleton/avatar-skeleton";
+import { AvatarSkeleton } from "@/components/page/main/skeleton/avatar-skeleton";
 import { cn } from "@/lib/ui/generic";
 
 /**

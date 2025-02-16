@@ -1,5 +1,5 @@
 import { SelectUser } from "@/server/data/services/user";
-import { ProfileBadge } from "@/components/page/template/profile-badge";
+import { ProfileBadge } from "@/components/page/main/template/profile-badge";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/shadcn/button";
 import Link from "next/link";
 import { ChartColumnIncreasing, CircleUser, LogOut } from "lucide-react";
-import { SignOutButton } from "@/components/page/template/sign-out-button";
+import { SignOutButton } from "@/components/page/main/template/sign-out-button";
 import { cn } from "@/lib/ui/generic";
 
 /**

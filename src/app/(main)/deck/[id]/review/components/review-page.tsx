@@ -1,7 +1,7 @@
 "use client";
 
 import { SelectCard } from "@/server/data/services/card";
-import { FooterActionData, PageTemplate } from "@/components/page/template/page-template";
+import { FooterActionData, PageTemplate } from "@/components/page/main/template/page-template";
 import { SelectUser } from "@/server/data/services/user";
 import { ChangeEvent, useState } from "react";
 import { Check, Frown, Laugh, Meh, Smile } from "lucide-react";

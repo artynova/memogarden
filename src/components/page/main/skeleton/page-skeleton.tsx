@@ -1,7 +1,7 @@
 import { ThemeProvider } from "@/components/theme/theme-provider";
-import { HeaderSkeleton } from "@/components/page/skeleton/header-skeleton";
-import { LoadingSpinner } from "@/components/page/skeleton/loading-spinner";
-import { FooterSkeleton } from "@/components/page/skeleton/footer-skeleton";
+import { HeaderSkeleton } from "@/components/page/main/skeleton/header-skeleton";
+import { LoadingSpinner } from "@/components/page/main/skeleton/loading-spinner";
+import { FooterSkeleton } from "@/components/page/main/skeleton/footer-skeleton";
 
 /**
  * Component for creating page placeholders in various routes of the functional app (i.e., not for the static pages).

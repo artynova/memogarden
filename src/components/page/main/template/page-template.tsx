@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { SelectUser } from "@/server/data/services/user";
-import { Header } from "@/components/page/template/header";
-import { Footer, FooterActionData } from "@/components/page/template/footer";
+import { Header } from "@/components/page/main/template/header";
+import { Footer, FooterActionData } from "@/components/page/main/template/footer";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 
 import { darkModeToTheme } from "@/lib/ui/theme";
@@ -9,8 +9,7 @@ import { darkModeToTheme } from "@/lib/ui/theme";
 export type { FooterActionData };
 
 /**
- * Template with structures common for all application pages (header, main part, functional footer). Children of this
- * component are placed inside the `<main>` element.
+ * Common layout of all main application pages. Children of this component are placed inside the `<main>` element.
  *
  * @param props Component properties.
  * @param props.title Page title.
