@@ -3,7 +3,7 @@ import { getDeckOptions } from "@/server/data/services/deck";
 import { getCardDataView, isCardAccessible } from "@/server/data/services/card";
 import { CardPage } from "@/app/(main)/card/[id]/components/card-page";
 
-import { getUserOrRedirectSC } from "@/server/auth";
+import { getUserOrRedirectSC } from "@/lib/utils/server";
 import { ResourceSpecificPageProps } from "@/lib/utils/server";
 
 /**

@@ -1,6 +1,5 @@
 import { UrlObject } from "url";
 import { DateTime } from "luxon";
-import { SelectUser } from "@/server/data/services/user";
 
 /**
  * URL as accepted by Next.js links.
@@ -61,12 +60,21 @@ export function getLocaleDateString(date: Date, timezone: string): string {
 
 /**
  * Gets the JavaScript date representing the end of the calendar date on which the given base date
- * falls in the given user's timezone.
+ * falls in the given timezone.
  *
- * @param user User.
  * @param date Base date.
+ * @param timezone IANA timezone string.
  * @returns End-of-day date.
  */
-export function getUserDayEnd(user: SelectUser, date: Date) {
-    return DateTime.fromJSDate(date).setZone(user.timezone).endOf("day").toJSDate();
+export function getDayEnd(date: Date, timezone: string) {
+    return DateTime.fromJSDate(date).setZone(timezone).endOf("day").toJSDate();
+}
+/**
+ * Gets the ISO date string component of a given date in the UTC timezone.
+ *
+ * @param date Date.
+ * @returns Date string.
+ */
+export function getUTCDateString(date: Date) {
+    return date.toISOString().split("T")[0];
 }

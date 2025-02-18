@@ -1,5 +1,6 @@
 import { CardMaturity } from "@/lib/enums";
 import { DateTime } from "luxon";
+import { getUTCDateString } from "./generic";
 
 /**
  * Data about how many reviews are associated with a specific date (represented as a date string).
@@ -47,16 +48,6 @@ export const RETROSPECTION_LIMIT = 30;
 export const PREDICTION_LIMIT = 30;
 
 /**
- * Gets the ISO date string component of a given date.
- *
- * @param date Date.
- * @returns ISO date string.
- */
-export function getCalendarDate(date: Date) {
-    return date.toISOString().split("T")[0];
-}
-
-/**
  * Converts the list of date-review-count entries to a sparse date-review-count mapping.
  *
  * @param data Array of entries.
@@ -64,7 +55,7 @@ export function getCalendarDate(date: Date) {
  */
 export function toSparseDatesReviews(data: DateRevisionStats[]) {
     return data.reduce<SparseDatesReviews>((acc, { date, reviews }) => {
-        acc[getCalendarDate(new Date(date))] = reviews;
+        acc[getUTCDateString(new Date(date))] = reviews;
         return acc;
     }, {});
 }
@@ -87,7 +78,7 @@ export function getPastRevisionsDates(
     const todayInTimezone = DateTime.fromJSDate(date).setZone(timezone).startOf("day");
     return Array.from({ length: RETROSPECTION_LIMIT }, (_, i) => {
         const date = todayInTimezone.minus({ days: RETROSPECTION_LIMIT - 1 - i }).toJSDate();
-        return { date, reviews: sparseDatesToReviews[getCalendarDate(date)] ?? 0 }; // Assume 0 revisions if data for a date is not present
+        return { date, reviews: sparseDatesToReviews[getUTCDateString(date)] ?? 0 }; // Assume 0 revisions if data for a date is not present
     });
 }
 
@@ -109,7 +100,7 @@ export function getFutureRevisionsDates(
     const todayInTimezone = DateTime.fromJSDate(date).setZone(timezone).startOf("day");
     return Array.from({ length: PREDICTION_LIMIT }, (_, i) => {
         const date = todayInTimezone.plus({ days: i }).toJSDate();
-        return { date, reviews: sparseDatesToReviews[getCalendarDate(date)] ?? 0 }; // Assume 0 revisions if data for a date is not present
+        return { date, reviews: sparseDatesToReviews[getUTCDateString(date)] ?? 0 }; // Assume 0 revisions if data for a date is not present
     });
 }
 

@@ -19,7 +19,7 @@ import { ContentWrapper } from "@/components/page/content-wrapper";
 import { CardsMaturitiesCard } from "@/app/(main)/statistics/components/cards-maturities-card";
 import { DailyReviewsCard } from "@/app/(main)/statistics/components/daily-reviews-card";
 
-import { getUserOrRedirectSC } from "@/server/auth";
+import { getUserOrRedirectSC } from "@/lib/utils/server";
 
 const MAX_DECK_NAME_LENGTH = 30;
 

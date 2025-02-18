@@ -1,6 +1,7 @@
 "use server";
 
-import { getUserIdOrRedirect, getUserOrRedirect, signIn, signOut } from "@/server/auth";
+import { signIn, signOut } from "@/server/auth";
+import { getUserIdOrRedirect, getUserOrRedirect } from "@/lib/utils/server";
 import { REDIRECT_WITH_TOKEN_TO, REDIRECT_WITHOUT_TOKEN_TO } from "@/lib/routes";
 import { ResponseBadRequest, ResponseConflict, ResponseUnauthorized } from "@/lib/responses";
 import { CredentialsSignin } from "next-auth";

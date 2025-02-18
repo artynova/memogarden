@@ -1,7 +1,7 @@
 import { getAllAvatars, isCredentialsUser } from "@/server/data/services/user";
 import { AccountPage } from "@/app/(main)/account/components/account-page";
 
-import { getUserOrRedirectSC } from "@/server/auth";
+import { getUserOrRedirectSC } from "@/lib/utils/server";
 
 /**
  * Account settings page.

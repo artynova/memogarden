@@ -2,7 +2,7 @@
 
 import { createDeck, editDeck, isDeckAccessible, removeDeck } from "@/server/data/services/deck";
 
-import { getUserIdOrRedirect } from "@/server/auth";
+import { getUserIdOrRedirect } from "@/lib/utils/server";
 import { ResponseBadRequest, ResponseUnauthorized } from "@/lib/responses";
 import { ModifyDeckData, ModifyDeckSchema } from "@/server/actions/deck/schemas";
 

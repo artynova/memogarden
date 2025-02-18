@@ -4,7 +4,7 @@ import { Pagination } from "@/server/data/services/utils";
 import { BrowsePage } from "@/app/(main)/browse/components/browse-page";
 import { getDeckOptions, isDeckAccessible } from "@/server/data/services/deck";
 import { notFound, redirect } from "next/navigation";
-import { getUserOrRedirectSC } from "@/server/auth";
+import { getUserOrRedirectSC } from "@/lib/utils/server";
 
 const PAGE_SIZE = 20;
 

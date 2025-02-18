@@ -5,7 +5,14 @@ import { NextURL } from "next/dist/server/web/next-url";
  */
 export const HOME = "/home";
 
-const ROUTES_ALLOWED_WITHOUT_TOKEN = ["/signin", "/signup", "/"];
+const ROUTE_PREFIXES_FORBIDDEN_WITHOUT_TOKEN = [
+    "/home",
+    "/account",
+    "/statistics",
+    "/browse",
+    "/deck",
+    "/card",
+];
 
 /**
  * Checks whether the URL should be accessible without a JWT session token.
@@ -14,7 +21,7 @@ const ROUTES_ALLOWED_WITHOUT_TOKEN = ["/signin", "/signup", "/"];
  * @returns `true` if it should be accessible, `false` otherwise.
  */
 export function shouldAllowWithoutToken(nextUrl: NextURL) {
-    return ROUTES_ALLOWED_WITHOUT_TOKEN.includes(nextUrl.pathname);
+    return !ROUTE_PREFIXES_FORBIDDEN_WITHOUT_TOKEN.includes(`/${nextUrl.pathname.split("/")[1]}`); // / is always the leading character, causing a single empty string to become the first in the splits array; thus, the second string in the array is the route's first segment ("prefix") that needs to be checked
 }
 
 const ROUTES_FORBIDDEN_WITH_TOKEN = ["/signin", "/signup"];

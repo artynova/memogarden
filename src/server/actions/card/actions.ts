@@ -10,8 +10,8 @@ import {
     removeCard,
     reviewCard,
 } from "@/server/data/services/card";
-import { getUserIdOrRedirect, getUserOrRedirect } from "@/server/auth";
-import { getUserDayEnd } from "@/lib/utils/generic";
+import { getUserIdOrRedirect, getUserOrRedirect } from "@/lib/utils/server";
+import { getDayEnd } from "@/lib/utils/generic";
 
 import { ReviewRating } from "@/lib/enums";
 
@@ -77,5 +77,5 @@ export async function reviewCardWithRating(id: string, answer: string, rating: R
     const user = await getUserOrRedirect();
     if (!(await isCardAccessible(user.id, id))) return ResponseUnauthorized;
     const now = new Date();
-    return reviewCard(id, answer, now, getUserDayEnd(user, now), rating);
+    return reviewCard(id, answer, now, getDayEnd(now, user.timezone), rating);
 }
