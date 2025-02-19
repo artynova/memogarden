@@ -1,5 +1,6 @@
 import { HealthState } from "@/lib/enums";
 import { toHealthState } from "@/lib/ui/health";
+import { describe, expect, test } from "vitest";
 
 describe(toHealthState, () => {
     test.each([

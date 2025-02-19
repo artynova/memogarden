@@ -9,6 +9,7 @@ import {
 import { Session } from "next-auth";
 import { getUser, maybeSyncUserHealth } from "@/server/data/services/user";
 import { signout } from "@/server/actions/user/actions";
+import { describe, expect, test, vi } from "vitest";
 
 vi.mock("@/server/auth");
 vi.mock("next/navigation");

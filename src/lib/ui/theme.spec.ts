@@ -1,5 +1,6 @@
 import { darkModeToTheme, isThemedSrc, ThemedImageSrc } from "@/lib/ui/theme";
 import { StaticImageData } from "next/image";
+import { describe, expect, test } from "vitest";
 
 describe(darkModeToTheme, () => {
     test.each([

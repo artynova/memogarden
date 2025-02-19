@@ -1,8 +1,9 @@
 import { NextURL } from "next/dist/server/web/next-url";
 import { shouldAllowWithoutToken, shouldAllowWithToken } from "@/lib/routes";
+import { describe, expect, test } from "vitest";
 
 describe(shouldAllowWithoutToken, () => {
-    it.each([
+    test.each([
         { route: "/signin" },
         { route: "/signup" },
         { route: "/" },
@@ -15,7 +16,7 @@ describe(shouldAllowWithoutToken, () => {
         expect(output).toEqual(true);
     });
 
-    it.each([
+    test.each([
         { route: "/home" },
         { route: "/account" },
         { route: "/statistics" },
@@ -33,7 +34,7 @@ describe(shouldAllowWithoutToken, () => {
 });
 
 describe(shouldAllowWithToken, () => {
-    it.each([
+    test.each([
         { route: "/" },
         { route: "/signin?invalidToken" },
         { route: "/home" },
@@ -52,7 +53,7 @@ describe(shouldAllowWithToken, () => {
         expect(output).toEqual(true);
     });
 
-    it.each([{ route: "/signin" }, { route: "/signup" }])(
+    test.each([{ route: "/signin" }, { route: "/signup" }])(
         "should not allow route $route",
         ({ route }) => {
             const input = new NextURL(`http://localhost${route}`);

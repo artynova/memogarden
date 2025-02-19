@@ -1,5 +1,6 @@
 import { CardMaturity, CardState } from "@/lib/enums";
 import { getCardMaturity } from "./maturity";
+import { describe, expect, test } from "vitest";
 
 describe(getCardMaturity, () => {
     test("should return maturity 'Seed' for cards with SRS state 'New'", () => {

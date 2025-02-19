@@ -6,6 +6,7 @@ import {
     getUTCDateString,
     ignoreAsyncFnResult,
 } from "@/lib/utils/generic";
+import { describe, expect, test, vi } from "vitest";
 
 describe(ignoreAsyncFnResult, () => {
     test("should forward input parameters to the wrapped promise-returning function", () => {

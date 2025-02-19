@@ -6,7 +6,6 @@ export default defineConfig({
     plugins: [tsconfigPaths(), react()],
     test: {
         environment: "jsdom",
-        globals: true,
         server: {
             deps: {
                 inline: ["next"],
