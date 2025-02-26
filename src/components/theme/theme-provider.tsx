@@ -30,18 +30,18 @@ export function ThemeProvider({
         <NextThemesProvider
             attribute="class"
             defaultTheme="system"
-            forcedTheme={theme ?? undefined}
+            forcedTheme={theme}
             enableSystem
             disableTransitionOnChange
         >
-            {!doNotPersistTheme && <ThemeSetter theme={theme} />}
+            {!doNotPersistTheme && <ThemeStorageHandler theme={theme} />}
             {children}
         </NextThemesProvider>
     );
 }
 
 /**
- * Component that does not render anything and only stores the given theme in local storage if it is defined. As a
+ * Component that does not render anything and only stores the given theme in local storage if the theme is defined. As a
  * result, the locally stored theme value can be used as a reasonable fallback while the real value is loading from
  * the database.
  *
@@ -52,7 +52,7 @@ export function ThemeProvider({
  * @param props.theme Theme to store in the local storage. If `null`, nothing will be stored.
  * @returns The component.
  */
-function ThemeSetter({ theme }: { theme?: string }) {
+function ThemeStorageHandler({ theme }: { theme?: Theme }) {
     const { setTheme } = useTheme();
     useEffect(() => {
         if (theme) setTheme(theme);
