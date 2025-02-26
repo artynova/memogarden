@@ -47,8 +47,8 @@ export function ControlledModalCollection({
                     open={currentModalIndex === index}
                     onOpenChange={
                         currentModalIndex === index
-                            ? () => onCurrentModalChange(null)
-                            : () => onCurrentModalChange(index)
+                            ? () => onCurrentModalChange(null) // The current modal can only close
+                            : () => onCurrentModalChange(index) // Any non-current modal can only open
                     }
                     title={modal.title}
                     description={modal.description}
