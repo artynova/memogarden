@@ -3,10 +3,10 @@ import { Button } from "@/components/shadcn/button";
 import Link from "next/link";
 import { Section } from "@/app/(static)/(landing)/components/section";
 
-import Hero from "../../../../../public/static/landing/hero.png";
-import HeroDark from "../../../../../public/static/landing/hero-dark.png";
-import HeroMobile from "../../../../../public/static/landing/hero-mobile.png";
-import HeroMobileDark from "../../../../../public/static/landing/hero-mobile-dark.png";
+import Hero from "@/../public/static/landing/hero.png";
+import HeroDark from "@/../public/static/landing/hero-dark.png";
+import HeroMobile from "@/../public/static/landing/hero-mobile.png";
+import HeroMobileDark from "@/../public/static/landing/hero-mobile-dark.png";
 import { AdaptiveMockup } from "@/components/mockup/adaptive-mockup";
 
 /**

@@ -4,25 +4,25 @@ import { Section } from "@/app/(static)/(landing)/components/section";
 import { useState } from "react";
 import { AccordionItem, ControlledAccordion } from "@/components/controlled-accordion";
 
-import Step1 from "../../../../../public/static/landing/step-1.png";
-import Step1Dark from "../../../../../public/static/landing/step-1-dark.png";
-import Step1Mobile from "../../../../../public/static/landing/step-1-mobile.png";
-import Step1MobileDark from "../../../../../public/static/landing/step-1-mobile-dark.png";
+import Step1 from "@/../public/static/landing/step-1.png";
+import Step1Dark from "@/../public/static/landing/step-1-dark.png";
+import Step1Mobile from "@/../public/static/landing/step-1-mobile.png";
+import Step1MobileDark from "@/../public/static/landing/step-1-mobile-dark.png";
 
-import Step2 from "../../../../../public/static/landing/step-2.png";
-import Step2Dark from "../../../../../public/static/landing/step-2-dark.png";
-import Step2Mobile from "../../../../../public/static/landing/step-2-mobile.png";
-import Step2MobileDark from "../../../../../public/static/landing/step-2-mobile-dark.png";
+import Step2 from "@/../public/static/landing/step-2.png";
+import Step2Dark from "@/../public/static/landing/step-2-dark.png";
+import Step2Mobile from "@/../public/static/landing/step-2-mobile.png";
+import Step2MobileDark from "@/../public/static/landing/step-2-mobile-dark.png";
 
-import Step3 from "../../../../../public/static/landing/step-3.png";
-import Step3Dark from "../../../../../public/static/landing/step-3-dark.png";
-import Step3Mobile from "../../../../../public/static/landing/step-3-mobile.png";
-import Step3MobileDark from "../../../../../public/static/landing/step-3-mobile-dark.png";
+import Step3 from "@/../public/static/landing/step-3.png";
+import Step3Dark from "@/../public/static/landing/step-3-dark.png";
+import Step3Mobile from "@/../public/static/landing/step-3-mobile.png";
+import Step3MobileDark from "@/../public/static/landing/step-3-mobile-dark.png";
 
-import Step4 from "../../../../../public/static/landing/step-4.png";
-import Step4Dark from "../../../../../public/static/landing/step-4-dark.png";
-import Step4Mobile from "../../../../../public/static/landing/step-4-mobile.png";
-import Step4MobileDark from "../../../../../public/static/landing/step-4-mobile-dark.png";
+import Step4 from "@/../public/static/landing/step-4.png";
+import Step4Dark from "@/../public/static/landing/step-4-dark.png";
+import Step4Mobile from "@/../public/static/landing/step-4-mobile.png";
+import Step4MobileDark from "@/../public/static/landing/step-4-mobile-dark.png";
 
 import { AdaptiveThemedImage } from "@/components/theme/adaptive-themed-image";
 import { Button } from "@/components/shadcn/button";
