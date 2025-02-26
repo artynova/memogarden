@@ -4,6 +4,11 @@ import { bgForegroundForHealth, bgForHealth, nameForHealth, toHealthState } from
 import { cn } from "@/lib/ui/generic";
 
 /**
+ * Default ARIA label for any health bar.
+ */
+export const DEFAULT_LABEL = "Health bar";
+
+/**
  * Health bar based on the SRS value of retrievability.
  *
  * @param props Component properties.
@@ -26,10 +31,10 @@ export function HealthBar({
     withText?: boolean;
 }) {
     const retrievabilityMissing = retrievability === null;
-    const retrievabilityPercent = retrievabilityMissing ? null : Math.ceil(retrievability * 100);
+    const retrievabilityPercent = retrievabilityMissing ? null : Math.round(retrievability * 100);
     const state = toHealthState(retrievabilityPercent);
     const progress = retrievabilityPercent ?? 0;
-    const frontColorClass = bgForegroundForHealth[state]; // No need to check whether the object has valid health because the progress bar is rendered as empty in that case, i.e., the front color is unused
+    const frontColorClass = bgForegroundForHealth[state];
     const backColorClass = bgForHealth[state];
     return (
         <div className="space-y-2">
@@ -43,12 +48,12 @@ export function HealthBar({
                 <Progress
                     value={progress}
                     className={cn("h-full", backColorClass, `[&>div]:${frontColorClass}`)}
-                    aria-label={label ?? "Health bar"}
+                    aria-label={label ?? DEFAULT_LABEL}
                 />
             </div>
             {withText && (
                 <div className="flex justify-center">
-                    <span>{`${nameForHealth[state]}, ${progress}%`}</span>
+                    <span>{`${nameForHealth[state]}${retrievabilityMissing ? "" : ", " + progress + "%"}`}</span>
                 </div>
             )}
         </div>
