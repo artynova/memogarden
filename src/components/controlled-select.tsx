@@ -35,7 +35,7 @@ export function ControlledSelect({
     options: SelectOption[];
     placeholder?: string;
     innerLabel?: string;
-    value: string;
+    value?: string;
     onValueChange: (value: string) => void;
     className?: string;
     id?: string;
