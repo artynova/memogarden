@@ -1,5 +1,5 @@
 import { HealthBar } from "@/components/resource/bars/health-bar";
-import { getLocaleDateString } from "@/lib/utils/generic";
+import { getLocaleDateString } from "@/lib/ui/generic";
 
 /**
  * Card health bar with a due date label.

@@ -13,7 +13,7 @@ import { getFutureRevisionsDates, getPastRevisionsDates } from "@/lib/utils/stat
 import { getDeck, getDeckOptions, isDeckAccessible } from "@/server/data/services/deck";
 import { notFound } from "next/navigation";
 import { StatisticsDeckSelect } from "@/app/(main)/statistics/components/statistics-deck-select";
-import { getTrimmedText } from "@/lib/utils/generic";
+import { getTrimmedText } from "@/lib/ui/generic";
 import { HealthBar } from "@/components/resource/bars/health-bar";
 import { ContentWrapper } from "@/components/page/content-wrapper";
 import { CardsMaturitiesCard } from "@/app/(main)/statistics/components/cards-maturities-card";
@@ -68,8 +68,17 @@ export default async function Page({ searchParams }: PageWithSearchParamsProps) 
                 </div>
                 {await getHealthBar(user, deckId)}
                 <CardsMaturitiesCard data={maturityCounts} />
-                <DailyReviewsCard title="Recent reviews" data={retrospectionStats} retrospect />
-                <DailyReviewsCard title="Scheduled reviews" data={predictionStats} />
+                <DailyReviewsCard
+                    title="Recent reviews"
+                    data={retrospectionStats}
+                    timezone={user.timezone}
+                    retrospect
+                />
+                <DailyReviewsCard
+                    title="Scheduled reviews"
+                    data={predictionStats}
+                    timezone={user.timezone}
+                />
             </ContentWrapper>
         </PageTemplate>
     );

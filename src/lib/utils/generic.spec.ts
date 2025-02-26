@@ -1,11 +1,4 @@
-import {
-    escapeRegex,
-    getDayEnd,
-    getLocaleDateString,
-    getTrimmedText,
-    getUTCDateString,
-    ignoreAsyncFnResult,
-} from "@/lib/utils/generic";
+import { escapeRegex, getDayEnd, getUTCDateString, ignoreAsyncFnResult } from "@/lib/utils/generic";
 import { describe, expect, test, vi } from "vitest";
 
 describe(ignoreAsyncFnResult, () => {
@@ -29,40 +22,6 @@ describe(escapeRegex, () => {
 
         expect(output).toEqual("a\\*a\\+a\\?a\\^a\\$a\\{a\\}a\\(a\\)a\\|a\\[a\\]a\\\\a");
     });
-});
-
-describe(getTrimmedText, () => {
-    test.each([
-        { text: "abcde", limit: 7, expected: "abcde" },
-        { text: "abcdefg", limit: 7, expected: "abcdefg" },
-        { text: "abcdefgh", limit: 7, expected: "abcd..." },
-    ])("should return $expected for input $text", ({ text, limit, expected }) => {
-        const output = getTrimmedText(text, limit);
-
-        expect(output).toEqual(expected);
-    });
-});
-
-describe(getLocaleDateString, () => {
-    test.each([
-        {
-            timezone: "America/New_York",
-            date: new Date("2020-05-02T06:00:00.000Z"),
-            expected: new Date("2020-05-02").toLocaleDateString(),
-        },
-        {
-            timezone: "America/New_York",
-            date: new Date("2020-05-02T03:00:00.000Z"),
-            expected: new Date("2020-05-01").toLocaleDateString(),
-        },
-    ])(
-        "should return $expected with input timezone $timezone and date $date",
-        ({ timezone, date, expected }) => {
-            const output = getLocaleDateString(date, timezone);
-
-            expect(output).toEqual(expected);
-        },
-    );
 });
 
 describe(getDayEnd, () => {

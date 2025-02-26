@@ -5,7 +5,7 @@ import { SelectCardPreview } from "@/server/data/services/card";
 import { LimitedTextSpan } from "@/components/limited-text-span";
 import removeMd from "remove-markdown";
 import { HealthBar } from "@/components/resource/bars/health-bar";
-import { getLocaleDateString } from "@/lib/utils/generic";
+import { getLocaleDateString } from "@/lib/ui/generic";
 
 const MAX_FRONT_PREVIEW_LENGTH_DESKTOP = 30;
 const MAX_FRONT_PREVIEW_LENGTH_MOBILE = 8;

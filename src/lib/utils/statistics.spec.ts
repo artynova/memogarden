@@ -4,7 +4,7 @@ import {
     getPastRevisionsDates,
     getFutureRevisionsDates,
     SparseDatesReviews,
-} from "./statistics";
+} from "@/lib/utils/statistics";
 
 describe(toSparseDatesReviews, () => {
     test.each([

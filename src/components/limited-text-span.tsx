@@ -1,4 +1,4 @@
-import { getTrimmedText } from "@/lib/utils/generic";
+import { getTrimmedText } from "@/lib/ui/generic";
 
 /**
  * Span of text that gets trimmed with an ellipsis if it has too many characters.

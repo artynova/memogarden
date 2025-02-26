@@ -1,6 +1,6 @@
 import { CardMaturity } from "@/lib/enums";
 import { DateTime } from "luxon";
-import { getUTCDateString } from "./generic";
+import { getUTCDateString } from "@/lib/utils/generic";
 
 /**
  * Data about how many reviews are associated with a specific date (represented as a date string).

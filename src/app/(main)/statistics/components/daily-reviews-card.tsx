@@ -10,6 +10,7 @@ import {
 } from "@/components/shadcn/chart";
 import { TitledCard } from "@/components/titled-card";
 import { DailyReviewsEntry } from "@/lib/utils/statistics";
+import { getLocaleDateString, getLocaleDateStringConcise } from "@/lib/ui/generic";
 
 const chartConfig = {
     reviews: {
@@ -24,6 +25,7 @@ const chartConfig = {
  * @param props Component properties.
  * @param props.data Chart data.
  * @param props.title Card title.
+ * @param props.timezone IANA timezone.
  * @param props.retrospect Whether the chart starts in some moment in the past and ends on the current date. If true,
  * the chart will prioritize showing a date label for the rightmost date. If false or unspecified, the chart will
  * prioritize showing a label for the leftmost date instead (since that date will be considered the current date).
@@ -32,10 +34,12 @@ const chartConfig = {
 export function DailyReviewsCard({
     data,
     title,
+    timezone,
     retrospect,
 }: {
     data: DailyReviewsEntry[];
     title: string;
+    timezone: string;
     retrospect?: boolean;
 }) {
     const total = data.reduce((acc, curr) => acc + curr.reviews, 0);
@@ -61,13 +65,9 @@ export function DailyReviewsCard({
                             tickMargin={8}
                             minTickGap={32}
                             fontSize={16}
-                            tickFormatter={(value: Date) => {
-                                const date = new Date(value);
-                                return date.toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                });
-                            }}
+                            tickFormatter={(value: Date) =>
+                                getLocaleDateStringConcise(value, timezone)
+                            }
                         />
                         <ChartTooltip
                             content={
@@ -75,13 +75,10 @@ export function DailyReviewsCard({
                                     className="w-[150px]"
                                     nameKey="reviews"
                                     labelFormatter={(_value, payload) =>
-                                        new Date(
+                                        getLocaleDateString(
                                             (payload[0].payload as DailyReviewsEntry).date,
-                                        ).toLocaleDateString("en-US", {
-                                            month: "short",
-                                            day: "numeric",
-                                            year: "numeric",
-                                        })
+                                            timezone,
+                                        )
                                     }
                                 />
                             }

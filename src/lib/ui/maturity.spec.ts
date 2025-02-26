@@ -1,5 +1,5 @@
 import { CardMaturity, CardState } from "@/lib/enums";
-import { getCardMaturity } from "./maturity";
+import { getCardMaturity } from "@/lib/ui/maturity";
 import { describe, expect, test } from "vitest";
 
 describe(getCardMaturity, () => {
