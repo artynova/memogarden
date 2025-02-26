@@ -1,3 +1,5 @@
+// Strictly client component
+
 import {
     FormControl,
     FormDescription,
