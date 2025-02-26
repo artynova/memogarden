@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
 import { SelectUser } from "@/server/data/services/user";
 import { Header } from "@/components/page/main/template/header";
-import { Footer, FooterActionData } from "@/components/page/main/template/footer";
+import { Footer } from "@/components/page/main/template/footer";
+import { FooterActionData } from "@/components/page/main/template/footer-action";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 
 import { darkModeToTheme } from "@/lib/ui/theme";
@@ -27,18 +28,9 @@ export function PageTemplate({
     footerActions,
     children,
 }: {
-    /**
-     * Text to be displayed in the header.
-     */
     title: string;
     user: SelectUser;
-    /**
-     * Whether to hide the "home" button - optional, assumed false if missing.
-     */
     hideHomeButton?: boolean;
-    /**
-     * List of main functional buttons of the page. Will be displayed in the page footer.
-     */
     footerActions?: FooterActionData[];
     children: ReactNode;
 }) {
