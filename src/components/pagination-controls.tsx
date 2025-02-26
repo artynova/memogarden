@@ -14,41 +14,17 @@ import { Url } from "@/lib/utils/generic";
  * displayed by the controls component. This value is used to decide whether ellipses on either side of the active page
  * button are required or not.
  */
-const MAX_ITEMS_IN_LIST = 7;
+export const MAX_ITEMS_IN_LIST = 7;
 
 /**
- * Page item in the controls page list, associated with a specific index.
+ * Page item in the controls page list, described by the index it shows (1-based).
  */
-interface PageListPage {
-    /**
-     * Page index.
-     */
-    index: number;
-}
-
-/**
- * Creates a {@link PageListPage} object.
- *
- * @param pageIndex Page index (starting from 0).
- * @returns The object.
- */
-function makePageItem(pageIndex: number): PageListPage {
-    return { index: pageIndex + 1 };
-}
+type PageListPage = number;
 
 /**
  * Ellipsis item in the controls page list, used as a stand-in for multiple pages for compactness.
  */
-type PageListEllipsis = object;
-
-/**
- * Creates a {@link PageListEllipsis} object.
- *
- * @returns The object.
- */
-function makeEllipsisItem(): PageListEllipsis {
-    return {};
-}
+type PageListEllipsis = null;
 
 /**
  * Item in the controls page list.
@@ -62,7 +38,7 @@ type PageListItem = PageListPage | PageListEllipsis;
  * @returns `true` if the item is a {@link PageListPage} item, `false` otherwise.
  */
 function isPageItem(item: PageListItem): item is PageListPage {
-    return (item as PageListPage).index != undefined;
+    return item != undefined;
 }
 
 /**
@@ -77,7 +53,7 @@ function prepareListItems(pageIndex: number, totalPages: number) {
 
     // Case when there is enough space to fit all page links comfortably and any ellipses are unnecessary
     if (totalPages <= MAX_ITEMS_IN_LIST) {
-        for (let i = 0; i < totalPages; i++) pageListItems.push(makePageItem(i)); // Use 1-based indexing for items
+        for (let i = 0; i < totalPages; i++) pageListItems.push(i + 1); // Use 1-based indexing for items
         return pageListItems;
     }
 
@@ -86,30 +62,29 @@ function prepareListItems(pageIndex: number, totalPages: number) {
     const useEllipsisRight = pageIndex < totalPages - edgeItems;
 
     if (useEllipsisLeft && !useEllipsisRight) {
-        pageListItems.push(makePageItem(0));
-        pageListItems.push(makeEllipsisItem());
+        pageListItems.push(1);
+        pageListItems.push(null);
         const remainingItems = edgeItems * 2 - 2; // Total number of items on both edges minus the 2 items that were already pushed (the first page and the ellipsis)
-        for (let i = totalPages - remainingItems; i < totalPages; i++)
-            pageListItems.push(makePageItem(i));
+        for (let i = totalPages - remainingItems; i < totalPages; i++) pageListItems.push(i + 1);
         return pageListItems;
     }
 
     if (!useEllipsisLeft && useEllipsisRight) {
         const initialItems = edgeItems * 2 - 2;
-        for (let i = 0; i < initialItems; i++) pageListItems.push(makePageItem(i));
-        pageListItems.push(makeEllipsisItem());
-        pageListItems.push(makePageItem(totalPages - 1)); // Last page
+        for (let i = 0; i < initialItems; i++) pageListItems.push(i + 1);
+        pageListItems.push(null);
+        pageListItems.push(totalPages); // Last page
         return pageListItems;
     }
 
     // Case when both ellipses are used
-    pageListItems.push(makePageItem(0));
-    pageListItems.push(makeEllipsisItem());
+    pageListItems.push(1);
+    pageListItems.push(null);
     // Push all items in the middle (including the central current page item)
     for (let i = pageIndex - edgeItems + 2; i <= pageIndex + edgeItems - 2; i++)
-        pageListItems.push(makePageItem(i));
-    pageListItems.push(makeEllipsisItem());
-    pageListItems.push(makePageItem(totalPages - 1));
+        pageListItems.push(i + 1);
+    pageListItems.push(null);
+    pageListItems.push(totalPages);
     return pageListItems;
 }
 
@@ -149,11 +124,8 @@ export function PaginationControls({
                 {pageListItems.map((item, index) => (
                     <PaginationItem key={index}>
                         {isPageItem(item) ? (
-                            <PaginationLink
-                                href={indexToHref(item.index)}
-                                isActive={pageIndex === item.index}
-                            >
-                                {item.index}
+                            <PaginationLink href={indexToHref(item)} isActive={pageIndex === item}>
+                                {item}
                             </PaginationLink>
                         ) : (
                             <PaginationEllipsis />
