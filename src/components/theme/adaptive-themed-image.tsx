@@ -28,7 +28,7 @@ export function AdaptiveThemedImage({
 }) {
     return imageMobile === undefined ? (
         <div className={cn("overflow-hidden", className)}>
-            <ThemedImage image={image} className={className} />
+            <ThemedImage image={image} />
         </div>
     ) : (
         <>
