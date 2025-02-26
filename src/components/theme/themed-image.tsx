@@ -26,6 +26,6 @@ export function ThemedImage({ image, className }: { image: ImageData; className?
             />
         </>
     ) : (
-        <Image src={image.src} alt={image.alt} />
+        <Image src={image.src} alt={image.alt} className={className} />
     );
 }
