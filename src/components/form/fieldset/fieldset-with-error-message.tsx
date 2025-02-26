@@ -18,7 +18,6 @@ export function FieldsetWithErrorMessage({
     error,
     className,
     children,
-    ...props
 }: {
     name: string;
     error?: string;
@@ -34,8 +33,7 @@ export function FieldsetWithErrorMessage({
             name={name}
             className={cn("space-y-2", className)}
             aria-invalid={!!error}
-            aria-describedby={error ? messageId : ""}
-            {...props}
+            aria-describedby={error ? messageId : undefined}
         >
             <FieldsetContext.Provider value={{ error }}>{children}</FieldsetContext.Provider>
             {error && (
