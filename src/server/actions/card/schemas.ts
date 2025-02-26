@@ -7,11 +7,11 @@ export const ModifyCardSchema = z.object({
     deckId: z.string().min(1, { message: "Required" }), // To trigger an error in the select field if no option is selected
     front: z
         .string()
-        .min(1, { message: "Should not be empty" })
+        .min(1, { message: "Required" })
         .max(300, { message: "Should be at most 300 characters" }),
     back: z
         .string()
-        .min(1, { message: "Should not be empty" })
+        .min(1, { message: "Required" })
         .max(1000, { message: "Should be at most 1000 characters" }),
 });
 

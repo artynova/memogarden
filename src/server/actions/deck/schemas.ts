@@ -6,7 +6,7 @@ import { z } from "zod";
 export const ModifyDeckSchema = z.object({
     name: z
         .string()
-        .min(1, { message: "Most likely should not be empty" })
+        .min(1, { message: "Required" })
         .max(100, { message: "Should be at most 100 characters" }),
 });
 /**
