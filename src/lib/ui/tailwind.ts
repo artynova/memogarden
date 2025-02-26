@@ -32,3 +32,7 @@ export const bgProblemClass = "bg-problem";
  * Class that sets the background color to the theme color signaling lack of importance.
  */
 export const bgUnimportantClass = "bg-muted";
+/**
+ * Class that sets the foreground color to the theme color signifying unimportant text.
+ */
+export const textUnimportantClass = "text-muted-foreground";

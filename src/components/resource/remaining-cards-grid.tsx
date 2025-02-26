@@ -2,23 +2,24 @@ import { CardsRemaining } from "@/server/data/services/deck";
 import { Fragment } from "react";
 
 import { cn } from "@/lib/ui/generic";
+import { textUnimportantClass } from "@/lib/ui/tailwind";
 
 function getDeckRemainingRenderData(remaining: CardsRemaining) {
     return [
         {
             name: "Seeds",
             number: remaining.new,
-            textColorClass: remaining.new ? "" : "text-muted-foreground",
+            textColorClass: remaining.new ? "" : textUnimportantClass,
         },
         {
             name: "Sprouts",
             number: remaining.learning,
-            textColorClass: remaining.learning ? "" : "text-muted-foreground",
+            textColorClass: remaining.learning ? "" : textUnimportantClass,
         },
         {
             name: "Growing",
             number: remaining.review,
-            textColorClass: remaining.review ? "" : "text-muted-foreground",
+            textColorClass: remaining.review ? "" : textUnimportantClass,
         },
     ];
 }
