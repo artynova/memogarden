@@ -9,7 +9,7 @@ import { Button } from "@/components/shadcn/button";
 import { BookOpen, Check, Pencil, X } from "lucide-react";
 import { FormSelect } from "@/components/form/form-select";
 import { ignoreAsyncFnResult } from "@/lib/utils/generic";
-import { FormMarkdownInput } from "@/components/form/markdown/form-markdown-input";
+import { FormMarkdownInput } from "@/components/form/form-markdown-input";
 import { Toggle } from "@/components/shadcn/toggle";
 
 import { SelectOption } from "@/lib/utils/input";

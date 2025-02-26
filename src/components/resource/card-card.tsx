@@ -1,7 +1,7 @@
 import { SelectCard, SelectCardDataView } from "@/server/data/services/card";
 import { Card, CardContent, CardHeader } from "@/components/shadcn/card";
 import { Separator } from "@/components/shadcn/separator";
-import { MarkdownProse } from "@/components/markdown-prose";
+import { MarkdownProse } from "@/components/markdown/markdown-prose";
 
 /**
  * Generalized UI card showing either both the front (question) and the back (answer) or just the front of a flashcard.
