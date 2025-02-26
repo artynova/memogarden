@@ -1,6 +1,11 @@
 import { HealthBar } from "@/components/resource/bars/health-bar";
 
 /**
+ * Deck health bar label.
+ */
+export const LABEL = "Average health:";
+
+/**
  * Deck health bar with an "Average health:" label.
  *
  * @param props Component properties.
@@ -23,7 +28,7 @@ export function DeckHealthBarWithLabel({
         <HealthBar
             retrievability={retrievability}
             className={className}
-            label="Average health:"
+            label={LABEL}
             withText={withBarText}
         />
     );
