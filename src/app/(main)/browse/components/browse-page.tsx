@@ -76,9 +76,9 @@ export function BrowsePage({
 
     function pageIndexToHref(index: number) {
         const params = new URLSearchParams(searchParams);
-        if (index === 0) params.delete("page");
+        if (index === 1) params.delete("page");
         else params.set("page", index.toString());
-        return `/browse?${params}`;
+        return `/browse${params.toString() ? "?" + params.toString() : ""}`;
     }
 
     function onSearchSubmit(query: string, deckFilter: string) {
@@ -185,11 +185,13 @@ export function BrowsePage({
                     }))}
                     pagination={pagination}
                 />
-                <PaginationControls
-                    pageIndex={searchResults.page}
-                    totalPages={totalPages}
-                    indexToHref={pageIndexToHref}
-                />
+                {totalPages > 0 && (
+                    <PaginationControls
+                        pageIndex={searchResults.page}
+                        totalPages={totalPages}
+                        indexToHref={pageIndexToHref}
+                    />
+                )}
             </ContentWrapper>
             <ControlledModalCollection
                 modals={modals}
