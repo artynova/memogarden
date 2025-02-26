@@ -57,7 +57,8 @@ export function UserDropdown({ user, className }: { user: SelectUser; className?
                 </DropdownMenuItem>
                 <DropdownMenuItem className="p-0">
                     <SignOutButton variant="ghost" className="w-full justify-between px-4 py-2">
-                        Sign out <LogOut />
+                        Sign out
+                        <LogOut />
                     </SignOutButton>
                 </DropdownMenuItem>
             </DropdownMenuContent>

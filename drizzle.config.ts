@@ -1,6 +1,6 @@
 import "@/scripts/load-dev-env";
-import { defineConfig } from "drizzle-kit";
 import { connectionURL } from "@/server/data/db";
+import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
     schema: "./src/server/data/schemas",
