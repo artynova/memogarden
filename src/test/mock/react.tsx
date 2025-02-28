@@ -3,7 +3,15 @@ import { MockedFunction } from "vitest";
 import { FormField } from "@/components/shadcn/form";
 import { fakeCompliantValue } from "@/test/mock/generic";
 
-type MockedComponentWithChildren = MockedFunction<(props: { children?: ReactNode }) => ReactNode>;
+type MockedComponentWithOptionalChildren = MockedFunction<
+    (props: { children?: ReactNode }) => ReactNode
+>;
+type MockedComponentWithRequiredChildren = MockedFunction<
+    (props: { children: ReactNode }) => ReactNode
+>;
+type MockedComponentWithChildren =
+    | MockedComponentWithOptionalChildren
+    | MockedComponentWithRequiredChildren;
 
 /**
  * Adds a mock implementation to the provided mocked functional component, returning the component's children without any wrappers.
@@ -12,7 +20,7 @@ type MockedComponentWithChildren = MockedFunction<(props: { children?: ReactNode
  * @param mockedComponent Mocked component with children.
  */
 export function replaceWithChildren(mockedComponent: MockedComponentWithChildren) {
-    mockedComponent.mockImplementation(({ children }) => <>{children}</>);
+    mockedComponent.mockImplementation(({ children }) => <>{children ?? null}</>);
 }
 
 type MockedFormField = MockedFunction<typeof FormField>;

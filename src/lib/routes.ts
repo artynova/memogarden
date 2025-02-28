@@ -34,7 +34,7 @@ const ROUTES_FORBIDDEN_WITH_TOKEN = ["/signin", "/signup"];
  * @returns `true` if it should be accessible, `false` otherwise.
  */
 export function shouldAllowWithToken(nextUrl: NextURL) {
-    if (nextUrl.pathname === "/signin") return nextUrl.searchParams.has("invalidToken"); // The sign-in route should normally be avoided if the request has a session token, except for cases when the "invalidToken" search parameter is used to explicitly specify that the current token is invalid and should be destroyed
+    if (nextUrl.pathname === "/signin") return nextUrl.searchParams.has(INVALID_TOKEN_FLAG); // The sign-in route should normally be avoided if the request has a session token, except for cases when the invalid token flag is used to explicitly specify that the current token is invalid and should be destroyed
     return !ROUTES_FORBIDDEN_WITH_TOKEN.includes(nextUrl.pathname);
 }
 
@@ -42,6 +42,11 @@ export function shouldAllowWithToken(nextUrl: NextURL) {
  * Where the user without a JWT session token should be redirected if they visit a non-public route.
  */
 export const REDIRECT_WITHOUT_TOKEN_TO = "/signin";
+
+/**
+ * Invalid token flag for the sign-in route, triggers seamless sign-out when included in search parameters.
+ */
+export const INVALID_TOKEN_FLAG = "invalidToken";
 
 /**
  * Where the user with a JWT session token should be redirected if they visit a route that does not make sense for

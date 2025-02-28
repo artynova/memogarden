@@ -12,6 +12,7 @@ import { ChevronsRight } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
 import { CredentialsSignupData, CredentialsSignupSchema } from "@/server/actions/user/schemas";
+import { ResponseConflict } from "@/lib/responses";
 
 const formConfig: UseFormProps<CredentialsSignupData> = {
     mode: "onBlur" as const,
@@ -34,7 +35,7 @@ export function SignupForm() {
     async function onSubmit(data: CredentialsSignupData) {
         const inferredTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const response = await signup(data, inferredTimezone);
-        if (response?.status === 409) {
+        if (response?.status === ResponseConflict.status) {
             form.setError("email", { message: "Already in use" });
         }
     }

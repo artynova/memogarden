@@ -38,7 +38,7 @@ export const CredentialsSignupSchema = z
     .object({
         email: z.string().min(1, { message: "Required" }).email(),
         password: passwordField,
-        confirmPassword: z.string(),
+        confirmPassword: z.string().min(1, { message: "Required" }),
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: "Confirmation must match the password",
