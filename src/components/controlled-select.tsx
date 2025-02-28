@@ -1,3 +1,5 @@
+// Strictly client component
+
 import {
     Select,
     SelectContent,
@@ -9,6 +11,7 @@ import {
 } from "@/components/shadcn/select";
 
 import { SelectOption } from "@/lib/utils/input";
+import { ComponentProps, forwardRef } from "react";
 
 /**
  * Dropdown selector with arbitrary options and externally managed state.
@@ -23,26 +26,19 @@ import { SelectOption } from "@/lib/utils/input";
  * @param props.id HTML ID.
  * @returns The component.
  */
-export function ControlledSelect({
-    options,
-    placeholder,
-    innerLabel,
-    value,
-    onValueChange,
-    className,
-    id,
-}: {
-    options: SelectOption[];
-    placeholder?: string;
-    innerLabel?: string;
-    value?: string;
-    onValueChange: (value: string) => void;
-    className?: string;
-    id?: string;
-}) {
+const ControlledSelect = forwardRef<
+    HTMLButtonElement,
+    {
+        options: SelectOption[];
+        placeholder?: string;
+        innerLabel?: string;
+        value?: string;
+        onValueChange: (value: string) => void;
+    } & ComponentProps<"button">
+>(({ options, placeholder, innerLabel, value, onValueChange, ...rest }, ref) => {
     return (
         <Select onValueChange={onValueChange} value={value}>
-            <SelectTrigger id={id} className={className} aria-label={innerLabel}>
+            <SelectTrigger ref={ref} {...rest}>
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
@@ -57,4 +53,7 @@ export function ControlledSelect({
             </SelectContent>
         </Select>
     );
-}
+});
+ControlledSelect.displayName = "ControlledSelect";
+
+export { ControlledSelect };

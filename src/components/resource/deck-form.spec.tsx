@@ -62,6 +62,7 @@ describe(DeckForm, () => {
 
     test("should report validation errors and avoid submitting erroneous data", async () => {
         render(<DeckForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+        const input = screen.getByRole("textbox", { name: /name/i });
         const saveButton = screen.getByRole("button", { name: /save/i });
         fireEvent.click(saveButton);
 
@@ -70,6 +71,8 @@ describe(DeckForm, () => {
 
             expect(error).toBeInTheDocument();
             expect(error).toHaveClass("text-destructive");
+            expect(input).toHaveAttribute("aria-invalid", "true");
+            expect(input).toHaveAttribute("aria-describedby", expect.stringContaining(error!.id));
             expect(mockOnSubmit).not.toHaveBeenCalled();
             expect(mockOnCancel).not.toHaveBeenCalled();
         });

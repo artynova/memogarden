@@ -8,7 +8,7 @@ describe(ControlledMarkdownInput, () => {
         "should forward provided HTML ID to the editor container given ID $id",
         ({ id }) => {
             const { container } = render(<ControlledMarkdownInput id={id} />);
-            const editor = container.getElementsByClassName("cm-editor")[0];
+            const editor = container.firstElementChild;
 
             expect(editor).toHaveAttribute("id", id);
         },

@@ -170,6 +170,7 @@ export function BrowsePage({
                             ...deckOptions,
                         ]}
                         innerLabel="Filter by deck"
+                        aria-label="Filter by deck"
                         value={deckFilter}
                         onValueChange={(value: string) => {
                             onSearchSubmit(inputQuery, value);

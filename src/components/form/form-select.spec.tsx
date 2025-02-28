@@ -24,7 +24,9 @@ vi.mock("@/components/shadcn/form", async (importOriginal) => {
         FormMessage: vi.fn(),
     };
 });
-vi.mock("@/components/controlled-select");
+vi.mock("@/components/controlled-select", () => ({
+    ControlledSelect: vi.fn(),
+}));
 
 const mockedFormField = vi.mocked(FormField);
 const mockedFormLabel = vi.mocked(FormLabel);

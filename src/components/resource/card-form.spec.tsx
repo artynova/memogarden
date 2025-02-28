@@ -254,15 +254,24 @@ describe(CardForm, () => {
 
     test("should report validation errors and avoid submitting erroneous data", async () => {
         render(<CardForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} deckOptions={[]} />);
+        const inputDeck = screen.getByRole("combobox");
+        const editorFront = screen.getByText(/front/i).nextElementSibling;
+        const editorBack = screen.getByText(/back/i).nextElementSibling;
         const saveButton = screen.getByRole("button", { name: /save/i });
         fireEvent.click(saveButton);
 
         await waitFor(() => {
+            const fieldsInOrder = [inputDeck, editorFront, editorBack];
             const errors = screen.getAllByText(/required/i);
 
             expect(errors.length).toEqual(3);
-            errors.forEach((error) => {
+            errors.forEach((error, index) => {
                 expect(error).toHaveClass("text-destructive");
+                expect(fieldsInOrder[index]).toHaveAttribute("aria-invalid", "true");
+                expect(fieldsInOrder[index]).toHaveAttribute(
+                    "aria-describedby",
+                    expect.stringContaining(error.id),
+                );
             });
             expect(mockOnSubmit).not.toHaveBeenCalled();
             expect(mockOnCancel).not.toHaveBeenCalled();

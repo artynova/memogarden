@@ -8,6 +8,7 @@ import {
     ComponentProps,
     FocusEvent,
     forwardRef,
+    useEffect,
     useImperativeHandle,
     useRef,
     useState,
@@ -31,6 +32,18 @@ const ControlledMarkdownInput = forwardRef<
 >(({ onChange, onFocus, onBlur, value, disabled, ...rest }, ref) => {
     const [editorFocused, setEditorFocused] = useState(false);
     const codeMirrorRef = useRef<ReactCodeMirrorRef>(null);
+
+    // Synchronize the editor with the attributes forwarded to it
+    useEffect(() => {
+        const editor = codeMirrorRef.current?.editor;
+        if (editor) {
+            Object.entries(rest).forEach(([key, value]) => {
+                if (typeof value === "string" || typeof value === "boolean")
+                    editor.setAttribute(key, value.toString());
+                else editor.removeAttribute(key);
+            });
+        }
+    }, [rest]);
 
     useImperativeHandle(ref, () => codeMirrorRef.current?.editor ?? undefined, [codeMirrorRef]);
 
@@ -62,14 +75,6 @@ const ControlledMarkdownInput = forwardRef<
             editable={!disabled}
             extensions={[markdown(), memoGarden]}
             ref={codeMirrorRef}
-            onCreateEditor={(view) => {
-                // Assign other attributes to the editor DOM element
-                Object.entries(rest).forEach(([key, value]) => {
-                    if (typeof value === "string") {
-                        view.dom.setAttribute(key, value);
-                    }
-                });
-            }}
         />
     );
 });
