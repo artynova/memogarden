@@ -3,10 +3,39 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, test, vi } from "vitest";
 import { CardForm } from "@/components/resource/card-form";
 import { MarkdownProse } from "@/components/markdown/markdown-prose";
+import { ModifyCardData } from "@/server/actions/card/schemas";
 
 vi.mock("@/components/markdown/markdown-prose");
 
 const mockedMarkdownProse = vi.mocked(MarkdownProse);
+
+/**
+ * Simulates a real user inputting given data into a form currently rendered on the screen.
+ *
+ * @param data Desired input data.
+ * @param deckLabel Label to find the target deck option by.
+ */
+async function inputIntoForm(data: ModifyCardData, deckLabel: string) {
+    // Simulate choosing card deck ID
+    const inputDeck = screen.getByRole("combobox");
+    fireEvent.click(inputDeck);
+    const targetOption = screen.getByRole("option", {
+        name: deckLabel,
+    });
+    fireEvent.click(targetOption);
+    // Simulate inputting front Markdown
+    const inputFront = screen
+        .getByText(/front/i)
+        .nextElementSibling?.getElementsByClassName("cm-content")[0];
+    await userEvent.click(inputFront!);
+    await userEvent.keyboard(data.front);
+    // Simulate inputting back Markdown
+    const inputBack = screen
+        .getByText(/back/i)
+        .nextElementSibling?.getElementsByClassName("cm-content")[0];
+    await userEvent.click(inputBack!);
+    await userEvent.keyboard(data.back);
+}
 
 describe(CardForm, () => {
     const mockOnSubmit = vi.fn();
@@ -203,26 +232,7 @@ describe(CardForm, () => {
         render(
             <CardForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} deckOptions={deckOptions} />,
         );
-        // Simulate choosing card deck ID
-        const inputDeck = screen.getByRole("combobox");
-        fireEvent.click(inputDeck);
-        const targetOption = screen.getByRole("option", {
-            name: deckOptions[deckIndex].label,
-        });
-        fireEvent.click(targetOption);
-        // Simulate inputting front Markdown
-        const inputFront = screen
-            .getByText(/front/i)
-            .nextElementSibling?.getElementsByClassName("cm-content")[0];
-        await userEvent.click(inputFront!);
-        await userEvent.keyboard(target.front);
-        // Simulate inputting back Markdown
-        const inputBack = screen
-            .getByText(/back/i)
-            .nextElementSibling?.getElementsByClassName("cm-content")[0];
-        await userEvent.click(inputBack!);
-        await userEvent.keyboard(target.back);
-        // Save
+        await inputIntoForm(target, deckOptions[deckIndex].label);
         const saveButton = screen.getByRole("button", { name: /save/i });
         fireEvent.click(saveButton);
 
@@ -233,16 +243,17 @@ describe(CardForm, () => {
     });
 
     test("should call onCancel when cancel button is clicked", async () => {
-        const frontText = "hello world";
+        const deckOptions = [
+            { label: "German", value: "uuid_1" },
+            { label: "Polish", value: "uuid_2" },
+        ];
+        const deckIndex = 0;
+        const target = { front: "Hello", back: "Hallo", deckId: deckOptions[deckIndex].value };
 
-        render(<CardForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} deckOptions={[]} />);
-        // Simulate inputting front Markdown
-        const inputFront = screen
-            .getByText(/front/i)
-            .nextElementSibling?.getElementsByClassName("cm-content")[0];
-        await userEvent.click(inputFront!);
-        await userEvent.keyboard(frontText);
-        // Cancel
+        render(
+            <CardForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} deckOptions={deckOptions} />,
+        );
+        await inputIntoForm(target, deckOptions[deckIndex].label);
         const cancelButton = screen.getByRole("button", { name: /cancel/i });
         fireEvent.click(cancelButton);
 

@@ -1,6 +1,19 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 import { DeckForm } from "@/components/resource/deck-form";
+import { ModifyDeckData } from "@/server/actions/deck/schemas";
+
+/**
+ * Simulates a real user inputting given data into a form currently rendered on the screen.
+ *
+ * @param data Desired input data.
+ */
+function inputIntoForm(data: ModifyDeckData) {
+    const input = screen.getByRole("textbox", { name: /name/i });
+    fireEvent.change(input, {
+        target: { value: data.name },
+    });
+}
 
 describe(DeckForm, () => {
     const mockOnSubmit = vi.fn();
@@ -30,10 +43,7 @@ describe(DeckForm, () => {
         const target = { name: "My Deck" };
 
         render(<DeckForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
-        const input = screen.getByRole("textbox", { name: /name/i });
-        fireEvent.change(input, {
-            target: { value: target.name },
-        });
+        inputIntoForm(target);
         const saveButton = screen.getByRole("button", { name: /save/i });
         fireEvent.click(saveButton);
 
@@ -44,13 +54,10 @@ describe(DeckForm, () => {
     });
 
     test("should call onCancel when cancel button is clicked", async () => {
-        const nameText = "hello world";
+        const target = { name: "hello world" };
 
         render(<DeckForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
-        const input = screen.getByRole("textbox", { name: /name/i });
-        fireEvent.change(input, {
-            target: { value: nameText },
-        });
+        inputIntoForm(target);
         const cancelButton = screen.getByRole("button", { name: /cancel/i });
         fireEvent.click(cancelButton);
 
