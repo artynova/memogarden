@@ -51,7 +51,6 @@ describe(FieldsetWithErrorMessage, () => {
         const { container } = render(
             <FieldsetWithErrorMessage name="">{children}</FieldsetWithErrorMessage>,
         );
-        screen.debug();
         const contentTag = container.getElementsByTagName(checkTag)[0];
 
         expect(contentTag).toBeInTheDocument();
