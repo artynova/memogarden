@@ -3,9 +3,7 @@
 import { useRouter } from "next/navigation";
 import { ControlledSelect } from "@/components/controlled-select";
 
-import { SelectOption } from "@/lib/utils/input";
-
-const NO_DECK_FILTER_OPTION = "any";
+import { NO_DECK_OPTION, SelectOption } from "@/lib/utils/input";
 
 /**
  * Deck selector for the statistics page.
@@ -26,13 +24,11 @@ export function StatisticsDeckSelect({
 
     return (
         <ControlledSelect
-            options={[{ value: NO_DECK_FILTER_OPTION, label: "All decks" }, ...deckOptions]}
+            options={[{ value: NO_DECK_OPTION, label: "All decks" }, ...deckOptions]}
             innerLabel="Select deck to view"
-            value={deckId ?? NO_DECK_FILTER_OPTION}
+            value={deckId ?? NO_DECK_OPTION}
             onValueChange={(value: string) => {
-                router.push(
-                    `/statistics${value === NO_DECK_FILTER_OPTION ? "" : "?deckId=" + value}`,
-                );
+                router.push(`/statistics${value === NO_DECK_OPTION ? "" : "?deckId=" + value}`);
             }}
             className="max-w-[35%] sm:max-w-[20%]"
         />

@@ -60,7 +60,7 @@ export function ThemeDropdown({
             <DropdownMenuTrigger className="w-full" id={id} asChild>
                 <Button variant="outline">
                     {themeToLabel[theme]}
-                    <span className="sr-only">Toggle theme</span>
+                    <span className="sr-only">Select theme</span>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[--radix-dropdown-menu-trigger-width]">

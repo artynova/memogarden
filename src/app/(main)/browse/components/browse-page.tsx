@@ -25,9 +25,7 @@ import {
 import { ContentWrapper } from "@/components/page/content-wrapper";
 import { ModifyDeckData } from "@/server/actions/deck/schemas";
 
-import { SelectOption } from "@/lib/utils/input";
-
-const NO_DECK_FILTER_OPTION = "any";
+import { NO_DECK_OPTION, SelectOption } from "@/lib/utils/input";
 
 /**
  * Parsed and validated search parameters for the browsing page.
@@ -72,7 +70,7 @@ export function BrowsePage({
     const [inputQuery, setInputQuery] = useState(query);
 
     const totalPages = Math.ceil(searchResults.totalCards / pagination.pageSize);
-    const deckFilter = deckId ?? NO_DECK_FILTER_OPTION;
+    const deckFilter = deckId ?? NO_DECK_OPTION;
 
     function pageIndexToHref(index: number) {
         const params = new URLSearchParams(searchParams);
@@ -84,7 +82,7 @@ export function BrowsePage({
     function onSearchSubmit(query: string, deckFilter: string) {
         const params = new URLSearchParams();
         if (query) params.set("query", query);
-        if (deckFilter !== NO_DECK_FILTER_OPTION) params.set("deckId", deckFilter);
+        if (deckFilter !== NO_DECK_OPTION) params.set("deckId", deckFilter);
         router.push(`/browse?${params}`);
     }
 
@@ -165,10 +163,7 @@ export function BrowsePage({
                 </div>
                 <div className="flex items-center gap-x-8">
                     <ControlledSelect
-                        options={[
-                            { value: NO_DECK_FILTER_OPTION, label: "All decks" },
-                            ...deckOptions,
-                        ]}
+                        options={[{ value: NO_DECK_OPTION, label: "All decks" }, ...deckOptions]}
                         innerLabel="Filter by deck"
                         aria-label="Filter by deck"
                         value={deckFilter}

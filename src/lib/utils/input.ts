@@ -11,3 +11,9 @@ export interface SelectOption {
      */
     label: string;
 }
+
+/**
+ * String select value that denotes no specific deck being selected. Only for cases when this is a permissible choice that can be processed by the
+ * server.
+ */
+export const NO_DECK_OPTION = "any";

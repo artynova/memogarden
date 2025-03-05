@@ -82,9 +82,9 @@ describe(SignupForm, () => {
 
         render(<SignupForm />);
         inputIntoForm(target);
-        const inputEmail = screen.getByRole("textbox", { name: /email/i });
         const signupButton = screen.getByRole("button", { name: /sign up/i });
         fireEvent.click(signupButton);
+        const inputEmail = screen.getByRole("textbox", { name: /email/i });
 
         await waitFor(() => {
             const error = screen.queryByText(/already in use/i);
@@ -103,14 +103,15 @@ describe(SignupForm, () => {
         render(<SignupForm />);
         const signupButton = screen.getByRole("button", { name: /sign up/i });
         const inputEmail = screen.getByRole("textbox", { name: /email/i });
+        const inputPassword = screen.getByLabelText(/^password/i);
         const inputConfirmPassword = screen.getByLabelText(/confirm password/i);
         fireEvent.click(signupButton);
 
         await waitFor(() => {
-            const fieldsInOrder = [inputEmail, inputConfirmPassword];
+            const fieldsInOrder = [inputEmail, inputPassword, inputConfirmPassword];
             const errors = screen.getAllByText(/required/i);
 
-            expect(errors.length).toEqual(2);
+            expect(errors.length).toEqual(3);
 
             errors.forEach((error, index) => {
                 expect(error).toHaveClass("text-destructive");
@@ -125,7 +126,6 @@ describe(SignupForm, () => {
     });
 
     test.each([
-        { password: "", errorExp: /at least 8/i },
         { password: "a", errorExp: /at least 8/i },
         { password: "aaaaaaa", errorExp: /at least 8/i },
         { password: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", errorExp: /at most 32/i },

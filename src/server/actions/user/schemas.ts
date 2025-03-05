@@ -16,6 +16,7 @@ export type CredentialsSigninData = z.infer<typeof CredentialsSigninSchema>;
 
 const passwordField = z
     .string()
+    .min(1, { message: "Required" })
     .min(8, { message: "Must be at least 8 characters" })
     .max(32, { message: "Must be at most 32 characters" })
     .regex(/^(?=.*[a-z]).+$/, {
@@ -58,7 +59,7 @@ export const ChangePasswordSchema = z
     .object({
         oldPassword: z.string().min(1, { message: "Required" }),
         password: passwordField,
-        confirmPassword: z.string(),
+        confirmPassword: z.string().min(1, { message: "Required" }),
     })
     .refine((data) => data.oldPassword != data.password, {
         message: "New password must be different from the old password",

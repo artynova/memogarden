@@ -43,7 +43,7 @@ export function ControlledSelectAvatar({
     id?: string;
 }) {
     const [api, setApi] = useState<CarouselApi>();
-    const [currentSnap, setCurrentSnap] = useState<number>(avatarIndex);
+    const [currentSnap, setCurrentSnap] = useState(avatarIndex);
 
     useEffect(() => {
         if (!api) return () => {}; // Nothing to unsubscribe from, returning the function is just required by the hook
@@ -66,13 +66,13 @@ export function ControlledSelectAvatar({
                     id={id}
                 >
                     <CarouselContent>
-                        {avatars.map((avatar) => (
+                        {avatars.map((avatar, index) => (
                             <CarouselItem key={avatar.id} className="basis-full">
                                 <div className="flex items-center justify-center">
                                     <Avatar
                                         className={cn(
                                             "size-32 border-8 sm:size-64",
-                                            avatarIndex === avatar.id
+                                            index === avatarIndex
                                                 ? "border-accent"
                                                 : "border-muted",
                                         )}

@@ -1,5 +1,6 @@
 import "@/scripts/load-test-env";
 import "@testing-library/jest-dom/vitest";
+import "@/test/expect/react";
 import { cleanup } from "@testing-library/react";
 import { StaticImageData } from "next/image";
 import { afterEach, vi } from "vitest";

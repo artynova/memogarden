@@ -1,6 +1,6 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { AccessorKeyColumnDef } from "@tanstack/react-table";
 import { SelectCardPreview } from "@/server/data/services/card";
 import { LimitedTextSpan } from "@/components/limited-text-span";
 import removeMd from "remove-markdown";
@@ -25,7 +25,7 @@ export interface SelectCardPreviewWithTimezone extends SelectCardPreview {
 /**
  * Browsing results table columns.
  */
-export const columns: ColumnDef<SelectCardPreviewWithTimezone>[] = [
+export const columns: AccessorKeyColumnDef<SelectCardPreviewWithTimezone>[] = [
     {
         accessorKey: "front",
         header: "Front",

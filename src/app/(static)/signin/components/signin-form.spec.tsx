@@ -43,7 +43,7 @@ describe(SigninForm, () => {
         expect(form).toHaveFormValues({});
     });
 
-    test("should submit input data along to the 'signinWithCredentials' server action when submit button is clicked and form contains valid data", async () => {
+    test("should submit input data to the 'signinWithCredentials' server action when submit button is clicked and form contains valid data", async () => {
         const target = {
             email: "john_smith@example.com",
             password: "s3cure_PASSWORD",
@@ -63,7 +63,6 @@ describe(SigninForm, () => {
         const target = {
             email: "john_smith@example.com",
             password: "s3cure_PASSWORD",
-            confirmPassword: "s3cure_PASSWORD",
         };
         mockedSigninWithCredentials.mockResolvedValue(ResponseUnauthorized); // Mock sign-in failure on server
 

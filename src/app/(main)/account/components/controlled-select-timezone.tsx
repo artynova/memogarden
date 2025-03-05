@@ -8,9 +8,10 @@ import { ComponentProps } from "react";
  * Supported timezones.
  */
 const timezones = Object.fromEntries(
-    Intl.supportedValuesOf("timeZone")
-        .filter((value) => value !== "UTC" && !value.startsWith("Etc/"))
-        .map((value) => [value, value.replaceAll("_", " ").replaceAll("/", " / ")]),
+    Intl.supportedValuesOf("timeZone").map((value) => [
+        value,
+        value.replaceAll("_", " ").replaceAll("/", " / "),
+    ]),
 );
 
 /**
