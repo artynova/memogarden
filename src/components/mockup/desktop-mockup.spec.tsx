@@ -10,7 +10,7 @@ vi.mock("@/components/theme/themed-image");
 const mockedThemedImage = vi.mocked(ThemedImage);
 
 describe(DesktopMockup, () => {
-    test.each([
+    describe.each([
         { image: { src: { src: "testsrc" } as StaticImageData, alt: "testalt" } },
         {
             image: {
@@ -21,15 +21,11 @@ describe(DesktopMockup, () => {
                 alt: "testalt",
             },
         },
-    ])(
-        "should correctly forward image data to underlying 'ThemedImage' given image data $image",
-        ({ image }) => {
+    ])("given image data $image", ({ image }) => {
+        test("should forward data to base 'ThemedImage'", () => {
             render(<DesktopMockup image={image} />);
 
-            expect(mockedThemedImage).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({ image }),
-                {},
-            );
-        },
-    );
+            expect(mockedThemedImage).toHaveBeenCalledOnceWithProps({ image });
+        });
+    });
 });

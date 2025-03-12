@@ -14,30 +14,28 @@ vi.mock("@/components/shadcn/avatar", async (importOriginal) => {
 const mockedHealthBar = vi.mocked(HealthBar);
 const mockedAvatarImage = vi.mocked(AvatarImage);
 
-describe.each([
-    { user: { avatarId: 1, retrievability: null } as SelectUser },
-    { user: { avatarId: 0, retrievability: 0 } as SelectUser },
-    { user: { avatarId: 3, retrievability: 0.01 } as SelectUser },
-    { user: { avatarId: 2, retrievability: 0.5 } as SelectUser },
-    { user: { avatarId: 0, retrievability: 1 } as SelectUser },
-])(ProfileBadge, ({ user }) => {
-    test(`should forward correct retrievability value to user health bar when retrievability is ${user.retrievability}`, () => {
-        render(<ProfileBadge user={user} />);
+describe(ProfileBadge, () => {
+    describe.each([
+        { user: { avatarId: 1, retrievability: null } as SelectUser },
+        { user: { avatarId: 0, retrievability: 0 } as SelectUser },
+        { user: { avatarId: 3, retrievability: 0.01 } as SelectUser },
+        { user: { avatarId: 2, retrievability: 0.5 } as SelectUser },
+        { user: { avatarId: 0, retrievability: 1 } as SelectUser },
+    ])("given user $user", ({ user }) => {
+        test("should forward retrievability to 'HealthBar'", () => {
+            render(<ProfileBadge user={user} />);
 
-        expect(mockedHealthBar).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({ retrievability: user.retrievability }),
-            {},
-        );
-    });
+            expect(mockedHealthBar).toHaveBeenCalledOnceWithProps({
+                retrievability: user.retrievability,
+            });
+        });
 
-    test(`should render user avatar image with correct src when avatar ID is ${user.avatarId}`, () => {
-        const expectedSrc = `/avatars/${user.avatarId}.png`;
+        test("should render user avatar image with correct src", () => {
+            const expectedSrc = `/avatars/${user.avatarId}.png`;
 
-        render(<ProfileBadge user={user} />);
+            render(<ProfileBadge user={user} />);
 
-        expect(mockedAvatarImage).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({ src: expectedSrc }),
-            {},
-        );
+            expect(mockedAvatarImage).toHaveBeenCalledOnceWithProps({ src: expectedSrc });
+        });
     });
 });

@@ -14,124 +14,112 @@ describe(FieldsetWithErrorMessage, () => {
         replaceWithChildren(fakeCompliantValue(mockedFieldsetContextProvider)); // The mock provider, unlike the real one, does not actually require the value prop
     });
 
-    test.each([{ name: "credentials" }, { name: "content" }, { name: "preferences" }])(
-        "should render fieldset with correct name given name $name",
+    describe.each([{ name: "credentials" }, { name: "content" }, { name: "preferences" }])(
+        "given name $name",
         ({ name }) => {
-            const { container } = render(
-                <FieldsetWithErrorMessage name={name}>Content</FieldsetWithErrorMessage>,
-            );
-            const fieldset = container.getElementsByTagName("fieldset")[0];
+            test("should render fieldset with correct name given name $name", () => {
+                const { container } = render(
+                    <FieldsetWithErrorMessage name={name}>Content</FieldsetWithErrorMessage>,
+                );
+                const fieldset = container.getElementsByTagName("fieldset")[0];
 
-            expect(fieldset).toBeInTheDocument();
-            expect(fieldset).toHaveAttribute("name", name);
+                expect(fieldset).toBeInTheDocument();
+                expect(fieldset).toHaveAttribute("name", name);
+            });
         },
     );
 
-    test.each([
-        { children: <input />, checkTag: "input" },
+    describe.each([
+        { children: <input data-testid="children" /> },
         {
             children: (
-                <div>
+                <div data-testid="children">
                     <input />
                     <select />
                 </div>
             ),
-            checkTag: "div",
         },
         {
             children: (
                 <>
-                    <label />
+                    <label data-testid="children" />
                     <input />
                 </>
             ),
-            checkTag: "label",
         },
-    ])("should render fieldset with correct name given name $name", ({ children, checkTag }) => {
-        const { container } = render(
-            <FieldsetWithErrorMessage name="">{children}</FieldsetWithErrorMessage>,
-        );
-        const contentTag = container.getElementsByTagName(checkTag)[0];
+    ])("given children $children", ({ children }) => {
+        test("should render children inside fieldset", () => {
+            render(<FieldsetWithErrorMessage name="">{children}</FieldsetWithErrorMessage>);
+            const contentTag = screen.queryByTestId("children");
 
-        expect(contentTag).toBeInTheDocument();
+            expect(contentTag).toBeInTheDocument();
+        });
     });
 
-    test("should mark fieldset as valid for ARIA if there is no error", () => {
-        const { container } = render(
-            <FieldsetWithErrorMessage name="">Content</FieldsetWithErrorMessage>,
-        );
-        const fieldset = container.getElementsByTagName("fieldset")[0];
+    describe("given no error", () => {
+        test("should mark fieldset as valid for ARIA", () => {
+            const { container } = render(
+                <FieldsetWithErrorMessage name="">Content</FieldsetWithErrorMessage>,
+            );
+            const fieldset = container.getElementsByTagName("fieldset")[0];
 
-        expect(fieldset).toBeInTheDocument();
-        expect(fieldset).toHaveAttribute("aria-invalid", "false");
+            expect(fieldset).toBeInTheDocument();
+            expect(fieldset).toHaveAttribute("aria-invalid", "false");
+        });
+
+        test("should not provide ARIA description", () => {
+            const { container } = render(
+                <FieldsetWithErrorMessage name="">Content</FieldsetWithErrorMessage>,
+            );
+            const fieldset = container.getElementsByTagName("fieldset")[0];
+
+            expect(fieldset).toBeInTheDocument();
+            expect(fieldset).not.toHaveAttribute("aria-describedby");
+            expect(fieldset).not.toHaveAttribute("aria-description");
+        });
     });
 
-    test("should not provide any ARIA description for the fieldset if there is no error", () => {
-        const { container } = render(
-            <FieldsetWithErrorMessage name="">Content</FieldsetWithErrorMessage>,
-        );
-        const fieldset = container.getElementsByTagName("fieldset")[0];
-
-        expect(fieldset).toBeInTheDocument();
-        expect(fieldset).not.toHaveAttribute("aria-describedby");
-    });
-
-    test.each([
+    describe.each([
         { error: "Invalid credentials." },
         { error: "Email or login are incorrect." },
         { error: "Something went wrong." },
-    ])("should mark fieldset as invalid for ARIA given error message $error", ({ error }) => {
-        const { container } = render(
-            <FieldsetWithErrorMessage name="" error={error}>
-                Content
-            </FieldsetWithErrorMessage>,
-        );
-        const fieldset = container.getElementsByTagName("fieldset")[0];
-
-        expect(fieldset).toBeInTheDocument();
-        expect(fieldset).toHaveAttribute("aria-invalid", "true");
-    });
-
-    test.each([
-        { error: "Invalid credentials." },
-        { error: "Lorem ipsum dolor sit amet." },
-        { error: "Something went wrong." },
-    ])(
-        "should render a description paragraph with the error message and link it to the fieldset given error message $error",
-        ({ error }) => {
+    ])("given error $error", ({ error }) => {
+        test("should mark fieldset as invalid for ARIA", () => {
             const { container } = render(
                 <FieldsetWithErrorMessage name="" error={error}>
                     Content
                 </FieldsetWithErrorMessage>,
             );
             const fieldset = container.getElementsByTagName("fieldset")[0];
-            const paragraph = screen.queryByRole("paragraph");
 
             expect(fieldset).toBeInTheDocument();
+            expect(fieldset).toHaveAttribute("aria-invalid", "true");
+        });
+
+        test("should render fieldset description with error message", () => {
+            const { container } = render(
+                <FieldsetWithErrorMessage name="" error={error}>
+                    Content
+                </FieldsetWithErrorMessage>,
+            );
+            const fieldset = container.getElementsByTagName("fieldset")[0];
+            const paragraph = screen.queryByText(error);
+
             expect(paragraph).toBeInTheDocument();
             expect(paragraph).toHaveTextContent(error);
-            expect(fieldset).toHaveAttribute("aria-describedby", paragraph?.id);
-        },
-    );
+            expect(fieldset).toHaveAttribute("aria-describedby", paragraph!.id);
+        });
 
-    test.each([
-        {},
-        { error: "Invalid credentials." },
-        { error: "Lorem ipsum dolor sit amet." },
-        { error: "Something went wrong." },
-    ])(
-        "should correctly forward error message to 'FieldsetContext.Provider' given error message $error",
-        ({ error }) => {
+        test("should forward error message to 'FieldsetContext.Provider'", () => {
             render(
                 <FieldsetWithErrorMessage name="" error={error}>
                     Content
                 </FieldsetWithErrorMessage>,
             );
 
-            expect(mockedFieldsetContextProvider).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({ value: { error } }),
-                {},
-            );
-        },
-    );
+            expect(mockedFieldsetContextProvider).toHaveBeenCalledOnceWithProps({
+                value: { error },
+            });
+        });
+    });
 });

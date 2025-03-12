@@ -15,7 +15,7 @@ describe(HeroSection, () => {
         replaceWithChildren(mockedSection);
     });
 
-    test("should wrap content in a 'Section' component", () => {
+    test("should wrap content in 'Section'", () => {
         render(<HeroSection />);
 
         expect(mockedSection).toHaveBeenCalledOnce();
@@ -31,7 +31,7 @@ describe(HeroSection, () => {
         });
     });
 
-    test("should contain an adaptive screen mockup with main app screenshot", () => {
+    test("should contain adaptive screen mockup with main app screenshot", () => {
         render(<HeroSection />);
 
         expect(mockedAdaptiveMockup).toHaveBeenCalledOnce();

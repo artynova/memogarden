@@ -23,7 +23,11 @@ export function TitledCard({
         <Card>
             <CardHeader>
                 <h2 className="text-center font-bold">{title}</h2>
-                {description && <CardDescription>{description}</CardDescription>}
+                {description && (
+                    <CardDescription>
+                        <p>{description}</p>
+                    </CardDescription>
+                )}
             </CardHeader>
             <CardContent>{children}</CardContent>
         </Card>

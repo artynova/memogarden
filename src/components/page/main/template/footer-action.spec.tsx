@@ -4,7 +4,7 @@ import { Check, Eye, Search, Trash } from "lucide-react";
 import { describe, expect, test, vi } from "vitest";
 
 describe(FooterAction, () => {
-    test.each([
+    describe.each([
         {
             action: {
                 Icon: Eye,
@@ -19,16 +19,6 @@ describe(FooterAction, () => {
                 action: "/browse",
             },
         },
-    ])("should render a link when passed link action data $action", ({ action }) => {
-        render(<FooterAction action={action} />);
-        const link = screen.queryByRole("link");
-
-        expect(link).toBeInTheDocument();
-        expect(link).toHaveTextContent(action.text); // The text is only visible to screen readers, but it should be in the DOM
-        expect(link).toHaveAttribute("href", action.action);
-    });
-
-    test.each([
         {
             action: {
                 Icon: Check,
@@ -43,16 +33,32 @@ describe(FooterAction, () => {
                 action: vi.fn(),
             },
         },
-    ])(
-        "should render a button with the correct click handler when passed custom action data $action",
-        ({ action }) => {
+    ])("given action data $action", ({ action }) => {
+        test(`should render element with inner text '${action.text}' specific to screen readers`, () => {
             render(<FooterAction action={action} />);
-            const button = screen.queryByRole("button");
-            if (button) fireEvent.click(button);
+            const element = screen.queryByText(action.text);
 
-            expect(button).toBeInTheDocument();
-            expect(button).toHaveTextContent(action.text); // The text is only visible to screen readers, but it should be in the DOM
-            expect(action.action).toHaveBeenCalledOnce();
-        },
-    );
+            expect(element).toBeInTheDocument();
+        });
+
+        if (typeof action.action === "string") {
+            test(`should render link with href '${action.action}'`, () => {
+                render(<FooterAction action={action} />);
+                const link = screen.queryByRole("link");
+
+                expect(link).toBeInTheDocument();
+                expect(link).toHaveTextContent(action.text); // The text is only visible to screen readers, but it should be in the DOM
+                expect(link).toHaveAttribute("href", action.action);
+            });
+        } else {
+            test("should render button with action as click handler", () => {
+                render(<FooterAction action={action} />);
+                const button = screen.queryByRole("button");
+                if (button) fireEvent.click(button);
+
+                expect(button).toBeInTheDocument();
+                expect(action.action).toHaveBeenCalledOnce();
+            });
+        }
+    });
 });

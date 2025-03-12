@@ -10,14 +10,16 @@ describe(Section, () => {
         expect(sections.length).toEqual(1);
     });
 
-    test.each([
+    describe.each([
         { children: <div>Content</div>, checkTag: "div" },
         { children: <p>Lorem ipsum</p>, checkTag: "p" },
         { children: <h2>This is a heading</h2>, checkTag: "h2" },
-    ])("should render children", ({ children, checkTag }) => {
-        const { container } = render(<Section>{children}</Section>);
-        const renderedChildren = container.getElementsByTagName(checkTag);
+    ])("given children $children", ({ children, checkTag }) => {
+        test("should render children", () => {
+            const { container } = render(<Section>{children}</Section>);
+            const renderedChildren = container.getElementsByTagName(checkTag);
 
-        expect(renderedChildren.length).toEqual(1);
+            expect(renderedChildren.length).toEqual(1);
+        });
     });
 });

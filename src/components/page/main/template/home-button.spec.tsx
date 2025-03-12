@@ -4,7 +4,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 
 describe(HomeButton, () => {
-    test("should contain a link to the app home page", () => {
+    test("should render link to app home page", () => {
         render(<HomeButton />);
         const link = screen.queryByRole("link");
 

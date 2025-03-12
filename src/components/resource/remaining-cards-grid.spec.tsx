@@ -3,47 +3,88 @@ import { RemainingCardsGrid } from "@/components/resource/remaining-cards-grid";
 import { render, screen } from "@testing-library/react";
 import { textUnimportantClass } from "@/lib/ui/tailwind";
 
-describe.each([
-    {
-        remaining: {
-            new: 5,
-            learning: 1,
-            review: 3,
+describe(RemainingCardsGrid, () => {
+    // const conditionString = `for ${remaining.new} 'new' cards, ${remaining.learning} 'learning' cards, and ${remaining.review} 'review' cards`;
+
+    describe.each([
+        {
+            remaining: {
+                new: 0,
+                learning: 0,
+                review: 0,
+            },
         },
-    },
-])(RemainingCardsGrid, ({ remaining }) => {
-    const conditionString = `for ${remaining.new} 'new' cards, ${remaining.learning} 'learning' cards, and ${remaining.review} 'review' cards`;
+        {
+            remaining: {
+                new: 0,
+                learning: 3,
+                review: 0,
+            },
+        },
+        {
+            remaining: {
+                new: 0,
+                learning: 2,
+                review: 6,
+            },
+        },
+        {
+            remaining: {
+                new: 5,
+                learning: 1,
+                review: 3,
+            },
+        },
+    ])("given remaining cards data $remaining", ({ remaining }) => {
+        test(`should render 'seed' card count as ${remaining.new}`, () => {
+            render(<RemainingCardsGrid remaining={remaining} />);
+            const label = screen.queryByText(/seeds/i);
+            const count = label?.nextSibling;
 
-    test(`should correctly render 'seed' card count correctly ${conditionString}`, () => {
-        render(<RemainingCardsGrid remaining={remaining} />);
-        const newLabel = screen.queryByText(/seeds/i);
-        const count = newLabel?.nextSibling;
+            expect(label).toBeInTheDocument();
+            expect(count).toHaveTextContent(`${remaining.new}`);
+        });
 
-        expect(newLabel).toBeInTheDocument();
-        expect(count).toHaveTextContent(`${remaining.new}`);
-        if (remaining.new === 0) expect(count).toHaveClass(textUnimportantClass);
-        else expect(count).not.toHaveClass(textUnimportantClass);
-    });
+        test(`${remaining.new ? "should not" : "should"} render 'seed' card count with unimportant text style`, () => {
+            render(<RemainingCardsGrid remaining={remaining} />);
+            const count = screen.getByText(/seeds/i).nextSibling;
 
-    test(`should correctly render 'sprout' card count ${conditionString}`, () => {
-        render(<RemainingCardsGrid remaining={remaining} />);
-        const newLabel = screen.queryByText(/sprouts/i);
-        const count = newLabel?.nextSibling;
+            if (remaining.new) expect(count).not.toHaveClass(textUnimportantClass);
+            else expect(count).toHaveClass(textUnimportantClass);
+        });
 
-        expect(newLabel).toBeInTheDocument();
-        expect(count).toHaveTextContent(`${remaining.learning}`);
-        if (remaining.learning === 0) expect(count).toHaveClass(textUnimportantClass);
-        else expect(count).not.toHaveClass(textUnimportantClass);
-    });
+        test(`should render 'sprout' card count as ${remaining.learning}`, () => {
+            render(<RemainingCardsGrid remaining={remaining} />);
+            const label = screen.queryByText(/sprouts/i);
+            const count = label?.nextSibling;
 
-    test(`should correctly render 'growing' card count ${conditionString}`, () => {
-        render(<RemainingCardsGrid remaining={remaining} />);
-        const newLabel = screen.queryByText(/growing/i);
-        const count = newLabel?.nextSibling;
+            expect(label).toBeInTheDocument();
+            expect(count).toHaveTextContent(`${remaining.learning}`);
+        });
 
-        expect(newLabel).toBeInTheDocument();
-        expect(count).toHaveTextContent(`${remaining.review}`);
-        if (remaining.review === 0) expect(count).toHaveClass(textUnimportantClass);
-        else expect(count).not.toHaveClass(textUnimportantClass);
+        test(`${remaining.learning ? "should not" : "should"} render 'sprout' card count with unimportant text style`, () => {
+            render(<RemainingCardsGrid remaining={remaining} />);
+            const count = screen.getByText(/sprouts/i).nextSibling;
+
+            if (remaining.learning) expect(count).not.toHaveClass(textUnimportantClass);
+            else expect(count).toHaveClass(textUnimportantClass);
+        });
+
+        test(`should render 'growing' card count as ${remaining.review}`, () => {
+            render(<RemainingCardsGrid remaining={remaining} />);
+            const label = screen.queryByText(/growing/i);
+            const count = label?.nextSibling;
+
+            expect(label).toBeInTheDocument();
+            expect(count).toHaveTextContent(`${remaining.review}`);
+        });
+
+        test(`${remaining.review ? "should not" : "should"} render 'growing' card count with unimportant text style`, () => {
+            render(<RemainingCardsGrid remaining={remaining} />);
+            const count = screen.getByText(/growing/i).nextSibling;
+
+            if (remaining.review) expect(count).not.toHaveClass(textUnimportantClass);
+            else expect(count).toHaveClass(textUnimportantClass);
+        });
     });
 });

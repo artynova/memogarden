@@ -28,7 +28,7 @@ describe(BenefitsSection, () => {
         expect(mockedBenefitCard).toHaveBeenCalledTimes(6);
     });
 
-    test("should contain a sign-up call to action", () => {
+    test("should contain sign-up call to action", () => {
         render(<BenefitsSection />);
         const signupButton = screen.queryByRole("link", { name: /sign up/i });
 

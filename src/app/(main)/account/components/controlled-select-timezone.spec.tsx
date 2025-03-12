@@ -31,8 +31,8 @@ describe(ControlledSelectTimezone, () => {
                 { value: "Europe/Warsaw", label: "Warsaw" },
             ],
         },
-    ])("given that 'useTimezoneSelect' returns selection options $options", ({ options }) => {
-        test("should forward computed options to the base controlled select implementation", () => {
+    ])("given 'useTimezoneSelect' returns selection options $options", ({ options }) => {
+        test("should forward computed options to base 'ControlledSelect'", () => {
             mockedUseTimezoneSelect.mockReturnValue(fakeCompliantValue({ options }));
 
             render(<ControlledSelectTimezone onValueChange={() => {}} />);

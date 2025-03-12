@@ -7,7 +7,7 @@ import {
     parseStringParam,
 } from "@/lib/utils/server";
 import { Session } from "next-auth";
-import { getUser, maybeSyncUserHealth } from "@/server/data/services/user";
+import { getUser, maybeSyncUserHealth, SelectUser } from "@/server/data/services/user";
 import { signout } from "@/server/actions/user/actions";
 import { describe, expect, test, vi } from "vitest";
 
@@ -23,19 +23,21 @@ const mockedMaybeSyncUserHealth = vi.mocked(maybeSyncUserHealth);
 const mockedSignout = vi.mocked(signout);
 
 describe(parseStringParam, () => {
-    test.each([
+    describe.each([
         { param: undefined, expected: null },
         { param: "test", expected: "test" },
         { param: ["test1", "test2"], expected: "test1" },
-    ])("should return $expected for input $param", ({ param, expected }) => {
-        const output = parseStringParam(param);
+    ])("given input $param", ({ param, expected }) => {
+        test(`should return ${expected}`, () => {
+            const output = parseStringParam(param);
 
-        expect(output).toEqual(expected);
+            expect(output).toEqual(expected);
+        });
     });
 });
 
 describe(parseIntParam, () => {
-    test.each([
+    describe.each([
         { param: undefined, expected: null },
         { param: "1", expected: 1 },
         { param: "1.5", expected: 1 },
@@ -43,203 +45,193 @@ describe(parseIntParam, () => {
         { param: ["1", "2"], expected: 1 },
         { param: ["1.5", "2"], expected: 1 },
         { param: ["not a number", "2"], expected: null },
-    ])("should return $expected for input $param", ({ param, expected }) => {
-        const output = parseIntParam(param);
+    ])("given input $param", ({ param, expected }) => {
+        test(`should return ${expected}`, () => {
+            const output = parseIntParam(param);
 
-        expect(output).toEqual(expected);
+            expect(output).toEqual(expected);
+        });
     });
 });
 
 describe(getUserOrRedirectSC, () => {
-    test.each([
-        { condition: "session is absent", authResolvedTo: null, getUserResolvedTo: null },
+    describe.each([
+        { condition: "session data is absent", authResolvedTo: null, getUserResolvedTo: null },
         {
             condition: "user ID is absent from session data",
-            authResolvedTo: { user: {}, expires: "" },
+            authResolvedTo: { user: {} } as Session,
             getUserResolvedTo: null,
         },
         {
-            condition: "session user ID does not have a match in the database",
-            authResolvedTo: { user: { id: "id" }, expires: "" },
+            condition: "session user ID does not have corresponding entry in database",
+            authResolvedTo: { user: { id: "id" } } as Session,
             getUserResolvedTo: null,
         },
         {
-            condition: 'the token has been invalidated through the "accept tokens after" date',
-            authResolvedTo: { user: { id: "id", tokenIat: 0 }, expires: "" },
+            condition: "token is invalid according to user 'accept tokens after' date",
+            authResolvedTo: { user: { id: "id", tokenIat: 0 } } as Session,
             getUserResolvedTo: {
                 id: "id",
-                lastHealthSync: new Date(0),
-                timezone: "",
-                retrievability: null,
-                avatarId: 0,
-                darkMode: null,
                 acceptTokensAfter: new Date(1),
-            },
+            } as SelectUser,
         },
-    ])("should force sign-out if $condition", async ({ authResolvedTo, getUserResolvedTo }) => {
-        mockedAuth.mockResolvedValue(authResolvedTo);
-        mockedGetUser.mockResolvedValue(getUserResolvedTo);
-        mockedRedirect.mockImplementation(() => {
-            throw Error(); // Error like in the real redirect function, to conform to the "never" return type
+    ])("", ({ condition, authResolvedTo, getUserResolvedTo }) => {
+        describe(`given ${condition}`, () => {
+            test("should force sign-out", async () => {
+                mockedAuth.mockResolvedValue(authResolvedTo);
+                mockedGetUser.mockResolvedValue(getUserResolvedTo);
+                mockedRedirect.mockImplementation(() => {
+                    throw Error(); // Error like in the real redirect function, to conform to the "never" return type
+                });
+
+                try {
+                    await getUserOrRedirectSC();
+                } catch {} // Silence the error
+
+                expect(mockedRedirect).toHaveBeenCalledExactlyOnceWith("/signin?invalidToken");
+            });
         });
-
-        try {
-            await getUserOrRedirectSC();
-        } catch {} // Silence the error
-
-        expect(mockedRedirect).toHaveBeenCalledExactlyOnceWith("/signin?invalidToken");
     });
 
-    test("should re-fetch user data from the database if a health sync occurs", async () => {
-        mockedAuth.mockResolvedValue({ user: { id: "id", tokenIat: 1 }, expires: "" });
-        mockedGetUser.mockResolvedValue({
-            id: "id",
-            lastHealthSync: new Date(0),
-            timezone: "",
-            retrievability: null,
-            avatarId: 0,
-            darkMode: null,
-            acceptTokensAfter: new Date(1),
+    describe("given session is valid", () => {
+        describe("given health sync occurred during fetch", () => {
+            test("should re-fetch user data", async () => {
+                mockedAuth.mockResolvedValue({ user: { id: "id", tokenIat: 1 }, expires: "" });
+                mockedGetUser.mockResolvedValue({
+                    id: "id",
+                    acceptTokensAfter: new Date(1),
+                } as SelectUser);
+                mockedMaybeSyncUserHealth.mockResolvedValue(true); // Pretend that the sync did occur, necessitating a data refetch
+
+                await getUserOrRedirectSC();
+
+                expect(mockedGetUser).toHaveBeenCalledTimes(2);
+            });
         });
-        mockedMaybeSyncUserHealth.mockResolvedValue(true); // Pretend that the sync did occur, necessitating a data refetch
 
-        await getUserOrRedirectSC();
+        describe("given health sync did not occur during fetch", () => {
+            test("should not re-fetch user data", async () => {
+                mockedAuth.mockResolvedValue({ user: { id: "id", tokenIat: 1 } } as Session);
+                mockedGetUser.mockResolvedValue({
+                    id: "id",
+                    acceptTokensAfter: new Date(1),
+                } as SelectUser);
+                mockedMaybeSyncUserHealth.mockResolvedValue(false); // Pretend that the sync did not occur
 
-        expect(mockedGetUser).toHaveBeenCalledTimes(2);
-    });
+                await getUserOrRedirectSC();
 
-    test("should not re-fetch user data from the database if a health sync does not occur", async () => {
-        mockedAuth.mockResolvedValue({ user: { id: "id", tokenIat: 1 }, expires: "" });
-        mockedGetUser.mockResolvedValue({
-            id: "id",
-            lastHealthSync: new Date(0),
-            timezone: "",
-            retrievability: null,
-            avatarId: 0,
-            darkMode: null,
-            acceptTokensAfter: new Date(1),
+                expect(mockedGetUser).toHaveBeenCalledOnce();
+            });
         });
-        mockedMaybeSyncUserHealth.mockResolvedValue(false); // Pretend that the sync did not occur
 
-        await getUserOrRedirectSC();
+        describe.each([{ id: "id" }, { id: "a" }, { id: "uuid1" }])(
+            "given session user ID is $id",
+            ({ id }) => {
+                test("should retrieve user with ID matching session user ID", async () => {
+                    mockedAuth.mockResolvedValue({ user: { id, tokenIat: 1 } } as Session);
+                    mockedGetUser.mockResolvedValue({
+                        id,
+                        acceptTokensAfter: new Date(1),
+                    } as SelectUser);
 
-        expect(mockedGetUser).toHaveBeenCalledOnce();
-    });
+                    const user = await getUserOrRedirectSC();
 
-    test("should retrieve a user with the same ID as in the session token", async () => {
-        mockedAuth.mockResolvedValue({ user: { id: "id", tokenIat: 1 }, expires: "" });
-        mockedGetUser.mockResolvedValue({
-            id: "id",
-            lastHealthSync: new Date(0),
-            timezone: "",
-            retrievability: null,
-            avatarId: 0,
-            darkMode: null,
-            acceptTokensAfter: new Date(1),
-        });
-        mockedMaybeSyncUserHealth.mockResolvedValue(false); // Pretend that the sync did not occur
-
-        const user = await getUserOrRedirectSC();
-
-        expect(mockedGetUser).toHaveBeenCalledExactlyOnceWith("id");
-        expect(mockedMaybeSyncUserHealth).toHaveBeenCalledExactlyOnceWith("id");
-        expect(user.id).toEqual("id");
+                    expect(mockedGetUser).toHaveBeenCalledExactlyOnceWith(id);
+                    expect(mockedMaybeSyncUserHealth).toHaveBeenCalledExactlyOnceWith(id);
+                    expect(user.id).toEqual(id);
+                });
+            },
+        );
     });
 });
 
 describe(getUserOrRedirect, () => {
-    test.each([
-        { condition: "session is absent", authResolvedTo: null, getUserResolvedTo: null },
+    describe.each([
+        { condition: "session data is absent", authResolvedTo: null, getUserResolvedTo: null },
         {
             condition: "user ID is absent from session data",
-            authResolvedTo: { user: {}, expires: "" },
+            authResolvedTo: { user: {} } as Session,
             getUserResolvedTo: null,
         },
         {
-            condition: "session user ID does not have a match in the database",
-            authResolvedTo: { user: { id: "id" }, expires: "" },
+            condition: "session user ID does not have corresponding entry in database",
+            authResolvedTo: { user: { id: "id" } } as Session,
             getUserResolvedTo: null,
         },
         {
-            condition: 'the token has been invalidated through the "accept tokens after" date',
-            authResolvedTo: { user: { id: "id", tokenIat: 0 }, expires: "" },
+            condition: "token is invalid according to user 'accept tokens after' date",
+            authResolvedTo: { user: { id: "id", tokenIat: 0 } } as Session,
             getUserResolvedTo: {
                 id: "id",
-                lastHealthSync: new Date(0),
-                timezone: "",
-                retrievability: null,
-                avatarId: 0,
-                darkMode: null,
                 acceptTokensAfter: new Date(1),
-            },
+            } as SelectUser,
         },
-    ])("should force sign-out if $condition", async ({ authResolvedTo, getUserResolvedTo }) => {
-        mockedAuth.mockResolvedValue(authResolvedTo);
-        mockedGetUser.mockResolvedValue(getUserResolvedTo);
-        mockedSignout.mockImplementation(() => {
-            throw Error(); // Error like in the real redirect function, to conform to the "never" return type
+    ])("", ({ condition, authResolvedTo, getUserResolvedTo }) => {
+        describe(`given ${condition}`, () => {
+            test("should force sign-out", async () => {
+                mockedAuth.mockResolvedValue(authResolvedTo);
+                mockedGetUser.mockResolvedValue(getUserResolvedTo);
+                mockedSignout.mockImplementation(() => {
+                    throw Error(); // Error like in the real redirect function, to conform to the "never" return type
+                });
+
+                try {
+                    await getUserOrRedirect();
+                } catch {} // Silence the error
+
+                expect(mockedSignout).toHaveBeenCalledOnce();
+            });
         });
-
-        try {
-            await getUserOrRedirect();
-        } catch {} // Silence the error
-
-        expect(mockedSignout).toHaveBeenCalledOnce();
     });
 
-    test("should re-fetch user data from the database if a health sync occurs", async () => {
-        mockedAuth.mockResolvedValue({ user: { id: "id", tokenIat: 1 }, expires: "" });
-        mockedGetUser.mockResolvedValue({
-            id: "id",
-            lastHealthSync: new Date(0),
-            timezone: "",
-            retrievability: null,
-            avatarId: 0,
-            darkMode: null,
-            acceptTokensAfter: new Date(1),
+    describe("given session is valid", () => {
+        describe("given health sync occurred during fetch", () => {
+            test("should re-fetch user data", async () => {
+                mockedAuth.mockResolvedValue({ user: { id: "id", tokenIat: 1 }, expires: "" });
+                mockedGetUser.mockResolvedValue({
+                    id: "id",
+                    acceptTokensAfter: new Date(1),
+                } as SelectUser);
+                mockedMaybeSyncUserHealth.mockResolvedValue(true); // Pretend that the sync did occur, necessitating a data refetch
+
+                await getUserOrRedirect();
+
+                expect(mockedGetUser).toHaveBeenCalledTimes(2);
+            });
         });
-        mockedMaybeSyncUserHealth.mockResolvedValue(true); // Pretend that the sync did occur, necessitating a data refetch
 
-        await getUserOrRedirect();
+        describe("given health sync did not occur during fetch", () => {
+            test("should not re-fetch user data", async () => {
+                mockedAuth.mockResolvedValue({ user: { id: "id", tokenIat: 1 } } as Session);
+                mockedGetUser.mockResolvedValue({
+                    id: "id",
+                    acceptTokensAfter: new Date(1),
+                } as SelectUser);
+                mockedMaybeSyncUserHealth.mockResolvedValue(false); // Pretend that the sync did not occur
 
-        expect(mockedGetUser).toHaveBeenCalledTimes(2);
-    });
+                await getUserOrRedirect();
 
-    test("should not re-fetch user data from the database if a health sync does not occur", async () => {
-        mockedAuth.mockResolvedValue({ user: { id: "id", tokenIat: 1 }, expires: "" });
-        mockedGetUser.mockResolvedValue({
-            id: "id",
-            lastHealthSync: new Date(0),
-            timezone: "",
-            retrievability: null,
-            avatarId: 0,
-            darkMode: null,
-            acceptTokensAfter: new Date(1),
+                expect(mockedGetUser).toHaveBeenCalledOnce();
+            });
         });
-        mockedMaybeSyncUserHealth.mockResolvedValue(false); // Pretend that the sync did not occur
 
-        await getUserOrRedirect();
+        describe.each([{ id: "id" }, { id: "a" }, { id: "uuid1" }])(
+            "given session user ID is $id",
+            ({ id }) => {
+                test("should retrieve user with ID matching session user ID", async () => {
+                    mockedAuth.mockResolvedValue({ user: { id, tokenIat: 1 } } as Session);
+                    mockedGetUser.mockResolvedValue({
+                        id,
+                        acceptTokensAfter: new Date(1),
+                    } as SelectUser);
 
-        expect(mockedGetUser).toHaveBeenCalledOnce();
-    });
+                    const user = await getUserOrRedirect();
 
-    test("should retrieve a user with the same ID as in the session token", async () => {
-        mockedAuth.mockResolvedValue({ user: { id: "id", tokenIat: 1 }, expires: "" });
-        mockedGetUser.mockResolvedValue({
-            id: "id",
-            lastHealthSync: new Date(0),
-            timezone: "",
-            retrievability: null,
-            avatarId: 0,
-            darkMode: null,
-            acceptTokensAfter: new Date(1),
-        });
-        mockedMaybeSyncUserHealth.mockResolvedValue(false); // Pretend that the sync did not occur
-
-        const user = await getUserOrRedirect();
-
-        expect(mockedGetUser).toHaveBeenCalledExactlyOnceWith("id");
-        expect(mockedMaybeSyncUserHealth).toHaveBeenCalledExactlyOnceWith("id");
-        expect(user.id).toEqual("id");
+                    expect(mockedGetUser).toHaveBeenCalledExactlyOnceWith(id);
+                    expect(mockedMaybeSyncUserHealth).toHaveBeenCalledExactlyOnceWith(id);
+                    expect(user.id).toEqual(id);
+                });
+            },
+        );
     });
 });

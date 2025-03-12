@@ -4,6 +4,7 @@ import { PageTemplate } from "@/components/page/static/page-template";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { replaceWithChildren } from "@/test/mock/react";
 
 vi.mock("@/components/theme/theme-provider");
 vi.mock("@/components/page/static/header");
@@ -15,36 +16,43 @@ const mockedFooter = vi.mocked(Footer);
 
 describe(PageTemplate, () => {
     beforeEach(() => {
-        mockedProvider.mockImplementation(({ children }) => <>{children}</>); // So that the content of the provider still renders
+        replaceWithChildren(mockedProvider);
     });
 
-    test("should contain a header", () => {
+    test("should contain header", () => {
         render(<PageTemplate>Content</PageTemplate>);
 
         expect(mockedHeader).toHaveBeenCalledOnce();
     });
 
-    test("should contain a footer", () => {
+    test("should contain footer", () => {
         render(<PageTemplate>Content</PageTemplate>);
 
         expect(mockedFooter).toHaveBeenCalledOnce();
     });
 
-    test("should contain a main tag with content", () => {
-        render(<PageTemplate>Content</PageTemplate>);
-        const main = screen.getByText("Content");
+    test("should use semantic main tag with content", () => {
+        const contentTestId = "mock-content";
 
-        expect(main.tagName).toEqual("MAIN");
+        render(
+            <PageTemplate>
+                <div data-testid={contentTestId} />
+            </PageTemplate>,
+        );
+        const main = screen.getByTestId(contentTestId).closest("main");
+
+        expect(main).toBeInTheDocument();
     });
 
-    test("should initialize the theme with value 'system' and directive not to persist the value", () => {
+    test("should initialize theme with value 'system'", () => {
         render(<PageTemplate>Content</PageTemplate>);
-        expect(mockedProvider).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({
-                theme: "system",
-                doNotPersistTheme: true,
-            }),
-            {},
-        );
+
+        expect(mockedProvider).toHaveBeenCalledOnceWithProps({ theme: "system" });
+    });
+
+    test("should not persist theme in local storage", () => {
+        render(<PageTemplate>Content</PageTemplate>);
+
+        expect(mockedProvider).toHaveBeenCalledOnceWithProps({ doNotPersistTheme: true });
     });
 });

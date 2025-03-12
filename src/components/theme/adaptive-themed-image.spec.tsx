@@ -5,40 +5,46 @@ import { ImageData } from "@/lib/ui/theme";
 import { render, screen } from "@testing-library/react";
 
 describe(AdaptiveThemedImage, () => {
-    test("should render only one image when not supplied different sources for the desktop and mobile image", () => {
-        const mockSource = { src: "testsrc" } as StaticImageData;
-        const mockData: ImageData = { src: mockSource, alt: "testalt" };
+    describe("given only general 'image' source", () => {
+        test("should render only one image", () => {
+            const mockSource = { src: "testsrc" } as StaticImageData;
+            const mockData: ImageData = { src: mockSource, alt: "testalt" };
 
-        render(<AdaptiveThemedImage image={mockData} />);
-        const image = screen.queryByRole("img");
+            render(<AdaptiveThemedImage image={mockData} />);
+            const image = screen.queryByRole("img");
 
-        expect(image).toBeInTheDocument();
-        expect(image).toHaveAttribute("src", mockSource.src);
-        expect(image).toHaveAttribute("alt", mockData.alt);
+            expect(image).toBeInTheDocument();
+            expect(image).toHaveAttribute("src", mockSource.src);
+            expect(image).toHaveAttribute("alt", mockData.alt);
+        });
     });
 
-    test("should render both desktop- and mobile-specific images when supplied sources for both", () => {
+    describe("given both general 'image' source and mobile-specific 'imageMobile' source", () => {
         const mockSourceDesktop = { src: "testsrc desktop" } as StaticImageData;
         const mockDataDesktop: ImageData = { src: mockSourceDesktop, alt: "testalt desktop" };
         const mockSourceMobile = { src: "testsrc mobile" } as StaticImageData;
         const mockDataMobile: ImageData = { src: mockSourceMobile, alt: "testalt mobile" };
 
-        render(<AdaptiveThemedImage image={mockDataDesktop} imageMobile={mockDataMobile} />);
-        const images = screen.getAllByRole("img");
+        test("should render one desktop-specific image", () => {
+            render(<AdaptiveThemedImage image={mockDataDesktop} imageMobile={mockDataMobile} />);
+            const images = screen.getAllByRole("img");
+            const image = images.find((img) => img.getAttribute("src") === mockSourceDesktop.src);
 
-        expect(images.length).toEqual(2);
-        for (const image of images) {
-            const isDesktop = image.getAttribute("src") === mockSourceDesktop.src;
-            const isMobile = image.getAttribute("src") === mockSourceMobile.src;
+            expect(images.length).toEqual(2);
+            expect(image).toBeInTheDocument();
+            expect(image).toHaveAttribute("alt", mockDataDesktop.alt);
+            expect(image!.parentElement).toHaveClass("hidden sm:block");
+        });
 
-            expect(isDesktop || isMobile).toBeTruthy();
-            if (isDesktop) {
-                expect(image).toHaveAttribute("alt", mockDataDesktop.alt);
-                expect(image.parentElement).toHaveClass("hidden sm:block");
-            } else {
-                expect(image).toHaveAttribute("alt", mockDataMobile.alt);
-                expect(image.parentElement).toHaveClass("sm:hidden");
-            }
-        }
+        test("should render one desktop-specific image", () => {
+            render(<AdaptiveThemedImage image={mockDataDesktop} imageMobile={mockDataMobile} />);
+            const images = screen.getAllByRole("img");
+            const image = images.find((img) => img.getAttribute("src") === mockSourceMobile.src);
+
+            expect(images.length).toEqual(2);
+            expect(image).toBeInTheDocument();
+            expect(image).toHaveAttribute("alt", mockDataMobile.alt);
+            expect(image!.parentElement).toHaveClass("sm:hidden");
+        });
     });
 });

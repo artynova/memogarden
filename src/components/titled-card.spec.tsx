@@ -3,43 +3,59 @@ import { TitledCard } from "@/components/titled-card";
 import { render, screen } from "@testing-library/react";
 
 describe(TitledCard, () => {
-    test("should render the title text inside a second-level heading", () => {
-        render(<TitledCard title="Test">Content</TitledCard>);
-        const heading = screen.queryByRole("heading", { level: 2, name: "Test" });
+    describe.each([{ title: "Card" }, { title: "Lorem ipsum" }])(
+        "given title $title",
+        ({ title }) => {
+            test("should render title as second-level heading", () => {
+                render(<TitledCard title={title}>Content</TitledCard>);
+                const heading = screen.queryByRole("heading", { level: 2, name: title });
 
-        expect(heading).toBeInTheDocument();
-    });
+                expect(heading).toBeInTheDocument();
+            });
 
-    test("should not render a description container if there is no description", () => {
-        render(<TitledCard title="Test">Content</TitledCard>);
-        const description = screen.getByRole("heading", {
-            level: 2,
-            name: "Test",
-        }).nextElementSibling;
+            describe("given no description", () => {
+                test(`should not render description paragraph`, () => {
+                    render(<TitledCard title={title}>Content</TitledCard>);
+                    const descriptionParagraph = screen.queryByRole("paragraph");
 
-        expect(description).not.toBeInTheDocument();
-    });
+                    expect(descriptionParagraph).not.toBeInTheDocument();
+                });
+            });
 
-    test("should render the description text correctly", () => {
-        render(
-            <TitledCard title="Test" description="Desc">
-                Content
-            </TitledCard>,
-        );
-        const descriptionByContent = screen.queryByText("Desc");
-        const descriptionByDom = screen.getByRole("heading", {
-            level: 2,
-            name: "Test",
-        }).nextElementSibling;
+            describe.each([
+                { description: "Lorem ipsum dolor sit amet" },
+                { description: "Titled card." },
+            ])("given description $description", ({ description }) => {
+                test(`should render description paragraph`, () => {
+                    render(
+                        <TitledCard title={title} description={description}>
+                            Content
+                        </TitledCard>,
+                    );
+                    const descriptionParagraph = screen.queryByRole("paragraph");
 
-        expect(descriptionByContent).toBeInTheDocument();
-        expect(descriptionByContent).toBe(descriptionByDom);
-    });
+                    expect(descriptionParagraph).toBeInTheDocument();
+                    expect(descriptionParagraph).toHaveTextContent(description);
+                });
+            });
 
-    test("should render the content", () => {
-        render(<TitledCard title="Test">Content</TitledCard>);
-        const content = screen.queryByText("Content");
+            describe.each([
+                {
+                    children: <div data-testid="test_content">Some content</div>,
+                    testId: "test_content",
+                },
+                {
+                    children: <h3 data-testid="test_heading">Lorem ipsum</h3>,
+                    testId: "test_heading",
+                },
+            ])("given children $children", ({ children, testId }) => {
+                test("should render full content given content with test ID $testId", () => {
+                    render(<TitledCard title={title}>{children}</TitledCard>);
+                    const element = screen.queryByTestId(testId);
 
-        expect(content).toBeInTheDocument();
-    });
+                    expect(element).toBeInTheDocument();
+                });
+            });
+        },
+    );
 });

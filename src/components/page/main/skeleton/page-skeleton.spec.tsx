@@ -1,46 +1,59 @@
+import { FooterSkeleton } from "@/components/page/main/skeleton/footer-skeleton";
+import { HeaderSkeleton } from "@/components/page/main/skeleton/header-skeleton";
 import { PageSkeleton } from "@/components/page/main/skeleton/page-skeleton";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { replaceWithChildren } from "@/test/mock/react";
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 vi.mock("@/components/theme/theme-provider");
+vi.mock("@/components/page/main/skeleton/header-skeleton");
+vi.mock("@/components/page/main/skeleton/footer-skeleton");
 
 const mockedProvider = vi.mocked(ThemeProvider);
+const mockedHeaderSkeleton = vi.mocked(HeaderSkeleton);
+const mockedFooterSkeleton = vi.mocked(FooterSkeleton);
 
 describe(PageSkeleton, () => {
     beforeEach(() => {
-        mockedProvider.mockImplementation(({ children }) => <>{children}</>);
+        replaceWithChildren(mockedProvider);
     });
 
-    test("should render 'Home' button by default", () => {
-        render(<PageSkeleton />);
-        const link = screen.queryByText(/home/i);
+    describe("given no value for 'hideHomeButton' prop", () => {
+        test("should use undefined prop value for 'HeaderSkeleton'", () => {
+            render(<PageSkeleton />);
 
-        expect(link).toBeInTheDocument();
+            expect(mockedHeaderSkeleton).toHaveBeenCalledOnceWithProps({
+                hideHomeButton: undefined,
+            });
+        });
     });
 
-    test("should not render 'Home' button when directed to avoid it", () => {
-        render(<PageSkeleton hideHomeButton />);
-        const link = screen.queryByText(/home/i);
+    describe("given true value for 'hideHomeButton' prop", () => {
+        test("should forward prop value to 'HeaderSkeleton'", () => {
+            render(<PageSkeleton hideHomeButton />);
 
-        expect(link).not.toBeInTheDocument();
+            expect(mockedHeaderSkeleton).toHaveBeenCalledOnceWithProps({ hideHomeButton: true });
+        });
     });
 
-    test("should render footer by default", () => {
-        const { container } = render(<PageSkeleton />);
-        const footers = container.getElementsByTagName("footer");
+    describe("given no value for 'hideFooter' prop", () => {
+        test("should render footer", () => {
+            render(<PageSkeleton />);
 
-        expect(footers.length).toEqual(1);
+            expect(mockedFooterSkeleton).toHaveBeenCalledOnce();
+        });
     });
 
-    test("should avoid rendering the footer when specified to do so", () => {
-        const { container } = render(<PageSkeleton hideFooter />);
-        const footers = container.getElementsByTagName("footer");
+    describe("given true value for 'hideFooter' prop", () => {
+        test("should not render footer", () => {
+            render(<PageSkeleton hideFooter />);
 
-        expect(footers.length).toEqual(0);
+            expect(mockedFooterSkeleton).not.toHaveBeenCalled();
+        });
     });
 
-    test("should render loading spinner inside the main tag", () => {
+    test("should render loading spinner inside main tag", () => {
         render(<PageSkeleton />);
         const spinner = screen.queryByRole("status", { name: /loading/i });
         const main = spinner?.closest("main");

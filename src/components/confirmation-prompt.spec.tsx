@@ -1,29 +1,50 @@
 import { describe, expect, test, vi } from "vitest";
 import { ConfirmationPrompt } from "@/components/confirmation-prompt";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 describe(ConfirmationPrompt, () => {
-    test("should call the confirmation callback and not call the cancellation callback when confirmation button is clicked", () => {
-        const mockOnConfirm = vi.fn();
-        const mockOnCancel = vi.fn();
+    describe("when confirm button is clicked", () => {
+        test("should call 'onConfirm' callback", async () => {
+            const mockOnConfirm = vi.fn();
 
-        render(<ConfirmationPrompt onConfirm={mockOnConfirm} onCancel={mockOnCancel} />);
-        const confirmButton = screen.getByRole("button", { name: /confirm/i });
-        fireEvent.click(confirmButton);
+            render(<ConfirmationPrompt onConfirm={mockOnConfirm} onCancel={() => {}} />);
+            const confirmButton = screen.getByRole("button", { name: /confirm/i });
+            await userEvent.click(confirmButton);
 
-        expect(mockOnConfirm).toHaveBeenCalledOnce();
-        expect(mockOnCancel).not.toHaveBeenCalled();
+            expect(mockOnConfirm).toHaveBeenCalledOnce();
+        });
+
+        test("should not call 'onConfirm' callback", async () => {
+            const mockOnCancel = vi.fn();
+
+            render(<ConfirmationPrompt onConfirm={() => {}} onCancel={mockOnCancel} />);
+            const confirmButton = screen.getByRole("button", { name: /confirm/i });
+            await userEvent.click(confirmButton);
+
+            expect(mockOnCancel).not.toHaveBeenCalled();
+        });
     });
 
-    test("should call the cancellation callback and not call the confirmation callback when cancellation button is clicked", () => {
-        const mockOnConfirm = vi.fn();
-        const mockOnCancel = vi.fn();
+    describe("when cancel button is clicked", () => {
+        test("should not call 'onConfirm' callback", async () => {
+            const mockOnConfirm = vi.fn();
 
-        render(<ConfirmationPrompt onConfirm={mockOnConfirm} onCancel={mockOnCancel} />);
-        const cancelButton = screen.getByRole("button", { name: /cancel/i });
-        fireEvent.click(cancelButton);
+            render(<ConfirmationPrompt onConfirm={mockOnConfirm} onCancel={() => {}} />);
+            const confirmButton = screen.getByRole("button", { name: /cancel/i });
+            await userEvent.click(confirmButton);
 
-        expect(mockOnCancel).toHaveBeenCalledOnce();
-        expect(mockOnConfirm).not.toHaveBeenCalled();
+            expect(mockOnConfirm).not.toHaveBeenCalled();
+        });
+
+        test("should call 'onCancel' callback", async () => {
+            const mockOnCancel = vi.fn();
+
+            render(<ConfirmationPrompt onConfirm={() => {}} onCancel={mockOnCancel} />);
+            const confirmButton = screen.getByRole("button", { name: /cancel/i });
+            await userEvent.click(confirmButton);
+
+            expect(mockOnCancel).toHaveBeenCalledOnce();
+        });
     });
 });

@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 
 describe(LoadingSpinner, () => {
-    test("should have proper ARIA attributes", () => {
+    test("should have ARIA status role", () => {
         render(<LoadingSpinner />);
         const spinner = screen.queryByRole("status", { name: /loading/i });
 

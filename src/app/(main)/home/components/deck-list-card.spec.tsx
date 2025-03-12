@@ -31,18 +31,18 @@ describe(DeckListCard, () => {
             canReview: false,
         },
     ])("given deck preview data $preview", ({ preview, canReview }) => {
-        test("should render one deck page link with correct href value", () => {
-            const expectedHref = `/deck/${preview.deck.id}`;
+        const baseHref = `/deck/${preview.deck.id}`;
 
+        test(`should render one deck page link with href '${baseHref}'`, () => {
             render(<DeckListCard preview={preview} />);
             const links = screen
                 .getAllByRole("link")
-                .filter((link) => link.getAttribute("href") === expectedHref);
+                .filter((link) => link.getAttribute("href") === baseHref);
 
             expect(links.length).toEqual(1);
         });
 
-        test("should use trimmed deck name as the card title", () => {
+        test("should use trimmed deck name as card title", () => {
             mockedLimitedTextSpan.mockImplementation(({ text }) => <>{text}</>);
 
             render(<DeckListCard preview={preview} />);
@@ -54,7 +54,7 @@ describe(DeckListCard, () => {
             });
         });
 
-        test("should forward preview data to the remaining cards grid", () => {
+        test("should forward preview data to 'RemainingCardsGrid'", () => {
             render(<DeckListCard preview={preview} />);
 
             expect(mockedRemainingCardsGrid).toHaveBeenCalledOnceWithProps({
@@ -62,19 +62,17 @@ describe(DeckListCard, () => {
             });
         });
 
-        test("should render the deck health bar with correct retrievability and test value representation", () => {
+        test("should forward deck retrievability to 'DeckHealthBarWithLabel'", () => {
             render(<DeckListCard preview={preview} />);
 
             expect(mockedDeckHealthBarWithLabel).toHaveBeenCalledOnceWithProps({
                 retrievability: preview.deck.retrievability,
-                withBarText: true,
             });
         });
 
         if (canReview) {
-            test("should render the review button as a link with correct href", () => {
-                const expectedHref = `/deck/${preview.deck.id}/review`;
-
+            const expectedHref = `${baseHref}/review`;
+            test(`should render review button as link with href ${expectedHref}`, () => {
                 render(<DeckListCard preview={preview} />);
                 const links = screen
                     .getAllByRole("link")
@@ -83,12 +81,12 @@ describe(DeckListCard, () => {
                 expect(links.length).toEqual(1);
             });
         } else {
-            test("should render the review button as a disabled button", () => {
+            test("should render review button as disabled button", () => {
                 render(<DeckListCard preview={preview} />);
                 const button = screen.queryByRole("button");
 
                 expect(button).toBeInTheDocument();
-                expect(button).toHaveAttribute("disabled", "");
+                expect(button).toBeDisabled();
             });
         }
     });

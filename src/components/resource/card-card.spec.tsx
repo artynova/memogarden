@@ -1,58 +1,70 @@
+import { MarkdownProse } from "@/components/markdown/markdown-prose";
 import { CardCard } from "@/components/resource/card-card";
 import { SelectCardDataView } from "@/server/data/services/card";
-import { render, screen } from "@testing-library/react";
-import { describe, expect, test } from "vitest";
+import { render } from "@testing-library/react";
+import { describe, expect, test, vi } from "vitest";
 
-describe.each([
-    {
-        front: { raw: "**Card front**", markdownCheckTag: "strong" },
-        back: { raw: "*Card back*", markdownCheckTag: "em" },
-    },
-])(CardCard, ({ front, back }) => {
-    const conditionString = `given raw front text '${front.raw}' and raw back text '${back.raw}'`;
+vi.mock("@/components/markdown/markdown-prose");
 
-    test(`should render both card front and back by default ${conditionString}`, () => {
-        const card = {
-            front: front.raw,
-            back: back.raw,
-        } as SelectCardDataView;
+const mockedMarkdownProse = vi.mocked(MarkdownProse);
 
-        render(<CardCard card={card} />);
-        const headings = screen.getAllByRole("heading", { level: 2 });
-        const frontHeading = screen.queryByRole("heading", { level: 2, name: /question/i });
-        const frontContentCheckElement =
-            frontHeading?.parentElement?.nextElementSibling?.getElementsByTagName(
-                front.markdownCheckTag,
-            )[0];
-        const backHeading = screen.queryByRole("heading", { level: 2, name: /answer/i });
-        const backContentCheckElement =
-            backHeading?.parentElement?.nextElementSibling?.getElementsByTagName(
-                back.markdownCheckTag,
-            )[0];
+describe(CardCard, () => {
+    describe.each([
+        {
+            card: {
+                front: "**Card front**",
+                back: "*Card back*",
+            } as SelectCardDataView,
+        },
+        {
+            card: {
+                front: "# Hello",
+                back: "1. World",
+            } as SelectCardDataView,
+        },
+        {
+            card: {
+                front: "Hallo",
+                back: "__Hello__",
+            } as SelectCardDataView,
+        },
+    ])("given card data $card", ({ card }) => {
+        describe("given no value for prop 'onlyFront'", () => {
+            test("should forward card front text to card front 'MarkdownProse'", () => {
+                render(<CardCard card={card} />);
 
-        expect(headings.length).toEqual(2);
-        expect(frontHeading).toBeInTheDocument();
-        expect(frontContentCheckElement).toBeInTheDocument();
-        expect(backHeading).toBeInTheDocument();
-        expect(backContentCheckElement).toBeInTheDocument();
-    });
+                expect(mockedMarkdownProse).toHaveBeenCalledTimes(2);
+                expect(mockedMarkdownProse).toHaveBeenNthCalledWithProps(1, {
+                    children: card.front,
+                });
+            });
 
-    test(`should only render card front when explicitly specified to do so ${conditionString}`, () => {
-        const card = {
-            front: front.raw,
-            back: back.raw,
-        } as SelectCardDataView;
+            test("should forward card back text to card back 'MarkdownProse'", () => {
+                render(<CardCard card={card} />);
 
-        render(<CardCard card={card} onlyFront />);
-        const headings = screen.getAllByRole("heading", { level: 2 });
-        const frontHeading = screen.queryByRole("heading", { level: 2, name: /question/i });
-        const frontContentCheckElement =
-            frontHeading?.parentElement?.nextElementSibling?.getElementsByTagName(
-                front.markdownCheckTag,
-            )[0];
+                expect(mockedMarkdownProse).toHaveBeenCalledTimes(2);
+                expect(mockedMarkdownProse).toHaveBeenNthCalledWithProps(2, {
+                    children: card.back,
+                });
+            });
+        });
 
-        expect(headings.length).toEqual(1);
-        expect(frontHeading).toBeInTheDocument();
-        expect(frontContentCheckElement).toBeInTheDocument();
+        describe("given value 'true' for prop 'onlyFront'", () => {
+            test("should forward card front text to card front 'MarkdownProse'", () => {
+                render(<CardCard card={card} onlyFront />); // Implicit value "true"
+
+                expect(mockedMarkdownProse).toHaveBeenCalledTimes(1);
+                expect(mockedMarkdownProse).toHaveBeenNthCalledWithProps(1, {
+                    children: card.front,
+                });
+            });
+
+            test("should not render card back 'MarkdownProse'", () => {
+                render(<CardCard card={card} onlyFront />);
+
+                expect(mockedMarkdownProse).toHaveBeenCalledTimes(1);
+                expect(mockedMarkdownProse).not.toHaveBeenCalledWithProps({ children: card.back });
+            });
+        });
     });
 });

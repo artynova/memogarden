@@ -8,11 +8,13 @@ vi.mock("@/server/actions/user/actions");
 const mockedSignout = vi.mocked(signout);
 
 describe(SignOutButton, () => {
-    test("should call the 'signout' server action on click", () => {
-        render(<SignOutButton />);
-        const button = screen.getByRole("button");
-        fireEvent.click(button);
+    describe("when clicked", () => {
+        test("should call 'signout' server action", () => {
+            render(<SignOutButton />);
+            const button = screen.getByRole("button");
+            fireEvent.click(button);
 
-        expect(mockedSignout).toHaveBeenCalledOnce();
+            expect(mockedSignout).toHaveBeenCalledOnce();
+        });
     });
 });

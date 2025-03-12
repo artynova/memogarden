@@ -5,7 +5,7 @@ import { UserDropdown } from "@/components/page/main/template/user-dropdown";
 import { SelectUser } from "@/server/data/services/user";
 import { fakeCompliantValue } from "@/test/mock/generic";
 import { render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 vi.mock("@/components/limited-text-span");
 vi.mock("@/components/page/main/template/user-dropdown");
@@ -16,52 +16,53 @@ const mockedUserDropdown = vi.mocked(UserDropdown);
 const mockedHomeButton = vi.mocked(HomeButton);
 
 describe(Header, () => {
-    const mockSpanId = "limited-text-span";
+    describe("given no value for 'hideHomeButton' prop", () => {
+        test("should render 'Home' button", () => {
+            render(<Header title="" user={fakeCompliantValue()} />);
 
-    beforeEach(() => {
-        mockedLimitedTextSpan.mockReturnValue(<div data-testid={mockSpanId}></div>);
+            expect(mockedHomeButton).toHaveBeenCalledOnce();
+        });
     });
 
-    test("should render 'Home' button by default", () => {
-        render(<Header title="" user={fakeCompliantValue()} />);
+    describe("given true value for 'hideHomeButton' prop", () => {
+        test("should not render 'Home' button", () => {
+            render(<Header title="" user={fakeCompliantValue()} hideHomeButton />);
 
-        expect(mockedHomeButton).toHaveBeenCalledOnce();
+            expect(mockedHomeButton).not.toHaveBeenCalled();
+        });
     });
 
-    test("should not render 'Home' button when specified to do so", () => {
-        render(<Header title="" user={fakeCompliantValue()} hideHomeButton />);
-
-        expect(mockedHomeButton).not.toHaveBeenCalled();
-    });
-
-    test.each([
+    describe.each([
         { title: "Home" },
         { title: "Example title" },
         { title: "Japanese" },
         { title: "Browse" },
-    ])(
-        `should render title as a limited text span inside a top-level heading when the untrimmed title is $title `,
-        ({ title }) => {
+    ])("given title $title", ({ title }) => {
+        test("should forward title to 'LimitedTextSpan'", () => {
             render(<Header title={title} user={fakeCompliantValue()} />);
-            const heading = screen.getByTestId(mockSpanId).closest("h1");
 
-            expect(mockedLimitedTextSpan).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({ text: title }),
-                {},
-            );
+            expect(mockedLimitedTextSpan).toHaveBeenCalledOnceWithProps({ text: title });
+        });
+
+        test("should render title in first-level heading", () => {
+            const mockSpanTestId = "limited-text-span";
+            mockedLimitedTextSpan.mockReturnValue(<div data-testid={mockSpanTestId} />);
+
+            render(<Header title={title} user={fakeCompliantValue()} />);
+            const heading = screen.getByTestId(mockSpanTestId).closest("h1");
+
             expect(heading).toBeInTheDocument();
-        },
-    );
+        });
+    });
 
-    test.each([
+    describe.each([
         { user: { avatarId: 1, retrievability: null } as SelectUser },
         { user: { avatarId: 3, retrievability: 0.01 } as SelectUser },
-    ])("should forwared user data to 'UserDropdown' given user data $user", ({ user }) => {
-        render(<Header title="" user={user} />);
+    ])("given user data $user", ({ user }) => {
+        test("should forwared user data to 'UserDropdown'", () => {
+            render(<Header title="" user={user} />);
 
-        expect(mockedUserDropdown).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({ user }),
-            {},
-        );
+            expect(mockedUserDropdown).toHaveBeenCalledOnceWithProps({ user });
+        });
     });
 });

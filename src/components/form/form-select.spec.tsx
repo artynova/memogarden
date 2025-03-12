@@ -40,50 +40,60 @@ describe(FormSelect, () => {
         replaceWithChildren(mockedFormControl);
     });
 
-    test.each([{ name: "select" }, { name: "deck" }, { name: "difficulty" }])(
-        "should correctly forward form control and item name $name to 'FormField'",
+    test("should forward form control to 'FormField'", () => {
+        const mockControl: Control = fakeCompliantValue("mock_control");
+
+        render(<FormSelect control={mockControl} name="" options={[]} innerLabel="" />);
+
+        expect(mockedFormField).toHaveBeenCalledOnceWithProps({ control: mockControl });
+    });
+
+    describe.each([{ name: "select" }, { name: "deck" }, { name: "difficulty" }])(
+        "given field name $name",
         ({ name }) => {
-            const mockControl: Control = fakeCompliantValue();
+            test("should forward field name to 'FormField'", () => {
+                render(
+                    <FormSelect
+                        control={fakeCompliantValue<Control>()}
+                        name={name}
+                        options={[]}
+                        innerLabel=""
+                    />,
+                );
 
-            render(<FormSelect control={mockControl} name={name} options={[]} innerLabel="" />);
-
-            expect(mockedFormField).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({ name, control: mockControl }),
-                {},
-            );
+                expect(mockedFormField).toHaveBeenCalledOnceWithProps({ name });
+            });
         },
     );
 
-    test.each([{}, { label: "Select" }, { label: "Deck" }, { label: "Difficulty" }])(
-        "should correctly render label $label inside the form item using 'FormLabel'",
+    describe.each([{}, { label: "Select" }, { label: "Deck" }, { label: "Difficulty" }])(
+        "given label $label",
         ({ label }) => {
-            mockFormFieldWithField(mockedFormField);
+            test("should forward label to 'FormLabel'", () => {
+                mockFormFieldWithField(mockedFormField);
 
-            render(
-                <FormSelect
-                    control={fakeCompliantValue<Control>()}
-                    name=""
-                    options={[]}
-                    label={label}
-                    innerLabel=""
-                />,
-            );
+                render(
+                    <FormSelect
+                        control={fakeCompliantValue<Control>()}
+                        name=""
+                        options={[]}
+                        innerLabel=""
+                        label={label}
+                    />,
+                );
 
-            expect(mockedFormLabel).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({ children: label }),
-                {},
-            );
+                expect(mockedFormLabel).toHaveBeenCalledOnceWithProps({ children: label });
+            });
         },
     );
 
-    test.each([
+    describe.each([
         {},
         { description: "Select an item." },
         { description: "Assign card's deck." },
         { description: "Choose card's difficulty." },
-    ])(
-        "should correctly render label $label inside the form item using 'FormLabel'",
-        ({ description }) => {
+    ])("given description $description", ({ description }) => {
+        test("should forward description to 'FormDescription'", () => {
             mockFormFieldWithField(mockedFormField);
 
             render(
@@ -91,19 +101,16 @@ describe(FormSelect, () => {
                     control={fakeCompliantValue<Control>()}
                     name=""
                     options={[]}
-                    description={description}
                     innerLabel=""
+                    description={description}
                 />,
             );
 
-            expect(mockedFormDescription).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({ children: description }),
-                {},
-            );
-        },
-    );
+            expect(mockedFormDescription).toHaveBeenCalledOnceWithProps({ children: description });
+        });
+    });
 
-    test("should use the 'FormMessage' component", () => {
+    test("should contain 'FormMessage'", () => {
         mockFormFieldWithField(mockedFormField);
 
         render(
@@ -118,7 +125,7 @@ describe(FormSelect, () => {
         expect(mockedFormMessage).toHaveBeenCalledOnce();
     });
 
-    test.each([
+    describe.each([
         {
             options: [
                 { label: "Option 1", value: "option3" },
@@ -134,9 +141,8 @@ describe(FormSelect, () => {
                 { label: "Melon", value: "fruit4" },
             ],
         },
-    ])(
-        "should correctly forward options $options to 'ControlledSelect' when rendering",
-        ({ options }) => {
+    ])("given options $options", ({ options }) => {
+        test("should forward options to 'ControlledSelect'", () => {
             mockFormFieldWithField(mockedFormField);
 
             render(
@@ -148,47 +154,16 @@ describe(FormSelect, () => {
                 />,
             );
 
-            expect(mockedControlledSelect).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({
-                    options,
-                }),
-                {},
-            );
-        },
-    );
+            expect(mockedControlledSelect).toHaveBeenCalledOnceWithProps({ options });
+        });
+    });
 
-    test.each([{ value: "o1" }, { value: "test_value" }, { value: "orange" }])(
-        "should correctly forward form field's 'onChange' callback and value $value to 'ControlledSelect' when rendering",
-        ({ value }) => {
-            const mockOnChange = vi.fn();
-            mockFormFieldWithField(mockedFormField, { value, onChange: mockOnChange });
-
-            render(
-                <FormSelect
-                    control={fakeCompliantValue<Control>()}
-                    name=""
-                    options={[]}
-                    innerLabel=""
-                />,
-            );
-
-            expect(mockedControlledSelect).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({
-                    value,
-                    onValueChange: mockOnChange,
-                }),
-                {},
-            );
-        },
-    );
-
-    test.each([
+    describe.each([
         { placeholder: "Select a deck" },
         { placeholder: "Placeholder" },
         { placeholder: "Lorem ipsum" },
-    ])(
-        "should correctly forward placeholder $placeholder to 'ControlledSelect' when rendering",
-        ({ placeholder }) => {
+    ])("given placeholder $placeholder", ({ placeholder }) => {
+        test("should forward placeholder to 'ControlledSelect'", () => {
             mockFormFieldWithField(mockedFormField);
 
             render(
@@ -201,22 +176,16 @@ describe(FormSelect, () => {
                 />,
             );
 
-            expect(mockedControlledSelect).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({
-                    placeholder,
-                }),
-                {},
-            );
-        },
-    );
+            expect(mockedControlledSelect).toHaveBeenCalledOnceWithProps({ placeholder });
+        });
+    });
 
-    test.each([
+    describe.each([
         { innerLabel: "Group label" },
         { innerLabel: "Available decks" },
         { innerLabel: "Dolor sit amet" },
-    ])(
-        "should correctly forward placeholder $placeholder to 'ControlledSelect' when rendering",
-        ({ innerLabel }) => {
+    ])("given inner label $innerLabel", ({ innerLabel }) => {
+        test("should forward placeholder to 'ControlledSelect'", () => {
             mockFormFieldWithField(mockedFormField);
 
             render(
@@ -228,12 +197,45 @@ describe(FormSelect, () => {
                 />,
             );
 
-            expect(mockedControlledSelect).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({
-                    innerLabel,
-                }),
-                {},
-            );
+            expect(mockedControlledSelect).toHaveBeenCalledOnceWithProps({ innerLabel });
+        });
+    });
+
+    describe.each([{ value: "o1" }, { value: "test_value" }, { value: "orange" }])(
+        "given form field value $value",
+        ({ value }) => {
+            test("should forward value to 'ControlledSelect'", () => {
+                mockFormFieldWithField(mockedFormField, { value });
+
+                render(
+                    <FormSelect
+                        control={fakeCompliantValue<Control>()}
+                        name=""
+                        options={[]}
+                        innerLabel=""
+                    />,
+                );
+
+                expect(mockedControlledSelect).toHaveBeenCalledOnceWithProps({ value });
+            });
         },
     );
+
+    test("should forward form field 'onChange' callback to 'ControlledSelect'", () => {
+        const mockOnChange = vi.fn();
+        mockFormFieldWithField(mockedFormField, { onChange: mockOnChange });
+
+        render(
+            <FormSelect
+                control={fakeCompliantValue<Control>()}
+                name=""
+                options={[]}
+                innerLabel=""
+            />,
+        );
+
+        expect(mockedControlledSelect).toHaveBeenCalledOnceWithProps({
+            onValueChange: mockOnChange,
+        });
+    });
 });

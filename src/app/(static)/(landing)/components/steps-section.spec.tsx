@@ -12,7 +12,7 @@ const mockedControlledAccordion = vi.mocked(ControlledAccordion);
 const mockedAdaptiveThemedImage = vi.mocked(AdaptiveThemedImage);
 
 describe(StepsSection, () => {
-    test("should contain a sign-up call to action", () => {
+    test("should contain sign-up call to action", () => {
         render(<StepsSection />);
         const signupButton = screen.queryByRole("link", { name: /sign up/i });
 
@@ -20,66 +20,63 @@ describe(StepsSection, () => {
         expect(signupButton).toHaveAttribute("href", "/signup");
     });
 
-    test("should initially render the first step in the accordion as expanded", () => {
-        render(<StepsSection />);
+    describe("given no user interaction", () => {
+        test("should render first step as expanded", () => {
+            render(<StepsSection />);
 
-        expect(mockedControlledAccordion).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({ currentIndex: 0 }),
-            {},
-        );
+            expect(mockedControlledAccordion).toHaveBeenCalledOnceWithProps({ currentIndex: 0 });
+        });
     });
 
-    test.each([{ target: 1 }, { target: 2 }, { target: 3 }])(
-        "should correctly manage accordion state and pass updated current index after the accordion notifies about a click on the item at index $target",
-        async ({ target }) => {
-            let capturedOnCurrentIndexChange: (index: number) => void;
-            mockedControlledAccordion.mockImplementation(({ onCurrentIndexChange }) => {
-                capturedOnCurrentIndexChange = onCurrentIndexChange; // Interaction with real clicks is verified in accordion tests, so just capture the handler to fake them at the accordion level
-                return <></>;
-            });
+    describe.each([{ target: 1 }, { target: 2 }, { target: 3 }])(
+        "when step heading at index $target is clicked",
+        ({ target }) => {
+            test("should pass updated current index to 'ControlledAccordion'", async () => {
+                let capturedOnCurrentIndexChange: ((index: number) => void) | undefined;
+                mockedControlledAccordion.mockImplementation(({ onCurrentIndexChange }) => {
+                    capturedOnCurrentIndexChange = onCurrentIndexChange; // Interaction with real clicks is verified in accordion tests, so just capture the handler to fake them at the accordion level
+                    return <></>;
+                });
 
-            render(<StepsSection />);
-            capturedOnCurrentIndexChange!(target);
+                render(<StepsSection />);
+                capturedOnCurrentIndexChange?.(target);
 
-            await waitFor(() => {
-                expect(mockedControlledAccordion).toHaveBeenCalledTimes(2);
-                expect(mockedControlledAccordion).toHaveBeenLastCalledWith(
-                    expect.objectContaining({ currentIndex: target }),
-                    {},
-                );
+                await waitFor(() => {
+                    expect(mockedControlledAccordion).toHaveBeenCalledTimes(2);
+                    expect(mockedControlledAccordion).toHaveBeenLastCalledWithProps({
+                        currentIndex: target,
+                    });
+                });
             });
         },
     );
 
-    test.each([{ index: 0 }, { index: 1 }, { index: 2 }, { index: 3 }])(
-        "should render an adaptive themed image with source corresponding to step when step index is $index",
-        async ({ index }) => {
-            let capturedOnCurrentIndexChange: (index: number) => void;
-            mockedControlledAccordion.mockImplementation(({ onCurrentIndexChange }) => {
-                capturedOnCurrentIndexChange = onCurrentIndexChange;
-                return <></>;
-            });
+    describe.each([{ index: 0 }, { index: 1 }, { index: 2 }, { index: 3 }])(
+        "given current step index $index",
+        ({ index }) => {
+            test("should render an adaptive themed image with source corresponding to step when step index is $index", async () => {
+                let capturedOnCurrentIndexChange: ((index: number) => void) | undefined;
+                mockedControlledAccordion.mockImplementation(({ onCurrentIndexChange }) => {
+                    capturedOnCurrentIndexChange = onCurrentIndexChange;
+                    return <></>;
+                });
 
-            render(<StepsSection />);
-            capturedOnCurrentIndexChange!(index);
+                render(<StepsSection />);
+                capturedOnCurrentIndexChange?.(index);
 
-            await waitFor(() => {
-                expect(mockedAdaptiveThemedImage).toHaveBeenLastCalledWith(
-                    expect.objectContaining({
-                        image: fakeCompliantValue(
-                            expect.objectContaining({
-                                src: fakeCompliantValue(
-                                    expect.objectContaining({
-                                        light: fakeCompliantValue(
-                                            expect.stringContaining(`step-${index + 1}`),
-                                        ),
-                                    }),
-                                ),
-                            }),
-                        ),
-                    }),
-                    {},
-                );
+                await waitFor(() => {
+                    expect(mockedAdaptiveThemedImage).toHaveBeenLastCalledWithProps({
+                        image: expect.objectContaining({
+                            src: fakeCompliantValue(
+                                expect.objectContaining({
+                                    light: fakeCompliantValue(
+                                        expect.stringContaining(`step-${index + 1}`),
+                                    ),
+                                }),
+                            ),
+                        }),
+                    });
+                });
             });
         },
     );

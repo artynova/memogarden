@@ -1,10 +1,11 @@
 import { ChangePasswordForm } from "@/app/(main)/account/components/change-password-form";
 
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 import { ChangePasswordData } from "@/server/actions/user/schemas";
 import { changePassword } from "@/server/actions/user/actions";
 import { ResponseUnauthorized } from "@/lib/responses";
+import userEvent from "@testing-library/user-event";
 
 vi.mock("@/server/actions/user/actions");
 
@@ -45,105 +46,57 @@ describe(ChangePasswordForm, () => {
             expect(form).toHaveFormValues({});
         });
 
-        describe("when submit button is clicked", () => {
-            test("should report missing values and avoid submitting erroneous data", async () => {
+        describe("when confirm button is clicked", () => {
+            test("should report missing values", async () => {
                 render(<ChangePasswordForm onCancel={() => {}} />);
-                const confirmButton = screen.getByRole("button", { name: /confirm/i });
-                fireEvent.click(confirmButton);
+                const button = screen.getByRole("button", { name: /confirm/i });
+                await userEvent.click(button);
                 const inputOldPassword = screen.getByLabelText(/^current password/i);
                 const inputPassword = screen.getByLabelText(/^new password/i);
                 const inputConfirmPassword = screen.getByLabelText(/^confirm new password/i);
+                const fieldsInOrder = [inputOldPassword, inputPassword, inputConfirmPassword];
+                const errors = screen.getAllByText(/required/i);
 
-                await waitFor(() => {
-                    const fieldsInOrder = [inputOldPassword, inputPassword, inputConfirmPassword];
-                    const errors = screen.getAllByText(/required/i);
-
-                    expect(errors.length).toEqual(3);
-
-                    errors.forEach((error, index) => {
-                        expect(error).toHaveClass("text-destructive");
-                        expect(fieldsInOrder[index]).toHaveAttribute("aria-invalid", "true");
-                        expect(fieldsInOrder[index]).toHaveAttribute(
-                            "aria-describedby",
-                            expect.stringContaining(error.id),
-                        );
-                    });
-                    expect(mockedChangePassword).not.toHaveBeenCalled();
+                expect(errors.length).toEqual(3);
+                errors.forEach((error, index) => {
+                    expect(error).toHaveClass("text-destructive");
+                    expect(fieldsInOrder[index]).toHaveAttribute("aria-invalid", "true");
+                    expect(fieldsInOrder[index]).toHaveAttribute(
+                        "aria-describedby",
+                        expect.stringContaining(error.id),
+                    );
                 });
+            });
+
+            test("should not submit data", async () => {
+                render(<ChangePasswordForm onCancel={() => {}} />);
+                const button = screen.getByRole("button", { name: /confirm/i });
+                await userEvent.click(button);
+
+                expect(mockedChangePassword).not.toHaveBeenCalled();
             });
         });
 
         describe("when cancel button is clicked", () => {
-            test("should call the onCancel callback", () => {
+            test("should call 'onCancel' callback", async () => {
                 const mockOnCancel = vi.fn();
                 render(<ChangePasswordForm onCancel={mockOnCancel} />);
-                const cancelButton = screen.getByRole("button", { name: /cancel/i });
-                fireEvent.click(cancelButton);
+                const button = screen.getByRole("button", { name: /cancel/i });
+                await userEvent.click(button);
 
                 expect(mockOnCancel).toHaveBeenCalledOnce();
             });
+
+            test("should not submit data", async () => {
+                const mockOnCancel = vi.fn();
+                render(<ChangePasswordForm onCancel={mockOnCancel} />);
+                const button = screen.getByRole("button", { name: /cancel/i });
+                await userEvent.click(button);
+
+                expect(mockedChangePassword).not.toHaveBeenCalled();
+            });
         });
     });
-
-    describe.each([
-        {
-            data: {
-                oldPassword: "s3cure_PASSWORD",
-                password: "PASSWORD_s3cure",
-                confirmPassword: "PASSWORD_s3cure",
-            },
-        },
-    ])(
-        "given valid form old password input $data.oldPassword, password input $data.password, and confirm password input $data.confirmPassword",
-        ({ data }) => {
-            describe("when submit button is clicked", () => {
-                test("should submit input data to the changePassword server action", async () => {
-                    render(<ChangePasswordForm onCancel={() => {}} />);
-                    inputIntoForm(data);
-                    const confirmButton = screen.getByRole("button", { name: /confirm/i });
-                    fireEvent.click(confirmButton);
-
-                    await waitFor(() => {
-                        expect(mockedChangePassword).toHaveBeenCalledExactlyOnceWith(data);
-                    });
-                });
-                describe("when server action response notifies about incorrect password", () => {
-                    test("should report server-side password change error", async () => {
-                        mockedChangePassword.mockResolvedValue(ResponseUnauthorized);
-
-                        render(<ChangePasswordForm onCancel={() => {}} />);
-                        inputIntoForm(data);
-                        const confirmButton = screen.getByRole("button", { name: /confirm/i });
-                        fireEvent.click(confirmButton);
-                        const inputOldPassword = screen.getByLabelText(/^current password/i);
-
-                        await waitFor(() => {
-                            const error = screen.queryByText(/incorrect password/i);
-
-                            expect(error).toBeInTheDocument();
-                            expect(inputOldPassword).toHaveAttribute("aria-invalid", "true");
-                            expect(inputOldPassword).toHaveAttribute(
-                                "aria-describedby",
-                                expect.stringContaining(error!.id),
-                            );
-                            expect(error).toHaveClass("text-destructive");
-                        });
-                    });
-                });
-            });
-
-            describe("when cancel button is clicked", () => {
-                test("should call the onCancel callback", () => {
-                    const mockOnCancel = vi.fn();
-                    render(<ChangePasswordForm onCancel={mockOnCancel} />);
-                    const cancelButton = screen.getByRole("button", { name: /cancel/i });
-                    fireEvent.click(cancelButton);
-
-                    expect(mockOnCancel).toHaveBeenCalledOnce();
-                });
-            });
-        },
-    );
 
     describe.each([
         { password: "a", errorExp: /at least 8/i },
@@ -155,14 +108,13 @@ describe(ChangePasswordForm, () => {
         { password: "aaaaAAAA", errorExp: /one digit/i },
         { password: "aaaaAAA1", errorExp: /one special character/i },
     ])("given invalid form password input $password", ({ password, errorExp }) => {
-        test("should report insufficient password strength error", async () => {
-            render(<ChangePasswordForm onCancel={() => {}} />);
-            inputIntoForm({ password });
-            const confirmButton = screen.getByRole("button", { name: /confirm/i });
-            fireEvent.click(confirmButton);
-            const inputPassword = screen.getByLabelText(/^new password/i);
-
-            await waitFor(() => {
+        describe("when confirm button is clicked", () => {
+            test("should report insufficient password strength error", async () => {
+                render(<ChangePasswordForm onCancel={() => {}} />);
+                inputIntoForm({ password });
+                const button = screen.getByRole("button", { name: /confirm/i });
+                await userEvent.click(button);
+                const inputPassword = screen.getByLabelText(/^new password/i);
                 const error = screen.queryByText(errorExp);
 
                 expect(error).toBeInTheDocument();
@@ -172,6 +124,14 @@ describe(ChangePasswordForm, () => {
                     "aria-describedby",
                     expect.stringContaining(error!.id),
                 );
+            });
+
+            test("should not submit data", async () => {
+                render(<ChangePasswordForm onCancel={() => {}} />);
+                inputIntoForm({ password });
+                const button = screen.getByRole("button", { name: /confirm/i });
+                await userEvent.click(button);
+
                 expect(mockedChangePassword).not.toHaveBeenCalled();
             });
         });
@@ -184,14 +144,13 @@ describe(ChangePasswordForm, () => {
     ])(
         "given form password input $password and confirmPassword input $confirmPassword",
         ({ password, confirmPassword }) => {
-            test("should report password mismatch error", async () => {
-                render(<ChangePasswordForm onCancel={() => {}} />);
-                inputIntoForm({ password, confirmPassword });
-                const confirmButton = screen.getByRole("button", { name: /confirm/i });
-                fireEvent.click(confirmButton);
-                const inputConfirmPassword = screen.getByLabelText(/^confirm new password/i);
-
-                await waitFor(() => {
+            describe("when confirm button is clicked", () => {
+                test("should report password mismatch error", async () => {
+                    render(<ChangePasswordForm onCancel={() => {}} />);
+                    inputIntoForm({ password, confirmPassword });
+                    const button = screen.getByRole("button", { name: /confirm/i });
+                    await userEvent.click(button);
+                    const inputConfirmPassword = screen.getByLabelText(/^confirm new password/i);
                     const error = screen.queryByText(/must match/i);
 
                     expect(error).toBeInTheDocument();
@@ -201,9 +160,88 @@ describe(ChangePasswordForm, () => {
                         "aria-describedby",
                         expect.stringContaining(error!.id),
                     );
+                });
+
+                test("should not submit data", async () => {
+                    render(<ChangePasswordForm onCancel={() => {}} />);
+                    inputIntoForm({ password, confirmPassword });
+                    const button = screen.getByRole("button", { name: /confirm/i });
+                    await userEvent.click(button);
+
                     expect(mockedChangePassword).not.toHaveBeenCalled();
                 });
             });
         },
     );
+
+    describe.each([
+        {
+            data: {
+                oldPassword: "s3cure_PASSWORD",
+                password: "PASSWORD_s3cure",
+                confirmPassword: "PASSWORD_s3cure",
+            },
+        },
+        {
+            data: {
+                oldPassword: "P4$w0rd",
+                password: "P4$w0rd1",
+                confirmPassword: "P4$w0rd1",
+            },
+        },
+    ])("given valid form input $data", ({ data }) => {
+        describe("when confirm button is clicked", () => {
+            test("should submit input data to 'changePassword' server action", async () => {
+                render(<ChangePasswordForm onCancel={() => {}} />);
+                inputIntoForm(data);
+                const button = screen.getByRole("button", { name: /confirm/i });
+                await userEvent.click(button);
+
+                expect(mockedChangePassword).toHaveBeenCalledExactlyOnceWith(data);
+            });
+
+            describe("given server action response notifies about incorrect current password", () => {
+                test("should report server-side error", async () => {
+                    mockedChangePassword.mockResolvedValue(ResponseUnauthorized);
+
+                    render(<ChangePasswordForm onCancel={() => {}} />);
+                    inputIntoForm(data);
+                    const button = screen.getByRole("button", { name: /confirm/i });
+                    await userEvent.click(button);
+                    const inputOldPassword = screen.getByLabelText(/^current password/i);
+
+                    const error = screen.queryByText(/incorrect password/i);
+
+                    expect(error).toBeInTheDocument();
+                    expect(inputOldPassword).toHaveAttribute("aria-invalid", "true");
+                    expect(inputOldPassword).toHaveAttribute(
+                        "aria-describedby",
+                        expect.stringContaining(error!.id),
+                    );
+                    expect(error).toHaveClass("text-destructive");
+                });
+            });
+        });
+
+        describe("when cancel button is clicked", () => {
+            test("should call 'onCancel' callback", async () => {
+                const mockOnCancel = vi.fn();
+
+                render(<ChangePasswordForm onCancel={mockOnCancel} />);
+                const button = screen.getByRole("button", { name: /cancel/i });
+                await userEvent.click(button);
+
+                expect(mockOnCancel).toHaveBeenCalledOnce();
+            });
+
+            test("should not submit data", async () => {
+                const mockOnCancel = vi.fn();
+                render(<ChangePasswordForm onCancel={mockOnCancel} />);
+                const button = screen.getByRole("button", { name: /cancel/i });
+                await userEvent.click(button);
+
+                expect(mockedChangePassword).not.toHaveBeenCalled();
+            });
+        });
+    });
 });

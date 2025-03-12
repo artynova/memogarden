@@ -40,42 +40,45 @@ describe(FormInput, () => {
         replaceWithChildren(mockedFormControl);
     });
 
-    test.each([{ name: "name" }, { name: "deck" }, { name: "feedback" }])(
-        "should correctly forward form control and item name $name to 'FormField'",
+    test("should forward form control to 'FormField'", () => {
+        const mockControl: Control = fakeCompliantValue("mock_control");
+
+        render(<FormInput control={mockControl} name="" />);
+
+        expect(mockedFormField).toHaveBeenCalledOnceWithProps({ control: mockControl });
+    });
+
+    describe.each([{ name: "name" }, { name: "deck" }, { name: "feedback" }])(
+        "given field name $name",
         ({ name }) => {
-            const mockControl: Control = fakeCompliantValue();
+            test("should forward field name to 'FormField'", () => {
+                render(<FormInput control={fakeCompliantValue<Control>()} name={name} />);
 
-            render(<FormInput control={mockControl} name={name} />);
-
-            expect(mockedFormField).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({ name, control: mockControl }),
-                {},
-            );
+                expect(mockedFormField).toHaveBeenCalledOnceWithProps({ name });
+            });
         },
     );
 
-    test.each([{}, { label: "Lorem ipsum" }, { label: "Deck" }, { label: "Feedback" }])(
-        "should correctly render label $label inside the form item using 'FormLabel'",
+    describe.each([{}, { label: "Lorem ipsum" }, { label: "Deck" }, { label: "Feedback" }])(
+        "given label $label",
         ({ label }) => {
-            mockFormFieldWithField(mockedFormField);
+            test("should forward label to 'FormLabel'", () => {
+                mockFormFieldWithField(mockedFormField);
 
-            render(<FormInput control={fakeCompliantValue<Control>()} name="" label={label} />);
+                render(<FormInput control={fakeCompliantValue<Control>()} name="" label={label} />);
 
-            expect(mockedFormLabel).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({ children: label }),
-                {},
-            );
+                expect(mockedFormLabel).toHaveBeenCalledOnceWithProps({ children: label });
+            });
         },
     );
 
-    test.each([
+    describe.each([
         {},
         { description: "Input name." },
         { description: "Input deck." },
         { description: "Feedback about the app." },
-    ])(
-        "should correctly render label $label inside the form item using 'FormLabel'",
-        ({ description }) => {
+    ])("given description $description", ({ description }) => {
+        test("should forward description to 'FormDescription'", () => {
             mockFormFieldWithField(mockedFormField);
 
             render(
@@ -86,14 +89,11 @@ describe(FormInput, () => {
                 />,
             );
 
-            expect(mockedFormDescription).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({ children: description }),
-                {},
-            );
-        },
-    );
+            expect(mockedFormDescription).toHaveBeenCalledOnceWithProps({ children: description });
+        });
+    });
 
-    test("should use the 'FormMessage' component", () => {
+    test("should contain 'FormMessage'", () => {
         mockFormFieldWithField(mockedFormField);
 
         render(<FormInput control={fakeCompliantValue<Control>()} name="" />);
@@ -101,54 +101,49 @@ describe(FormInput, () => {
         expect(mockedFormMessage).toHaveBeenCalledOnce();
     });
 
-    test("should use input type 'text' when no type is provided", () => {
-        mockFormFieldWithField(mockedFormField);
-
-        render(<FormInput control={fakeCompliantValue<Control>()} name="" />);
-
-        expect(mockedInput).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({
-                type: "text",
-            }),
-            {},
-        );
-    });
-
-    test.each([{ type: "text" }, { type: "search" }, { type: "url" }])(
-        "should correctly forward input type $type to 'Input' when rendering",
-        ({ type }) => {
+    describe("given no value for 'type' prop", () => {
+        test("should use input type 'text'", () => {
             mockFormFieldWithField(mockedFormField);
-
-            render(<FormInput control={fakeCompliantValue<Control>()} name="" type={type} />);
-
-            expect(mockedInput).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({
-                    type,
-                }),
-                {},
-            );
-        },
-    );
-
-    test.each([
-        { value: "Japanese" },
-        { value: "Polish" },
-        { value: "Lorem ipsum dolor sit amet" },
-    ])(
-        "should correctly forward form field's 'onChange' callback and value $value to 'Input' when rendering",
-        ({ value }) => {
-            const mockOnChange = vi.fn();
-            mockFormFieldWithField(mockedFormField, { value, onChange: mockOnChange });
 
             render(<FormInput control={fakeCompliantValue<Control>()} name="" />);
 
-            expect(mockedInput).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({
-                    value,
-                    onChange: mockOnChange,
-                }),
-                {},
-            );
+            expect(mockedInput).toHaveBeenCalledOnceWithProps({ type: "text" });
+        });
+    });
+
+    describe.each([{ type: "text" }, { type: "search" }, { type: "url" }])(
+        "given value $type for 'type' prop",
+        ({ type }) => {
+            test("should correctly forward input type $type to 'Input' when rendering", () => {
+                mockFormFieldWithField(mockedFormField);
+
+                render(<FormInput control={fakeCompliantValue<Control>()} name="" type={type} />);
+
+                expect(mockedInput).toHaveBeenCalledOnceWithProps({ type });
+            });
         },
     );
+
+    describe.each([
+        { value: "Japanese" },
+        { value: "Polish" },
+        { value: "Lorem ipsum dolor sit amet" },
+    ])("given form field value $value", ({ value }) => {
+        test("should forward value to 'Input'", () => {
+            mockFormFieldWithField(mockedFormField, { value });
+
+            render(<FormInput control={fakeCompliantValue<Control>()} name="" />);
+
+            expect(mockedInput).toHaveBeenCalledOnceWithProps({ value });
+        });
+    });
+
+    test("should forward form field 'onChange' callback to 'Input'", () => {
+        const mockOnChange = vi.fn();
+        mockFormFieldWithField(mockedFormField, { onChange: mockOnChange });
+
+        render(<FormInput control={fakeCompliantValue<Control>()} name="" />);
+
+        expect(mockedInput).toHaveBeenCalledOnceWithProps({ onChange: mockOnChange });
+    });
 });

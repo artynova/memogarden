@@ -3,7 +3,8 @@ import { ResponseConflict } from "@/lib/responses";
 import { signinWithFacebook, signinWithGoogle, signup } from "@/server/actions/user/actions";
 import { CredentialsSignupData } from "@/server/actions/user/schemas";
 import { fakeCompliantValue } from "@/test/mock/generic";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, test, vi } from "vitest";
 
 vi.mock("@/server/actions/user/actions");
@@ -17,7 +18,7 @@ const mockedSigninWithFacebook = vi.mocked(signinWithFacebook);
  *
  * @param data Desired input data.
  */
-function inputIntoForm(data: CredentialsSignupData) {
+function inputIntoForm(data: Partial<CredentialsSignupData>) {
     const inputEmail = screen.getByRole("textbox", { name: /email/i });
     fireEvent.change(inputEmail, {
         target: { value: data.email },
@@ -33,99 +34,53 @@ function inputIntoForm(data: CredentialsSignupData) {
 }
 
 describe(SignupForm, () => {
-    test("should render empty input fields initially", () => {
-        render(<SignupForm />);
-        const inputEmail = screen.queryByRole("textbox", { name: /email/i });
-        const inputPassword = screen.queryByLabelText(/^password/i); // Password-type fields do not have the standard textbox role
-        const inputConfirmPassword = screen.queryByLabelText(/confirm password/i);
-        const form = inputEmail?.closest("form");
+    describe("given no form input", () => {
+        test("should render empty input fields", () => {
+            render(<SignupForm />);
+            const inputEmail = screen.getByRole("textbox", { name: /email/i });
+            const inputPassword = screen.getByLabelText(/^password/i);
+            const inputConfirmPassword = screen.getByLabelText(/confirm password/i);
+            const form = inputEmail?.closest("form");
 
-        expect(inputEmail).toBeInTheDocument();
-        expect(inputPassword).toBeInTheDocument();
-        expect(inputConfirmPassword).toBeInTheDocument();
-        expect(form).toHaveFormValues({});
-    });
-
-    test("should submit input data along with inferred timezone to the 'signup' server action when submit button is clicked and form contains valid data", async () => {
-        const target = {
-            email: "john_smith@example.com",
-            password: "s3cure_PASSWORD",
-            confirmPassword: "s3cure_PASSWORD",
-        };
-        // Fake user timezone inference
-        const mockTimezone = "mock_timezone";
-        vi.spyOn(Intl, "DateTimeFormat").mockReturnValue(
-            fakeCompliantValue({
-                resolvedOptions: () => ({
-                    timeZone: mockTimezone,
-                }),
-            }),
-        );
-
-        render(<SignupForm />);
-        inputIntoForm(target);
-        const signupButton = screen.getByRole("button", { name: /sign up/i });
-        fireEvent.click(signupButton);
-
-        await waitFor(() => {
-            expect(mockedSignup).toHaveBeenCalledExactlyOnceWith(target, mockTimezone);
+            expect(inputEmail).toBeInTheDocument();
+            expect(inputPassword).toBeInTheDocument();
+            expect(inputConfirmPassword).toBeInTheDocument();
+            expect(form).toHaveFormValues({});
         });
-    });
 
-    test("should report server-side email error when the server action response notifies about an email collision (i.e., the email is already used by an existing account)", async () => {
-        const target = {
-            email: "john_smith@example.com",
-            password: "s3cure_PASSWORD",
-            confirmPassword: "s3cure_PASSWORD",
-        };
-        mockedSignup.mockResolvedValue(ResponseConflict); // Mock conflict on server
+        describe("when sign up button is clicked", () => {
+            test("should report missing values", async () => {
+                render(<SignupForm />);
+                const button = screen.getByRole("button", { name: /sign up/i });
+                await userEvent.click(button);
+                const inputEmail = screen.getByRole("textbox", { name: /email/i });
+                const inputPassword = screen.getByLabelText(/^password/i);
+                const inputConfirmPassword = screen.getByLabelText(/confirm password/i);
+                const fieldsInOrder = [inputEmail, inputPassword, inputConfirmPassword];
+                const errors = screen.getAllByText(/required/i);
 
-        render(<SignupForm />);
-        inputIntoForm(target);
-        const signupButton = screen.getByRole("button", { name: /sign up/i });
-        fireEvent.click(signupButton);
-        const inputEmail = screen.getByRole("textbox", { name: /email/i });
-
-        await waitFor(() => {
-            const error = screen.queryByText(/already in use/i);
-
-            expect(error).toBeInTheDocument();
-            expect(inputEmail).toHaveAttribute("aria-invalid", "true");
-            expect(inputEmail).toHaveAttribute(
-                "aria-describedby",
-                expect.stringContaining(error!.id),
-            );
-            expect(error).toHaveClass("text-destructive");
-        });
-    });
-
-    test("should report missing generic field values and avoid submitting erroneous data", async () => {
-        render(<SignupForm />);
-        const signupButton = screen.getByRole("button", { name: /sign up/i });
-        const inputEmail = screen.getByRole("textbox", { name: /email/i });
-        const inputPassword = screen.getByLabelText(/^password/i);
-        const inputConfirmPassword = screen.getByLabelText(/confirm password/i);
-        fireEvent.click(signupButton);
-
-        await waitFor(() => {
-            const fieldsInOrder = [inputEmail, inputPassword, inputConfirmPassword];
-            const errors = screen.getAllByText(/required/i);
-
-            expect(errors.length).toEqual(3);
-
-            errors.forEach((error, index) => {
-                expect(error).toHaveClass("text-destructive");
-                expect(fieldsInOrder[index]).toHaveAttribute("aria-invalid", "true");
-                expect(fieldsInOrder[index]).toHaveAttribute(
-                    "aria-describedby",
-                    expect.stringContaining(error.id),
-                );
+                expect(errors.length).toEqual(3);
+                errors.forEach((error, index) => {
+                    expect(error).toHaveClass("text-destructive");
+                    expect(fieldsInOrder[index]).toHaveAttribute("aria-invalid", "true");
+                    expect(fieldsInOrder[index]).toHaveAttribute(
+                        "aria-describedby",
+                        expect.stringContaining(error.id),
+                    );
+                });
             });
-            expect(mockedSignup).not.toHaveBeenCalled();
+
+            test("should not submit data", async () => {
+                render(<SignupForm />);
+                const button = screen.getByRole("button", { name: /sign up/i });
+                await userEvent.click(button);
+
+                expect(mockedSignup).not.toHaveBeenCalled();
+            });
         });
     });
 
-    test.each([
+    describe.each([
         { password: "a", errorExp: /at least 8/i },
         { password: "aaaaaaa", errorExp: /at least 8/i },
         { password: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", errorExp: /at most 32/i },
@@ -134,18 +89,15 @@ describe(SignupForm, () => {
         { password: "AAAAAAAA", errorExp: /one lowercase/i },
         { password: "aaaaAAAA", errorExp: /one digit/i },
         { password: "aaaaAAA1", errorExp: /one special character/i },
-    ])(
-        "should report password failure for input $password with an appropriate error message due to insufficient strength",
-        async ({ password, errorExp }) => {
-            render(<SignupForm />);
-            const inputPassword = screen.getByLabelText(/^password/i);
-            fireEvent.change(inputPassword, {
-                target: { value: password },
-            });
-            const signupButton = screen.getByRole("button", { name: /sign up/i });
-            fireEvent.click(signupButton);
+    ])("given invalid form password input $password", ({ password, errorExp }) => {
+        describe("when sign up button is clicked", () => {
+            test("should report insufficient password strength error", async () => {
+                render(<SignupForm />);
+                inputIntoForm({ password });
+                const button = screen.getByRole("button", { name: /sign up/i });
+                await userEvent.click(button);
+                const inputPassword = screen.getByLabelText(/^password/i);
 
-            await waitFor(() => {
                 const error = screen.queryByText(errorExp);
 
                 expect(error).toBeInTheDocument();
@@ -155,49 +107,134 @@ describe(SignupForm, () => {
                     "aria-describedby",
                     expect.stringContaining(error!.id),
                 );
+            });
+
+            test("should not submit data", async () => {
+                render(<SignupForm />);
+                inputIntoForm({ password });
+                const button = screen.getByRole("button", { name: /sign up/i });
+                await userEvent.click(button);
+
                 expect(mockedSignup).not.toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe.each([
+        { password: "a", confirmPassword: "ab" },
+        { password: "AAaa11!!", confirmPassword: "AAaa!!11" },
+        { password: "AAaa11!!", confirmPassword: "AAaa1!!!" },
+    ])(
+        "given form password input $password and confirmPassword input $confirmPassword",
+        ({ password, confirmPassword }) => {
+            describe("when sign up button is clicked", () => {
+                test("should report password mismatch error", async () => {
+                    render(<SignupForm />);
+                    inputIntoForm({ password, confirmPassword });
+                    const button = screen.getByRole("button", { name: /sign up/i });
+                    await userEvent.click(button);
+                    const inputConfirmPassword = screen.getByLabelText(/^confirm password/i);
+                    const error = screen.queryByText(/must match/i);
+
+                    expect(error).toBeInTheDocument();
+                    expect(error).toHaveClass("text-destructive");
+                    expect(inputConfirmPassword).toHaveAttribute("aria-invalid", "true");
+                    expect(inputConfirmPassword).toHaveAttribute(
+                        "aria-describedby",
+                        expect.stringContaining(error!.id),
+                    );
+                });
+
+                test("should not submit data", async () => {
+                    render(<SignupForm />);
+                    inputIntoForm({ password, confirmPassword });
+                    const button = screen.getByRole("button", { name: /sign up/i });
+                    await userEvent.click(button);
+
+                    expect(mockedSignup).not.toHaveBeenCalled();
+                });
             });
         },
     );
 
-    test("should report password mismatch when second password input is not empty and its value does not match the first input", async () => {
-        render(<SignupForm />);
-        const inputConfirmPassword = screen.getByLabelText(/confirm password/i);
-        fireEvent.change(inputConfirmPassword, {
-            target: { value: "a" },
-        });
-        const signupButton = screen.getByRole("button", { name: /sign up/i });
-        fireEvent.click(signupButton);
+    describe.each([
+        {
+            data: {
+                email: "agent_smith@example.com",
+                password: "PASSWORD_s3cure",
+                confirmPassword: "PASSWORD_s3cure",
+            },
+        },
+        {
+            data: {
+                email: "neo@example.com",
+                password: "PASSWORD_s3cure",
+                confirmPassword: "PASSWORD_s3cure",
+            },
+        },
+    ])("given valid form input $data", ({ data }) => {
+        describe("when sign up button is clicked", () => {
+            test("should submit input data and inferred timezone to 'signup' server action", async () => {
+                // Fake user timezone inference
+                const mockTimezone = "mock_timezone";
+                vi.spyOn(Intl, "DateTimeFormat").mockReturnValue(
+                    fakeCompliantValue({
+                        resolvedOptions: () => ({
+                            timeZone: mockTimezone,
+                        }),
+                    }),
+                );
 
-        await waitFor(() => {
-            const error = screen.queryByText(/must match/i);
+                render(<SignupForm />);
+                inputIntoForm(data);
+                const button = screen.getByRole("button", { name: /sign up/i });
+                await userEvent.click(button);
 
-            expect(error).toBeInTheDocument();
-            expect(error).toHaveClass("text-destructive");
-            expect(inputConfirmPassword).toHaveAttribute("aria-invalid", "true");
-            expect(inputConfirmPassword).toHaveAttribute(
-                "aria-describedby",
-                expect.stringContaining(error!.id),
-            );
-            expect(mockedSignup).not.toHaveBeenCalled();
+                expect(mockedSignup).toHaveBeenCalledExactlyOnceWith(data, mockTimezone);
+            });
+
+            describe("given server action response notifies about email collision", () => {
+                test("should report server-side error", async () => {
+                    mockedSignup.mockResolvedValue(ResponseConflict);
+
+                    render(<SignupForm />);
+                    inputIntoForm(data);
+                    const button = screen.getByRole("button", { name: /sign up/i });
+                    await userEvent.click(button);
+                    const inputEmail = screen.getByLabelText(/email/i);
+                    const error = screen.queryByText(/already in use/i);
+
+                    expect(error).toBeInTheDocument();
+                    expect(inputEmail).toHaveAttribute("aria-invalid", "true");
+                    expect(inputEmail).toHaveAttribute(
+                        "aria-describedby",
+                        expect.stringContaining(error!.id),
+                    );
+                    expect(error).toHaveClass("text-destructive");
+                });
+            });
         });
     });
 
-    test("should call the correct server action after the 'Continue with Google' button is clicked", () => {
-        render(<SignupForm />);
-        const continueWithGoogle = screen.queryByRole("button", { name: /google/i });
-        if (continueWithGoogle) fireEvent.click(continueWithGoogle);
+    describe("when 'Continue with Google' button is clicked", () => {
+        test("should call 'signinWithGoogle' server action", async () => {
+            render(<SignupForm />);
+            const continueWithGoogle = screen.queryByRole("button", { name: /google/i });
+            if (continueWithGoogle) await userEvent.click(continueWithGoogle);
 
-        expect(continueWithGoogle).toBeInTheDocument();
-        expect(mockedSigninWithGoogle).toHaveBeenCalledOnce();
+            expect(continueWithGoogle).toBeInTheDocument();
+            expect(mockedSigninWithGoogle).toHaveBeenCalledOnce();
+        });
     });
 
-    test("should call the correct server action after the 'Continue with Facebook' button is clicked", () => {
-        render(<SignupForm />);
-        const continueWithFacebook = screen.queryByRole("button", { name: /facebook/i });
-        if (continueWithFacebook) fireEvent.click(continueWithFacebook);
+    describe("when 'Continue with Facebook' button is clicked", () => {
+        test("should call 'signinWithFacebook' server action", async () => {
+            render(<SignupForm />);
+            const continueWithFacebook = screen.queryByRole("button", { name: /facebook/i });
+            if (continueWithFacebook) await userEvent.click(continueWithFacebook);
 
-        expect(continueWithFacebook).toBeInTheDocument();
-        expect(mockedSigninWithFacebook).toHaveBeenCalledOnce();
+            expect(continueWithFacebook).toBeInTheDocument();
+            expect(mockedSigninWithFacebook).toHaveBeenCalledOnce();
+        });
     });
 });

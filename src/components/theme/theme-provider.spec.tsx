@@ -9,12 +9,7 @@ vi.mock("next-themes");
 const mockedNextThemesProvider = vi.mocked(NextThemesProvider);
 const mockedUseTheme = vi.mocked(useTheme);
 
-describe.each([
-    { theme: undefined },
-    { theme: "light" as const },
-    { theme: "dark" as const },
-    { theme: "system" as const },
-])(ThemeProvider, ({ theme }) => {
+describe(ThemeProvider, () => {
     const mockSetTheme = vi.fn();
 
     beforeEach(() => {
@@ -22,50 +17,56 @@ describe.each([
         mockedUseTheme.mockReturnValue({ setTheme: mockSetTheme, themes: [] });
     });
 
-    test(`should forward theme value to next-themes theme provider given theme value '${theme}'`, () => {
-        render(<ThemeProvider theme={theme}>Content</ThemeProvider>);
-
-        expect(mockedNextThemesProvider).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({ forcedTheme: theme }),
-            {},
-        );
-    });
-
-    if (theme) {
-        test(`should store theme value in local storage by default given theme value '${theme}'`, () => {
+    describe.each([
+        { theme: undefined },
+        { theme: "light" as const },
+        { theme: "dark" as const },
+        { theme: "system" as const },
+    ])("given theme value $theme", ({ theme }) => {
+        test("should forward theme value to next-themes theme provider", () => {
             render(<ThemeProvider theme={theme}>Content</ThemeProvider>);
 
-            expect(mockSetTheme).toHaveBeenCalledExactlyOnceWith(theme);
+            expect(mockedNextThemesProvider).toHaveBeenCalledOnceWithProps({ forcedTheme: theme });
         });
-    } else {
-        test(`should not store theme value in local storage by default given theme value '${theme}'`, () => {
-            render(<ThemeProvider theme={theme}>Content</ThemeProvider>);
 
-            expect(mockSetTheme).not.toHaveBeenCalled();
+        describe("given no value for 'doNotPersistTheme' prop", () => {
+            if (theme) {
+                test("should store theme value in local storage", () => {
+                    render(<ThemeProvider theme={theme}>Content</ThemeProvider>);
+
+                    expect(mockSetTheme).toHaveBeenCalledExactlyOnceWith(theme);
+                });
+            } else {
+                test("should not store theme value in local storage", () => {
+                    render(<ThemeProvider theme={theme}>Content</ThemeProvider>);
+
+                    expect(mockSetTheme).not.toHaveBeenCalled();
+                });
+            }
         });
-    }
 
-    test(`should not store theme value in local storage when requested to do so given theme value '${theme}'`, () => {
-        render(
-            <ThemeProvider theme={theme} doNotPersistTheme>
-                Content
-            </ThemeProvider>,
-        );
+        describe("given true value for 'doNotPersistTheme' prop", () => {
+            test("should not store theme value in local storage", () => {
+                render(
+                    <ThemeProvider theme={theme} doNotPersistTheme>
+                        Content
+                    </ThemeProvider>,
+                );
 
-        expect(mockSetTheme).not.toHaveBeenCalled();
+                expect(mockSetTheme).not.toHaveBeenCalled();
+            });
+        });
+
+        describe.each([
+            { children: <span data-testid="mock-1">Content</span>, contentTestId: "mock-1" },
+            { children: <div data-testid="mock-2">Page</div>, contentTestId: "mock-2" },
+        ])("given children $children", ({ children, contentTestId }) => {
+            test(`should render children inside next-themes provider`, () => {
+                render(<ThemeProvider theme={theme}>{children}</ThemeProvider>);
+                const content = screen.queryByTestId(contentTestId);
+
+                expect(content).toBeInTheDocument();
+            });
+        });
     });
-
-    test.each([{ contentText: "Content" }, { contentText: "Page" }])(
-        `should correctly render content given content as a div with text $contentText`,
-        ({ contentText }) => {
-            render(
-                <ThemeProvider theme={theme}>
-                    <div>{contentText}</div>
-                </ThemeProvider>,
-            );
-            const div = screen.queryByText(contentText);
-
-            expect(div).toBeInTheDocument();
-        },
-    );
 });

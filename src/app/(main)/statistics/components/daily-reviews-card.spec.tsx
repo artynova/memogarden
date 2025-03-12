@@ -56,68 +56,62 @@ describe(DailyReviewsCard, () => {
         );
     });
 
-    test.each([{ title: "Title" }, { title: "Lorem ipsum" }, { title: "Scheduled reviews" }])(
-        "should pass title $title to 'TitledCard'",
+    describe.each([{ title: "Title" }, { title: "Lorem ipsum" }, { title: "Scheduled reviews" }])(
+        "given title $title",
         ({ title }) => {
-            render(<DailyReviewsCard data={[]} title={title} timezone="" />);
+            test("should forward title to 'TitledCard'", () => {
+                render(<DailyReviewsCard data={[]} title={title} timezone="" />);
 
-            expect(mockedTitledCard).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({ title }),
-                {},
-            );
+                expect(mockedTitledCard).toHaveBeenCalledOnceWithProps({ title });
+            });
         },
     );
-
-    test.each([
-        { data: [{ reviews: 16 }], total: 16 },
-        { data: [{ reviews: 16 }, { reviews: 2 }], total: 18 },
-        { data: [{ reviews: 7 }, { reviews: 3 }, { reviews: 6 }, { reviews: 0 }], total: 16 },
-    ])(
-        "should render total review label 'Total: $total' given review data $data",
-        ({ data, total }) => {
-            render(<DailyReviewsCard data={fakeCompliantValue(data)} title="" timezone="" />);
-            const span = screen.queryByText(`Total: ${total}`);
-
-            expect(span).toBeInTheDocument();
-        },
-    );
-
-    test.each([
+    describe.each([
         {
             data: [{ date: new Date("2023-05-07T04:00:00.000Z"), reviews: 1 }],
-        },
-        {
-            data: [
-                { date: new Date("2023-06-07T04:00:00.000Z"), reviews: 1 },
-                { date: new Date("2023-06-08T04:00:00.000Z"), reviews: 7 },
-            ],
-        },
-    ])("should pass data $data to the 'BarChart' component", ({ data }) => {
-        render(<DailyReviewsCard data={data} title="" timezone="" />);
-
-        expect(mockedBarChart).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({
-                data,
-            }),
-            {},
-        );
-    });
-
-    test.each([
-        {
-            data: [{ date: new Date("2023-05-07T04:00:00.000Z"), reviews: 1 }],
+            total: 1,
             timezone: "America/New_York",
         },
         {
             data: [
-                { date: new Date("2023-08-07T00:00:00.000Z"), reviews: 1 },
-                { date: new Date("2023-08-08T00:00:00.000Z"), reviews: 7 },
+                { date: new Date("2023-06-07T00:00:00.000Z"), reviews: 1 },
+                { date: new Date("2023-06-08T00:00:00.000Z"), reviews: 7 },
             ],
+            total: 8,
             timezone: "Etc/UTC",
         },
-    ])(
-        "should use correct data key and tick formatter for the X axis given data $data and timezone $timezone",
-        ({ data, timezone }) => {
+        {
+            data: [
+                { date: new Date("2023-08-15T23:00:00.000Z"), reviews: 0 },
+                { date: new Date("2023-08-16T23:00:00.000Z"), reviews: 0 },
+            ],
+            total: 0,
+            timezone: "Europe/Berlin",
+        },
+        {
+            data: [
+                { date: new Date("2024-09-22T23:00:00.000Z"), reviews: 13 },
+                { date: new Date("2024-09-23T23:00:00.000Z"), reviews: 0 },
+                { date: new Date("2024-09-24T23:00:00.000Z"), reviews: 5 },
+            ],
+            total: 18,
+            timezone: "Europe/Warsaw",
+        },
+    ])("given review data $data and timezone $timezone", ({ data, total, timezone }) => {
+        test(`should render total review label 'Total: ${total}'`, () => {
+            render(<DailyReviewsCard data={data} title="" timezone="" />);
+            const span = screen.queryByText(`Total: ${total}`);
+
+            expect(span).toBeInTheDocument();
+        });
+
+        test("should forward review data to 'BarChart'", () => {
+            render(<DailyReviewsCard data={data} title="" timezone="" />);
+
+            expect(mockedBarChart).toHaveBeenCalledOnceWithProps({ data });
+        });
+
+        test("should use correct data key and tick formatter for 'XAxis'", () => {
             const expectedDataKey = "date";
             mockedXAxis.mockImplementation(
                 fakeCompliantValue(
@@ -128,12 +122,9 @@ describe(DailyReviewsCard, () => {
                 ),
             );
 
-            render(<DailyReviewsCard data={data} title="" timezone={timezone} />);
+            render(<DailyReviewsCard data={[]} title="" timezone={timezone} />);
 
-            expect(mockedXAxis).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({ dataKey: expectedDataKey }),
-                {},
-            );
+            expect(mockedXAxis).toHaveBeenCalledOnceWithProps({ dataKey: expectedDataKey });
             data.forEach(({ date }, index) => {
                 expect(mockedGetLocaleDateStringConcise).toHaveBeenNthCalledWith(
                     index + 1,
@@ -141,24 +132,9 @@ describe(DailyReviewsCard, () => {
                     timezone,
                 );
             });
-        },
-    );
+        });
 
-    test.each([
-        {
-            data: [{ date: new Date("2023-06-09T04:00:00.000Z"), reviews: 5 }],
-            timezone: "America/New_York",
-        },
-        {
-            data: [
-                { date: new Date("2023-08-15T00:00:00.000Z"), reviews: 5 },
-                { date: new Date("2023-08-16T00:00:00.000Z"), reviews: 13 },
-            ],
-            timezone: "Etc/UTC",
-        },
-    ])(
-        "should use correct name key and label formatter in chart tooltip content given data $data and timezone $timezone",
-        ({ data, timezone }) => {
+        test("should use correct label formatter for 'ChartTooltipContent'", () => {
             mockedChartTooltipContent.mockImplementation(
                 fakeCompliantValue(
                     ({
@@ -184,17 +160,24 @@ describe(DailyReviewsCard, () => {
                     timezone,
                 );
             });
-        },
-    );
+        });
+    });
 
-    test("should use correct data key for the bars", () => {
+    test("should use correct name key for 'ChartTooltipContent'", () => {
+        const expectedNameKey = "reviews";
+
+        render(<DailyReviewsCard data={[]} title="" timezone="" />);
+
+        expect(mockedChartTooltipContent).toHaveBeenCalledOnceWithProps({
+            nameKey: expectedNameKey,
+        });
+    });
+
+    test("should use correct data key for 'Bar'", () => {
         const expectedDataKey = "reviews";
 
         render(<DailyReviewsCard data={[]} title="" timezone="" />);
 
-        expect(mockedBar).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({ dataKey: expectedDataKey }),
-            {},
-        );
+        expect(mockedBar).toHaveBeenCalledOnceWithProps({ dataKey: expectedDataKey });
     });
 });

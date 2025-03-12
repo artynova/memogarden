@@ -3,18 +3,20 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 
 describe(Footer, () => {
-    test.each([
+    describe.each([
         { href: "/" },
         { href: "/signin" },
         { href: "/signup" },
         { href: "https://github.com/artynova/memogarden" },
-    ])("should have a link with href $href", ({ href }) => {
-        render(<Footer />);
-        const link = screen
-            .getAllByRole("link")
-            .find((element) => element.getAttribute("href") === href);
+    ])("", ({ href }) => {
+        test(`should render link with href ${href}`, () => {
+            render(<Footer />);
+            const link = screen
+                .getAllByRole("link")
+                .find((element) => element.getAttribute("href") === href);
 
-        expect(link).toBeInTheDocument();
+            expect(link).toBeInTheDocument();
+        });
     });
 
     test("should use semantic footer tag", () => {

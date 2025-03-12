@@ -22,37 +22,42 @@ describe(InvalidTokenHandler, () => {
         mockedUseSearchParams.mockReturnValue(fakeCompliantValue({ has: mockParamsHas }));
     });
 
-    test("should trigger sign-out when the invalid token flag is present in page search parameters", () => {
-        mockParamsHas.mockImplementation((value: string) => value === INVALID_TOKEN_FLAG);
+    describe(`given invalid token flag '${INVALID_TOKEN_FLAG}' is present in search parameters`, () => {
+        test("should trigger sign-out", () => {
+            mockParamsHas.mockImplementation((value: string) => value === INVALID_TOKEN_FLAG);
 
-        render(<InvalidTokenHandler />);
+            render(<InvalidTokenHandler />);
 
-        expect(mockedSignOut).toHaveBeenCalledOnce();
-    });
+            expect(mockedSignOut).toHaveBeenCalledOnce();
+        });
 
-    test("should seamlessly update the URL to remove the invalid token flag after sign-out is completed", async () => {
-        mockParamsHas.mockImplementation((value: string) => value === INVALID_TOKEN_FLAG);
+        test("should seamlessly update URL to remove invalid token flag after sign-out", async () => {
+            mockParamsHas.mockImplementation((value: string) => value === INVALID_TOKEN_FLAG);
 
-        render(<InvalidTokenHandler />);
+            render(<InvalidTokenHandler />);
 
-        await waitFor(() => {
-            expect(mockRouterReplace).toHaveBeenCalledExactlyOnceWith(REDIRECT_WITHOUT_TOKEN_TO, {
-                scroll: false,
+            await waitFor(() => {
+                expect(mockRouterReplace).toHaveBeenCalledExactlyOnceWith(
+                    REDIRECT_WITHOUT_TOKEN_TO,
+                    { scroll: false },
+                );
             });
         });
     });
 
-    test("should not trigger sign-out when the invalid token flag is not present in page search parameters", () => {
-        mockParamsHas.mockImplementation(() => false);
+    describe(`given invalid token flag '${INVALID_TOKEN_FLAG}' is not present in search parameters`, () => {
+        test("should not trigger sign-out", () => {
+            mockParamsHas.mockImplementation(() => false);
 
-        render(<InvalidTokenHandler />);
+            render(<InvalidTokenHandler />);
 
-        expect(mockedSignOut).not.toHaveBeenCalled();
-    });
+            expect(mockedSignOut).not.toHaveBeenCalled();
+        });
 
-    test("should not be rendered in the DOM", () => {
-        const { container } = render(<InvalidTokenHandler />);
+        test("should not render any DOM elements", () => {
+            const { container } = render(<InvalidTokenHandler />);
 
-        expect(container).toBeEmptyDOMElement();
+            expect(container).toBeEmptyDOMElement();
+        });
     });
 });

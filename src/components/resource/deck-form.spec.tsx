@@ -1,7 +1,8 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 import { DeckForm } from "@/components/resource/deck-form";
 import { ModifyDeckData } from "@/server/actions/deck/schemas";
+import userEvent from "@testing-library/user-event";
 
 /**
  * Simulates a real user inputting given data into a form currently rendered on the screen.
@@ -16,72 +17,120 @@ function inputIntoForm(data: ModifyDeckData) {
 }
 
 describe(DeckForm, () => {
-    const mockOnSubmit = vi.fn();
-    const mockOnCancel = vi.fn();
+    describe("given no form input", () => {
+        test("should render empty name input", () => {
+            render(<DeckForm onSubmit={() => {}} onCancel={() => {}} />);
+            const inputName = screen.queryByRole("textbox", { name: /name/i });
+            const form = inputName?.closest("form");
 
-    test("should render empty input field when supplied no initial value", () => {
-        render(<DeckForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
-        const input = screen.queryByRole("textbox", { name: /name/i });
-        const form = input?.closest("form");
-
-        expect(input).toBeInTheDocument();
-        expect(form).toHaveFormValues({});
-    });
-
-    test("should render pre-filled input field when supplied an initial value", () => {
-        const mockDeck = { name: "Test Deck" };
-
-        render(<DeckForm deck={mockDeck} onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
-        const input = screen.queryByRole("textbox", { name: /name/i });
-        const form = input?.closest("form");
-
-        expect(input).toBeInTheDocument();
-        expect(form).toHaveFormValues({ name: mockDeck.name });
-    });
-
-    test("should call onSubmit with input data when save button is clicked", async () => {
-        const target = { name: "My Deck" };
-
-        render(<DeckForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
-        inputIntoForm(target);
-        const saveButton = screen.getByRole("button", { name: /save/i });
-        fireEvent.click(saveButton);
-
-        await waitFor(() => {
-            expect(mockOnSubmit).toHaveBeenCalledExactlyOnceWith(target);
-            expect(mockOnCancel).not.toHaveBeenCalled();
+            expect(inputName).toBeInTheDocument();
+            expect(form).toHaveFormValues({});
         });
-    });
 
-    test("should call onCancel when cancel button is clicked", async () => {
-        const target = { name: "hello world" };
+        describe("when save button is clicked", () => {
+            test("should report missing value", async () => {
+                render(<DeckForm onSubmit={() => {}} onCancel={() => {}} />);
+                const button = screen.getByRole("button", { name: /save/i });
+                await userEvent.click(button);
+                const inputName = screen.queryByRole("textbox", { name: /name/i });
+                const error = screen.queryByText(/required/i);
 
-        render(<DeckForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
-        inputIntoForm(target);
-        const cancelButton = screen.getByRole("button", { name: /cancel/i });
-        fireEvent.click(cancelButton);
+                expect(error).toBeInTheDocument();
+                expect(error).toHaveClass("text-destructive");
+                expect(inputName).toHaveAttribute("aria-invalid", "true");
+                expect(inputName).toHaveAttribute(
+                    "aria-describedby",
+                    expect.stringContaining(error!.id),
+                );
+            });
 
-        await waitFor(() => {
-            expect(mockOnCancel).toHaveBeenCalledOnce();
-            expect(mockOnSubmit).not.toHaveBeenCalled();
+            test("should not call 'onSubmit' callback", async () => {
+                const mockOnSubmit = vi.fn();
+
+                render(<DeckForm onSubmit={mockOnSubmit} onCancel={() => {}} />);
+                const button = screen.getByRole("button", { name: /save/i });
+                await userEvent.click(button);
+
+                expect(mockOnSubmit).not.toHaveBeenCalled();
+            });
+
+            test("should not call 'onCancel' callback", async () => {
+                const mockOnCancel = vi.fn();
+
+                render(<DeckForm onSubmit={() => {}} onCancel={mockOnCancel} />);
+                const button = screen.getByRole("button", { name: /save/i });
+                await userEvent.click(button);
+
+                expect(mockOnCancel).not.toHaveBeenCalled();
+            });
         });
-    });
 
-    test("should report validation errors and avoid submitting erroneous data", async () => {
-        render(<DeckForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
-        const input = screen.getByRole("textbox", { name: /name/i });
-        const saveButton = screen.getByRole("button", { name: /save/i });
-        fireEvent.click(saveButton);
+        const validDataCases = [
+            { data: { name: "Japanese" } },
+            { data: { name: "Polish" } },
+            { data: { name: "Lorem ipsum" } },
+        ];
 
-        await waitFor(() => {
-            const error = screen.queryByText(/required/i);
+        describe.each(validDataCases)("given initial deck data $data", ({ data }) => {
+            test(`should render name input with value ${data.name}`, () => {
+                render(<DeckForm onSubmit={() => {}} onCancel={() => {}} deck={data} />);
+                const inputName = screen.queryByRole("textbox", { name: /name/i });
+                const form = inputName?.closest("form");
 
-            expect(error).toBeInTheDocument();
-            expect(error).toHaveClass("text-destructive");
-            expect(input).toHaveAttribute("aria-invalid", "true");
-            expect(input).toHaveAttribute("aria-describedby", expect.stringContaining(error!.id));
-            expect(mockOnSubmit).not.toHaveBeenCalled();
-            expect(mockOnCancel).not.toHaveBeenCalled();
+                expect(inputName).toBeInTheDocument();
+                expect(form).toHaveFormValues({ name: data.name });
+            });
+        });
+
+        // Same data (valid form content) but with different meaning (active user input instead of initial data), requiring a distinct condition label
+        describe.each(validDataCases)("given valid form input $data", ({ data }) => {
+            describe("when save button is clicked", () => {
+                test("should call 'onSubmit' callback with new data", async () => {
+                    const mockOnSubmit = vi.fn();
+
+                    render(<DeckForm onSubmit={mockOnSubmit} onCancel={() => {}} />);
+                    inputIntoForm(data);
+                    const button = screen.getByRole("button", { name: /save/i });
+                    await userEvent.click(button);
+
+                    expect(mockOnSubmit).toHaveBeenCalledExactlyOnceWith(data);
+                });
+
+                test("should not call 'onCancel' callback", async () => {
+                    const mockOnCancel = vi.fn();
+
+                    render(<DeckForm onSubmit={() => {}} onCancel={mockOnCancel} />);
+                    inputIntoForm(data);
+                    const button = screen.getByRole("button", { name: /save/i });
+                    await userEvent.click(button);
+
+                    expect(mockOnCancel).not.toHaveBeenCalled();
+                });
+            });
+
+            describe("when cancel button is clicked", () => {
+                test("should not call 'onSubmit' callback", async () => {
+                    const mockOnSubmit = vi.fn();
+
+                    render(<DeckForm onSubmit={mockOnSubmit} onCancel={() => {}} />);
+                    inputIntoForm(data);
+                    const button = screen.getByRole("button", { name: /cancel/i });
+                    await userEvent.click(button);
+
+                    expect(mockOnSubmit).not.toHaveBeenCalled();
+                });
+
+                test("should call 'onCancel' callback", async () => {
+                    const mockOnCancel = vi.fn();
+
+                    render(<DeckForm onSubmit={() => {}} onCancel={mockOnCancel} />);
+                    inputIntoForm(data);
+                    const button = screen.getByRole("button", { name: /cancel/i });
+                    await userEvent.click(button);
+
+                    expect(mockOnCancel).toHaveBeenCalledOnce();
+                });
+            });
         });
     });
 });

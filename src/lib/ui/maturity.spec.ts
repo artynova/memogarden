@@ -1,92 +1,82 @@
 import { CardMaturity, CardState } from "@/lib/enums";
 import { getCardMaturity } from "@/lib/ui/maturity";
+import { fakeCompliantValue } from "@/test/mock/generic";
 import { describe, expect, test } from "vitest";
 
 describe(getCardMaturity, () => {
-    test("should return maturity 'Seed' for cards with SRS state 'New'", () => {
-        const state = CardState.New;
-        const interval = 0;
+    describe("given SRS state 'New'", () => {
+        test("should return maturity 'Seed'", () => {
+            const state = CardState.New;
 
-        const output = getCardMaturity(state, interval);
+            const output = getCardMaturity(state, fakeCompliantValue());
 
-        expect(output).toEqual(CardMaturity.Seed);
+            expect(output).toEqual(CardMaturity.Seed);
+        });
     });
 
-    test.each([
+    describe.each([
         { state: CardState.Learning, stateLabel: "Learning" },
         { state: CardState.Relearning, stateLabel: "Relearning" },
-    ])("should return maturity 'Sapling' for cards with SRS state $stateLabel", ({ state }) => {
-        const interval = 0;
+    ])("given SRS state $stateLabel", ({ state }) => {
+        test("should return maturity 'Sprout'", () => {
+            const output = getCardMaturity(state, fakeCompliantValue());
 
-        const output = getCardMaturity(state, interval);
-
-        expect(output).toEqual(CardMaturity.Sprout);
+            expect(output).toEqual(CardMaturity.Sprout);
+        });
     });
 
-    test.each([
+    describe.each([
         {
             interval: 1,
             expected: CardMaturity.Sapling,
-            expectedLabel: "Sapling",
         },
         {
             interval: 7,
             expected: CardMaturity.Sapling,
-            expectedLabel: "Sapling",
         },
         {
             interval: 15,
             expected: CardMaturity.Sapling,
-            expectedLabel: "Sapling",
         },
         {
             interval: 16,
             expected: CardMaturity.Budding,
-            expectedLabel: "Budding",
         },
         {
             interval: 24,
             expected: CardMaturity.Budding,
-            expectedLabel: "Budding",
         },
         {
             interval: 30,
             expected: CardMaturity.Budding,
-            expectedLabel: "Budding",
         },
         {
             interval: 31,
             expected: CardMaturity.Mature,
-            expectedLabel: "Mature",
         },
         {
             interval: 47,
             expected: CardMaturity.Mature,
-            expectedLabel: "Mature",
         },
         {
             interval: 61,
             expected: CardMaturity.Mature,
-            expectedLabel: "Mature",
         },
         {
             interval: 62,
             expected: CardMaturity.Mighty,
-            expectedLabel: "Mighty",
         },
         {
             interval: 72,
             expected: CardMaturity.Mighty,
-            expectedLabel: "Mighty",
         },
-    ])(
-        "should return maturity $expectedLabel for cards with SRS state 'Review' and review interval of $interval days",
-        ({ interval, expected }) => {
+    ])("given SRS state 'Review' and review interval $interval", ({ interval, expected }) => {
+        test(`should return maturity '${CardMaturity[expected]}'`, () => {
             const state = CardState.Review;
 
             const output = getCardMaturity(state, interval);
 
             expect(output).toEqual(expected);
-        },
-    );
+        });
+    });
 });

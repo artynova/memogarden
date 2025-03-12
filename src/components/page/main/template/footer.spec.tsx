@@ -22,14 +22,16 @@ describe(Footer, () => {
         expect(footers.length).toEqual(1);
     });
 
-    test("should be an empty element when not given any actions", () => {
-        const { container } = render(<Footer actions={[]} />);
-        const footer = container.getElementsByTagName("footer")[0];
+    describe("given empty action list", () => {
+        test("should render footer without any children", () => {
+            const { container } = render(<Footer actions={[]} />);
+            const footer = container.getElementsByTagName("footer")[0];
 
-        expect(footer).toBeEmptyDOMElement();
+            expect(footer).toBeEmptyDOMElement();
+        });
     });
 
-    test.each([
+    describe.each([
         {
             actions: [
                 { Icon: Trash, text: "Delete", action: "/delete" },
@@ -44,18 +46,16 @@ describe(Footer, () => {
                 { Icon: Smile, text: "Good", action: () => {} },
             ],
         },
-    ])(
-        "should correctly forward action properties to 'FooterAction' when given actions $actions",
-        ({ actions }) => {
-            render(<Footer actions={actions} />);
+    ])("given actions $actions", ({ actions }) => {
+        describe.each(actions.map((action, index) => ({ action, index })))(
+            "for action $action",
+            ({ action, index }) => {
+                test("should forward action properties to 'FooterAction'", () => {
+                    render(<Footer actions={actions} />);
 
-            actions.forEach((action, index) => {
-                expect(mockedFooterAction).toHaveBeenNthCalledWith(
-                    index + 1, // The test method uses 1-based indexing for checking mock calls, this is not a mistake
-                    expect.objectContaining({ action }),
-                    {},
-                );
-            });
-        },
-    );
+                    expect(mockedFooterAction).toHaveBeenNthCalledWithProps(index + 1, { action });
+                });
+            },
+        );
+    });
 });

@@ -4,99 +4,129 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, test, vi } from "vitest";
 
 describe(ControlledMarkdownInput, () => {
-    test.each([{ id: "test_id" }, { id: "markdown" }, { id: "f1" }])(
-        "should forward provided HTML ID to the editor container given ID $id",
+    describe.each([{ id: "test_id" }, { id: "markdown" }, { id: "f1" }])(
+        "given ID $id",
         ({ id }) => {
-            const { container } = render(<ControlledMarkdownInput id={id} />);
-            const editor = container.firstElementChild;
+            test("should forward ID to CodeMirror editor container", () => {
+                const { container } = render(<ControlledMarkdownInput id={id} />);
+                const editor = container.firstElementChild;
 
-            expect(editor).toHaveAttribute("id", id);
+                expect(editor).toHaveAttribute("id", id);
+            });
         },
     );
 
-    test("should render an editable input by default", () => {
-        render(<ControlledMarkdownInput />);
-        const textbox = screen.getByRole("textbox");
+    describe("given no value for 'disabled' prop", () => {
+        test("should render editable field", () => {
+            render(<ControlledMarkdownInput />);
+            const textbox = screen.getByRole("textbox");
 
-        expect(textbox).toHaveAttribute("contenteditable", "true");
+            expect(textbox).toHaveAttribute("contenteditable", "true");
+        });
     });
 
-    test("should render a non-editable input when disabled", () => {
-        render(<ControlledMarkdownInput disabled />);
-        const textbox = screen.getByRole("textbox");
+    describe("given 'true' value for 'disabled' prop", () => {
+        test("should render non-editable field", () => {
+            render(<ControlledMarkdownInput disabled />);
+            const textbox = screen.getByRole("textbox");
 
-        expect(textbox).toHaveAttribute("contenteditable", "false");
+            expect(textbox).toHaveAttribute("contenteditable", "false");
+        });
     });
 
-    test("should not have focus-specific classes initially", () => {
-        const { container } = render(<ControlledMarkdownInput />);
-        const root = container.firstElementChild;
+    describe("given input is not focused", () => {
+        test("should not have focus-specific classes", () => {
+            const { container } = render(<ControlledMarkdownInput />);
+            const root = container.firstElementChild;
 
-        expect(root).not.toHaveClass("ring-ring");
+            expect(root).not.toHaveClass("ring-ring");
+        });
+
+        describe("when input becomes focused via clicking", () => {
+            test("should execute 'onFocus' callback", async () => {
+                const mockOnFocus = vi.fn();
+
+                render(<ControlledMarkdownInput onFocus={mockOnFocus} />);
+                const textbox = screen.getByRole("textbox");
+                await userEvent.click(textbox);
+
+                expect(mockOnFocus).toHaveBeenCalledOnce();
+            });
+        });
+
+        describe("when input becomes focused via keyboard navigation", () => {
+            test("should execute 'onFocus' callback", async () => {
+                const mockOnFocus = vi.fn();
+
+                render(<ControlledMarkdownInput onFocus={mockOnFocus} />);
+                await userEvent.tab();
+
+                expect(mockOnFocus).toHaveBeenCalledOnce();
+            });
+        });
     });
 
-    test("should execute 'onFocus' callback correctly when focusing on the editor", async () => {
-        const mockOnFocus = vi.fn();
-
-        render(<ControlledMarkdownInput onFocus={mockOnFocus} />);
-        const textbox = screen.getByRole("textbox");
-        await userEvent.click(textbox);
-
-        expect(mockOnFocus).toHaveBeenCalledOnce();
-    });
-
-    test("should have focus-specific classes when focused", async () => {
-        const { container } = render(<ControlledMarkdownInput />);
-        const textbox = screen.getByRole("textbox");
-        await userEvent.click(textbox);
-        const root = container.firstElementChild;
-
-        expect(root).toHaveClass("ring-ring");
-    });
-
-    test("should execute 'onBlur' callback correctly when the editor loses focus", async () => {
-        const mockOnBlur = vi.fn();
-
-        const { container } = render(<ControlledMarkdownInput onBlur={mockOnBlur} />);
-        const textbox = screen.getByRole("textbox");
-        await userEvent.click(textbox);
-        const root = container.firstElementChild;
-        await userEvent.click(root!);
-
-        expect(mockOnBlur).toHaveBeenCalledOnce();
-    });
-
-    test("should not have focus-specific classes after focusing and unfocusing", async () => {
-        const { container } = render(<ControlledMarkdownInput />);
-        const textbox = screen.getByRole("textbox");
-        await userEvent.click(textbox);
-        const root = container.firstElementChild;
-        await userEvent.click(root!);
-
-        expect(root).not.toHaveClass("ring-ring");
-    });
-
-    test.each([{ value: "Some code" }, { value: "Lorem ipsum" }, { value: "A" }])(
-        "should render initial value $value when passed",
-        ({ value }) => {
-            render(<ControlledMarkdownInput value={value} />);
-            const textContent = screen.queryByText(value);
-
-            expect(textContent).toBeInTheDocument();
-        },
-    );
-
-    test.each([{ target: "`Some code`" }, { target: "# Top heading" }, { target: "1. A" }])(
-        "should forward input text to 'onChange' when user types $target",
-        async ({ target }) => {
-            const mockOnChange = vi.fn();
-
-            render(<ControlledMarkdownInput onChange={mockOnChange} />);
+    describe("given input is focused", () => {
+        test("should have focus-specific classes", async () => {
+            const { container } = render(<ControlledMarkdownInput />);
             const textbox = screen.getByRole("textbox");
             await userEvent.click(textbox);
-            await userEvent.keyboard(target);
+            const root = container.firstElementChild;
 
-            expect(mockOnChange).toHaveBeenLastCalledWith(target);
-        },
-    );
+            expect(root).toHaveClass("ring-ring");
+        });
+
+        describe("when input loses focus via clicking", () => {
+            test("should execute 'onBlur' callback", async () => {
+                const mockOnBlur = vi.fn();
+
+                const { container } = render(<ControlledMarkdownInput onBlur={mockOnBlur} />);
+                const textbox = screen.getByRole("textbox");
+                await userEvent.click(textbox);
+                const root = container.firstElementChild;
+                await userEvent.click(root!);
+
+                expect(mockOnBlur).toHaveBeenCalledOnce();
+            });
+        });
+    });
+
+    describe.each([
+        { value: undefined },
+        { value: "`Some code`" },
+        { value: "# Lorem ipsum" },
+        { value: "1. A" },
+    ])("given initial value $value", ({ value }) => {
+        if (value) {
+            test("should render value", () => {
+                render(<ControlledMarkdownInput value={value} />);
+                const textbox = screen.getByRole("textbox");
+
+                expect(textbox).toHaveTextContent(value);
+            });
+        } else {
+            test("should not render any editor content", () => {
+                render(<ControlledMarkdownInput />);
+                const textbox = screen.getByRole("textbox");
+
+                expect(textbox).toHaveTextContent("");
+            });
+        }
+
+        describe.each([{ input: "`Some code`" }, { input: "# Top heading" }, { input: "1. A" }])(
+            "when user types input $input",
+            ({ input }) => {
+                test(`should forward updated text ${input + (value ?? "")} to 'onChange' callback`, async () => {
+                    const mockOnChange = vi.fn();
+                    const expectedContent = input + (value ?? ""); // Caret is placed at the beginning of the text when focusing, so the new input will be typed to the left of the initial value
+
+                    render(<ControlledMarkdownInput onChange={mockOnChange} value={value} />);
+                    await userEvent.tab();
+                    await userEvent.keyboard(input);
+
+                    expect(mockOnChange).toHaveBeenLastCalledWith(expectedContent);
+                });
+            },
+        );
+    });
 });
