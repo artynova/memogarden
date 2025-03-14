@@ -3,7 +3,10 @@ import { z } from "zod";
 // Auth.js URL does not need to be parametrized via env files because it always runs on the same server as the main app
 process.env["AUTH_URL"] = `http://localhost:${process.env.PORT ?? 3000}`;
 
-const envSchema = z.object({
+/**
+ * Schema for validating and parsing environment variables from `process.env`.
+ */
+export const EnvSchema = z.object({
     ENV: z
         .union([z.literal("development"), z.literal("testing"), z.literal("production")])
         .default("development"),
@@ -11,7 +14,7 @@ const envSchema = z.object({
 
     // Database
     DB_USER: z.string().min(1).default("postgres"),
-    DB_PASSWORD: z.string(),
+    DB_PASSWORD: z.string().min(1),
     DB_HOST: z.string().min(1).default("localhost"),
     DB_PORT: z.coerce.number().min(1000).max(65535).default(5432),
     DB_NAME: z.string().min(1).default("postgres"),
@@ -31,4 +34,4 @@ const envSchema = z.object({
 /**
  * Object with all environment variables parsed and validated.
  */
-export const env = envSchema.parse(process.env);
+export const env = EnvSchema.parse(process.env);

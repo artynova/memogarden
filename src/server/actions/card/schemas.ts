@@ -8,11 +8,11 @@ export const ModifyCardSchema = z.object({
     front: z
         .string()
         .min(1, { message: "Required" })
-        .max(300, { message: "Should be at most 300 characters" }),
+        .max(300, { message: "Must be at most 300 characters" }),
     back: z
         .string()
         .min(1, { message: "Required" })
-        .max(1000, { message: "Should be at most 1000 characters" }),
+        .max(1000, { message: "Must be at most 1000 characters" }),
 });
 
 /**

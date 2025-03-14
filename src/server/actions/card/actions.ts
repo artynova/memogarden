@@ -2,7 +2,7 @@
 
 import { ModifyCardData, ModifyCardSchema } from "@/server/actions/card/schemas";
 import { isDeckAccessible } from "@/server/data/services/deck";
-import { ResponseBadRequest, ResponseNotFound, ResponseUnauthorized } from "@/lib/responses";
+import { ResponseBadRequest, ResponseNotFound } from "@/lib/responses";
 import {
     createCard,
     editCard,
@@ -42,7 +42,9 @@ export async function createNewCard(data: ModifyCardData) {
 export async function updateCard(data: ModifyCardData, id: string) {
     if (ModifyCardSchema.safeParse(data).error) return ResponseBadRequest;
     const userId = await getUserIdOrRedirect();
-    if (!(await isCardAccessible(userId, id))) return ResponseUnauthorized;
+    if (!(await isCardAccessible(userId, id)) || !(await isDeckAccessible(userId, data.deckId))) {
+        return ResponseNotFound;
+    }
     return editCard(id, data);
 }
 
@@ -57,7 +59,7 @@ export async function updateCard(data: ModifyCardData, id: string) {
  */
 export async function deleteCard(id: string) {
     const userId = await getUserIdOrRedirect();
-    if (!(await isCardAccessible(userId, id))) return ResponseUnauthorized;
+    if (!(await isCardAccessible(userId, id))) return ResponseNotFound;
     return removeCard(id);
 }
 
@@ -75,7 +77,7 @@ export async function deleteCard(id: string) {
  */
 export async function reviewCardWithRating(id: string, answer: string, rating: ReviewRating) {
     const user = await getUserOrRedirect();
-    if (!(await isCardAccessible(user.id, id))) return ResponseUnauthorized;
+    if (!(await isCardAccessible(user.id, id))) return ResponseNotFound;
     const now = new Date();
     return reviewCard(id, answer, now, getDayEnd(now, user.timezone), rating);
 }

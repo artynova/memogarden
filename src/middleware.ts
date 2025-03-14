@@ -24,7 +24,7 @@ const { auth } = NextAuth({
  */
 export default auth((req) => {
     const { nextUrl } = req;
-    const hasToken = !!req.auth?.user?.id; // The existence of a valid user ID on the token proves that it was a valid token at some point, but it may have been become invalid since then, so this is not a full proof of authentication
+    const hasToken = !!req.auth?.user?.id; // The existence of a valid user ID on the token proves that it was a valid token at some point, but it may have been invalidated since then, so this is not a full proof of authentication
 
     if (!hasToken && !shouldAllowWithoutToken(nextUrl))
         return NextResponse.redirect(new URL(REDIRECT_WITHOUT_TOKEN_TO, nextUrl));

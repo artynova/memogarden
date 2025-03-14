@@ -3,7 +3,7 @@
 import { createDeck, editDeck, isDeckAccessible, removeDeck } from "@/server/data/services/deck";
 
 import { getUserIdOrRedirect } from "@/lib/utils/server";
-import { ResponseBadRequest, ResponseUnauthorized } from "@/lib/responses";
+import { ResponseBadRequest, ResponseNotFound } from "@/lib/responses";
 import { ModifyDeckData, ModifyDeckSchema } from "@/server/actions/deck/schemas";
 
 /**
@@ -32,7 +32,7 @@ export async function createNewDeck(data: ModifyDeckData) {
 export async function updateDeck(data: ModifyDeckData, id: string) {
     if (ModifyDeckSchema.safeParse(data).error) return ResponseBadRequest;
     const userId = await getUserIdOrRedirect();
-    if (!(await isDeckAccessible(userId, id))) return ResponseUnauthorized;
+    if (!(await isDeckAccessible(userId, id))) return ResponseNotFound;
     return editDeck(id, data);
 }
 
@@ -47,6 +47,6 @@ export async function updateDeck(data: ModifyDeckData, id: string) {
  */
 export async function deleteDeck(id: string) {
     const userId = await getUserIdOrRedirect();
-    if (!(await isDeckAccessible(userId, id))) return ResponseUnauthorized;
+    if (!(await isDeckAccessible(userId, id))) return ResponseNotFound;
     return removeDeck(id);
 }

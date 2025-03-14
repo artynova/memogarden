@@ -1,9 +1,14 @@
 "use server";
 
 import { signIn, signOut } from "@/server/auth";
-import { getUserIdOrRedirect, getUserOrRedirect } from "@/lib/utils/server";
+import { getUserIdOrRedirect } from "@/lib/utils/server";
 import { REDIRECT_WITH_TOKEN_TO, REDIRECT_WITHOUT_TOKEN_TO } from "@/lib/routes";
-import { ResponseBadRequest, ResponseConflict, ResponseUnauthorized } from "@/lib/responses";
+import {
+    ResponseBadRequest,
+    ResponseConflict,
+    ResponseNotFound,
+    ResponseUnauthorized,
+} from "@/lib/responses";
 import { CredentialsSignin } from "next-auth";
 import {
     createCredentialsUser,
@@ -38,12 +43,13 @@ import {
  */
 export async function signup(data: CredentialsSignupData, timezone: string) {
     const parsed = CredentialsSignupSchema.safeParse(data);
-    if (parsed.error) return ResponseBadRequest;
+    if (parsed.error || !Intl.supportedValuesOf("timeZone").includes(timezone))
+        return ResponseBadRequest;
     const { email, password } = parsed.data;
     const existingCredentials = await getUserCredentialsByEmail(email);
     if (existingCredentials) return ResponseConflict;
-    await createCredentialsUser(email, password, timezone ?? "Etc/UTC"); // Default to UTC in unexpected cases
-    return redirect("/signin");
+    await createCredentialsUser(email, password, timezone);
+    return redirect(REDIRECT_WITHOUT_TOKEN_TO);
 }
 
 /**
@@ -85,9 +91,11 @@ export async function signinWithFacebook() {
 
 /**
  * Signs the user out, destroying the session cookie and redirecting to sign-in afterward.
+ *
+ * @returns Never.
  */
 export async function signout() {
-    await signOut({ redirectTo: REDIRECT_WITHOUT_TOKEN_TO });
+    return signOut({ redirectTo: REDIRECT_WITHOUT_TOKEN_TO });
 }
 
 /**
@@ -100,14 +108,14 @@ export async function signout() {
  *
  * @param data Data required to change the password (namely, the old password - to confirm the identity once more - and
  * the new password).
- * @returns Error response if there are any problems. Nothing otherwise.
+ * @returns Error response if there are any problems.
  */
 export async function changePassword(data: ChangePasswordData) {
     if (ChangePasswordSchema.safeParse(data).error) return ResponseBadRequest; // Can only really happen for abnormal requests
     const { oldPassword, password } = data;
     const id = await getUserIdOrRedirect();
     const oldHash = await getUserPasswordHash(id);
-    if (!oldHash) return ResponseUnauthorized;
+    if (!oldHash) return ResponseNotFound;
     if (!bcrypt.compareSync(oldPassword, oldHash)) return ResponseUnauthorized;
     await updateUserPassword(id, password);
     await invalidateAllTokens(id);
@@ -116,11 +124,13 @@ export async function changePassword(data: ChangePasswordData) {
 
 /**
  * Destroys all sessions of the currently signed-in user, redirecting them to sign-in afterward.
+ *
+ * @returns Never.
  */
 export async function signoutEverywhere() {
-    const user = await getUserOrRedirect();
-    await invalidateAllTokens(user.id);
-    await signout();
+    const id = await getUserIdOrRedirect();
+    await invalidateAllTokens(id);
+    return signout();
 }
 
 /**

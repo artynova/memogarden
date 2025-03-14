@@ -1,6 +1,7 @@
 import { auth } from "@/server/auth";
 import { redirect } from "next/navigation";
 import {
+    getUserIdOrRedirect,
     getUserOrRedirect,
     getUserOrRedirectSC,
     parseIntParam,
@@ -145,7 +146,10 @@ describe(getUserOrRedirectSC, () => {
     });
 });
 
-describe(getUserOrRedirect, () => {
+function testGetUserOrRedirect<T>(
+    testedFn: () => Promise<T>,
+    testIdUsage: (sessionUserId: string, output: T) => void,
+) {
     describe.each([
         { condition: "session data is absent", authResolvedTo: null, getUserResolvedTo: null },
         {
@@ -176,7 +180,7 @@ describe(getUserOrRedirect, () => {
                 });
 
                 try {
-                    await getUserOrRedirect();
+                    await testedFn();
                 } catch {} // Silence the error
 
                 expect(mockedSignout).toHaveBeenCalledOnce();
@@ -194,7 +198,7 @@ describe(getUserOrRedirect, () => {
                 } as SelectUser);
                 mockedMaybeSyncUserHealth.mockResolvedValue(true); // Pretend that the sync did occur, necessitating a data refetch
 
-                await getUserOrRedirect();
+                await testedFn();
 
                 expect(mockedGetUser).toHaveBeenCalledTimes(2);
             });
@@ -209,7 +213,7 @@ describe(getUserOrRedirect, () => {
                 } as SelectUser);
                 mockedMaybeSyncUserHealth.mockResolvedValue(false); // Pretend that the sync did not occur
 
-                await getUserOrRedirect();
+                await testedFn();
 
                 expect(mockedGetUser).toHaveBeenCalledOnce();
             });
@@ -225,13 +229,25 @@ describe(getUserOrRedirect, () => {
                         acceptTokensAfter: new Date(1),
                     } as SelectUser);
 
-                    const user = await getUserOrRedirect();
+                    const output = await testedFn();
 
                     expect(mockedGetUser).toHaveBeenCalledExactlyOnceWith(id);
                     expect(mockedMaybeSyncUserHealth).toHaveBeenCalledExactlyOnceWith(id);
-                    expect(user.id).toEqual(id);
+                    testIdUsage(id, output);
                 });
             },
         );
+    });
+}
+
+describe(getUserOrRedirect, () => {
+    testGetUserOrRedirect(getUserOrRedirect, (id, output) => {
+        expect(output.id).toEqual(id);
+    });
+});
+
+describe(getUserIdOrRedirect, () => {
+    testGetUserOrRedirect(getUserIdOrRedirect, (id, output) => {
+        expect(output).toEqual(id); // Output itself is just the ID
     });
 });

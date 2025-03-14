@@ -101,9 +101,9 @@ describe(ChangePasswordForm, () => {
     describe.each([
         { password: "a", errorExp: /at least 8/i },
         { password: "aaaaaaa", errorExp: /at least 8/i },
-        { password: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", errorExp: /at most 32/i },
-        { password: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", errorExp: /at most 32/i },
-        { password: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", errorExp: /one uppercase/i },
+        { password: "a".repeat(34), errorExp: /at most 32/i },
+        { password: "a".repeat(33), errorExp: /at most 32/i },
+        { password: "a".repeat(32), errorExp: /one uppercase/i },
         { password: "AAAAAAAA", errorExp: /one lowercase/i },
         { password: "aaaaAAAA", errorExp: /one digit/i },
         { password: "aaaaAAA1", errorExp: /one special character/i },
