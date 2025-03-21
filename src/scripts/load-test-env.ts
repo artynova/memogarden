@@ -1,3 +1,3 @@
 import dotenv from "dotenv";
 
-dotenv.config({ path: ".env.testing" });
+dotenv.config({ path: ".env.testing", override: true });
