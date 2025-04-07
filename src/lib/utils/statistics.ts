@@ -85,7 +85,7 @@ export function getPastRevisionsDates(
 /**
  * Generates an array of date-to-review-count entries starting at the given date and ending in the future in the
  * specified IANA timezone. Dates not present in the mapping are assumed to have a review count of 0. The number of
- * dates is determined by the {@link PREDICTION_LIMIT}.
+ * dates is determined by the {@link PREDICTION_LIMIT}. Considers overdue cards (due before today) as due today.
  *
  * @param timezone The IANA timezone string (e.g., "America/New_York").
  * @param date Desired date.
@@ -98,10 +98,16 @@ export function getFutureRevisionsDates(
     sparseDatesToReviews: SparseDatesReviews,
 ) {
     const todayInTimezone = DateTime.fromJSDate(date).setZone(timezone).startOf("day");
-    return Array.from({ length: PREDICTION_LIMIT }, (_, i) => {
+    const todayUTCDate = getUTCDateString(todayInTimezone.toJSDate());
+    const prediction = Array.from({ length: PREDICTION_LIMIT }, (_, i) => {
         const date = todayInTimezone.plus({ days: i }).toJSDate();
         return { date, reviews: sparseDatesToReviews[getUTCDateString(date)] ?? 0 }; // Assume 0 revisions if data for a date is not present
     });
+    const overdue = Object.entries(sparseDatesToReviews).reduce((acc, [date, reviews]) => {
+        return date < todayUTCDate ? acc + reviews : acc;
+    }, 0);
+    prediction[0].reviews += overdue;
+    return prediction;
 }
 
 /**

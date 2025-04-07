@@ -4,6 +4,7 @@ import { ContentWrapper } from "@/components/page/content-wrapper";
 import { TitledCard } from "@/components/titled-card";
 import { InvalidTokenHandler } from "@/app/(static)/signin/components/invalid-token-handler";
 import { PageTemplate } from "@/components/page/static/page-template";
+import { Suspense } from "react";
 
 /**
  * Static sign-in page.
@@ -13,7 +14,9 @@ import { PageTemplate } from "@/components/page/static/page-template";
 export default function Page() {
     return (
         <PageTemplate>
-            <InvalidTokenHandler />
+            <Suspense>
+                <InvalidTokenHandler />
+            </Suspense>
             <ContentWrapper variant="compact">
                 <TitledCard title="Sign in" description="Enter your credentials below to sign in.">
                     <div className="space-y-6">

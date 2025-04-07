@@ -7,7 +7,6 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
-# bcrypt needs to be recompiled here after installation, otherwise it causes issues related to native bindings
 RUN npm install -g pnpm@10.2 && pnpm fetch && pnpm install --frozen-lockfile --offline
 
 # Rebuild the source code only when needed
@@ -17,13 +16,15 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY drizzle ./drizzle
 COPY public ./public
 COPY src ./src
-COPY .env next.config.mjs package.json postcss.config.mjs tailwind.config.ts tsconfig.json ./
+COPY next.config.mjs package.json postcss.config.mjs tailwind.config.ts tsconfig.json ./
+ARG ENV_FILE=.env
+COPY $ENV_FILE .env
 ENV NEXT_TELEMETRY_DISABLED=1
 # Package lock is not necessary for building, and the scripts from package.json can be run by npm in the same way as by pnpm
 RUN npm run build:prod
 
 # Production image, copy the build and run the Next.js server on startup
-FROM base AS runner
+FROM base AS prod
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1

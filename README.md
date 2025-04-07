@@ -15,7 +15,7 @@ users.
 
 - Desktop and mobile support
 - Management of flashcards and decks
-- Card revision with an optional "answer attempt" field for accountability
+- Card review with an optional "answer attempt" field for accountability
 - Markdown formatting support for card content, as well as a rich editor with Markdown syntax highlighting and a preview
   option
 - Visual representation of card maturity, card health, deck health, and overall garden health
@@ -43,25 +43,64 @@ users.
         ```bash
         openssl rand -base64 32
         ```
-    3. Obtain and fill in Google and Facebook API IDs and secrets for OAuth sign-in. The values you add do not have to
-       be valid if you do not plan on testing the OAuth functionality - the rest of the app will still work
-4. Run
+    3. Obtain and fill in Google and Facebook API IDs and secrets for OAuth sign-in. Alternatively, you can insert placeholder values if you do not plan on testing the OAuth functionality - the rest of the app will still work
+4. Run the following to install all dependencies
     ```bash
     pnpm install
+    ```
+5. Run
+    ```bash
     pnpm run dev
     ```
 
 ### Production Version
 
 1. Ensure you have [Docker Compose](https://docs.docker.com/compose) installed and available, e.g., by
-   downloading [Docker Desktop](https://www.docker.com/products/docker-desktop)
+   downloading [Docker Desktop](https://www.docker.com/products/docker-desktop) and opening it
 2. Clone the repository and navigate into its folder
 3. Create `.env` and fill in the necessary environment variables there. Use `.env.example` for guidance. The process is
-   mostly the same as for the `.env.production` file (see development version instructions), but you do not need to specify
+   mostly the same as for the `.env.development` file (see development version instructions), but you do not need to specify
    the database host and port because they are managed internally by the Docker Compose application
 4. Run
     ```bash
-    docker compose up
+    pnpm run docker:start
+    ```
+5. The application containers will start in detached mode. To stop them, run
+    ```bash
+    pnpm run docker:stop
+    ```
+
+### Tests
+
+#### Unit Tests
+
+1. Ensure steps 1, 2, and 4 of running the local development version are completed
+2. Create `.env.testing` and fill in the necessary environment variables there. Use `.env.testing.example` for guidance. The process is
+   mostly the same as for the `.env.development` file (see development version instructions), but you do not need to specify
+   the database host.
+3. Run
+    ```bash
+    pnpm run test:unit
+    ```
+
+#### End-to-End Tests
+
+1. Ensure steps 1 and 2 of running the production version are completed
+2. Ensure step 2 of running the unit tests is completed. Note that the database port in the `.env.testing` file needs to be specified because the Cypress
+   test runner uses it to interact with the database directly when setting up test cases. A new containerized database instance will be listening on this
+   port, so it should be a vacant port.
+3. Run
+    ```bash
+    pnpm run test:e2e
+    ```
+
+#### All Tests
+
+1. Ensure steps 1 and 2 of running unit tests are completed
+2. Ensure steps 1 and 2 of running end-to-end tests are completed
+3. Run
+    ```bash
+    pnpm run test
     ```
 
 ## Attribution

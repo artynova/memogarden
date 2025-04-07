@@ -1,11 +1,11 @@
-import { and, count, eq, getTableColumns, InferInsertModel, lte, or, SQL, sql } from "drizzle-orm";
+import { and, count, eq, getTableColumns, InferInsertModel, lte, SQL, sql } from "drizzle-orm";
 import { card, cardState, reviewLog } from "@/server/data/schemas/card";
 import db from "@/server/data/db";
 import { deck } from "@/server/data/schemas/deck";
 import {
     eqOptionalPlaceholder,
     eqPlaceholder,
-    imatchPlaceholder,
+    imatch,
     InferInsertModelFromGroup,
     InferSelectModelFromGroup,
     isNotDeleted,
@@ -26,6 +26,7 @@ import { forceSyncDeckHealth, getDeck } from "@/server/data/services/deck";
 import { forceSyncUserHealth } from "@/server/data/services/user";
 
 import { ReviewRating } from "@/lib/enums";
+import removeMd from "remove-markdown";
 
 /**
  * Filter using an inner query to test that the card is a non-deleted card that belongs to one of the user's decks.
@@ -42,7 +43,7 @@ const userCardTest = inArray(
 const checkCardAccessibility = db
     .select({ result: userCardTest })
     .from(card)
-    .where(and(eqPlaceholder(card.id), isNotDeleted(card)))
+    .where(and(eqPlaceholder(card.id, undefined, true), isNotDeleted(card)))
     .prepare("check_card_ownership");
 
 /**
@@ -60,6 +61,9 @@ export async function isCardAccessible(userId: string, id: string) {
     );
 }
 
+/**
+ * Columns for external input inference, come from the user
+ */
 const modifyCardColumns = [card.front, card.back, card.deckId] as const;
 
 /**
@@ -67,12 +71,30 @@ const modifyCardColumns = [card.front, card.back, card.deckId] as const;
  */
 export type ModifyCardData = InferInsertModelFromGroup<typeof modifyCardColumns>;
 
+// External columns plus helper plain columns (with stripped formatting) that are computed automatically
+const modifyCardColumnsInternal = [...modifyCardColumns, card.frontPlain, card.backPlain] as const;
+
 /**
- * Placeholders: derived from modifyCardColumns.
+ * Full card modification data (including plain front and back content that is computed automatically).
+ */
+type ModifyCardDataInternal = InferInsertModelFromGroup<typeof modifyCardColumnsInternal>;
+
+/**
+ * Computes plain (with stripped Markdown formatting) card front and back values and returns a full internal card modification data object.
+ *
+ * @param data External card modification input data.
+ * @returns Same data with plain front and back values added.
+ */
+export function modifyDataToInternal(data: ModifyCardData): ModifyCardDataInternal {
+    return { ...data, frontPlain: removeMd(data.front), backPlain: removeMd(data.back) };
+}
+
+/**
+ * Placeholders: derived from modifyCardColumnsInternal.
  */
 const insertCard = db
     .insert(card)
-    .values(makeInsertPlaceholders(modifyCardColumns))
+    .values(makeInsertPlaceholders(modifyCardColumnsInternal))
     .returning({ id: card.id })
     .prepare("insert_card");
 
@@ -83,7 +105,7 @@ const insertCard = db
  * @returns Internal ID of the newly created card.
  */
 export async function createCard(data: ModifyCardData) {
-    const id = (await insertCard.execute({ ...data }).then(takeFirstOrNull))!.id;
+    const id = (await insertCard.execute(modifyDataToInternal(data)).then(takeFirstOrNull))!.id;
     const deck = (await getDeck(data.deckId))!;
     await forceSyncDeckHealth(deck.id);
     await forceSyncUserHealth(deck.userId);
@@ -91,7 +113,7 @@ export async function createCard(data: ModifyCardData) {
 }
 
 /**
- * Placeholders: "id" = card's ID, others derived from modifyCardColumns.
+ * Placeholders: "id" = card's ID, others derived from modifyCardColumnsInternal.
  */
 const updateCardData = db
     .update(card)
@@ -110,7 +132,7 @@ export async function editCard(id: string, data: ModifyCardData) {
     if (!card) return;
 
     const oldDeckId = card.deckId;
-    await updateCardData.execute({ id, ...data });
+    await updateCardData.execute({ id, ...modifyDataToInternal(data) });
     if (oldDeckId === data.deckId) return; // If the card stayed in the same deck, no aggregate health values are affected
 
     // If the card moved between decks, the source and the destination decks' average retrievabilities are affected. Since the account-wide aggregate health is computed without respect to decks, it is not affected, and only the decks themselves need to be updated
@@ -204,7 +226,7 @@ const countCardsMatchingQuery = db
         and(
             userCardTest,
             eqOptionalPlaceholder(card.deckId),
-            or(imatchPlaceholder(card.front, "query"), imatchPlaceholder(card.back, "query")),
+            imatch(sql`CONCAT_WS(' ', ${card.front}, ${card.back})`, sql.placeholder("query")), // Use a combination of both front and back so that results include cards where front and back together have all the terms even if neither has all of them on its own
             isNotDeleted(card),
         ),
     )
@@ -223,14 +245,11 @@ const selectCardsMatchingQuery = db
         and(
             eqPlaceholder(deck.userId),
             eqOptionalPlaceholder(deck.id, "deckId"),
-            or(
-                imatchPlaceholder(card.front, "query"), // Test card front against the provided query regex case-insensitively
-                imatchPlaceholder(card.back, "query"), // Test the back
-            ),
+            imatch(sql`CONCAT_WS(' ', ${card.front}, ${card.back})`, sql.placeholder("query")), // Use a combination of both front and back so that results include cards where front and back together have all the terms even if neither has all of them on its own
             isNotDeleted(card),
         ),
     )
-    .orderBy(card.front, card.back, card.createdAt)
+    .orderBy(card.frontPlain, card.backPlain, card.createdAt) // Order by plain values to avoid confusion in the browse UI
     .limit(sql.placeholder("limit"))
     .offset(sql.placeholder("offset"))
     .prepare("select_cards_matching_query");

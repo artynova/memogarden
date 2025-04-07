@@ -337,10 +337,13 @@ export function makeDeletedAt() {
  *
  * @param column Column.
  * @param name Custom placeholder name, will be inferred from the column if not specified.
+ * @param useGenericComparison Whether to cast the column to TEXT, thus avoiding any implicit casts of the value to the
+ * column's type when comparing the two. Disabled by default.
  * @returns Equality check SQL with the placeholder.
  */
-export function eqPlaceholder(column: PgColumn, name?: string) {
-    return sql<boolean>`(${column} = ${sql.placeholder(name ?? column.name)})`;
+export function eqPlaceholder(column: PgColumn, name?: string, useGenericComparison = false) {
+    const preparedColumn = useGenericComparison ? sql`CAST(${column} AS TEXT)` : column;
+    return sql<boolean>`(${preparedColumn} = ${sql.placeholder(name ?? column.name)})`;
 }
 
 /**
@@ -358,13 +361,7 @@ export function eqOptional(
     value: string | SQLWrapper,
     useGenericComparison = true,
 ) {
-    const preparedColumn = useGenericComparison
-        ? sql`CAST(
-            ${column}
-            AS
-            TEXT
-            )`
-        : column;
+    const preparedColumn = useGenericComparison ? sql`CAST(${column} AS TEXT)` : column;
     return sql<boolean>`(CAST (${value} AS TEXT) IS NULL OR ${preparedColumn} = ${value})`; // Bypass the comparison and immediately yield TRUE for value NULL. In the NULL check, the value is cast to TEXT regardless of the generic comparison mode because the specific type does not actually matter for the nullity check
 }
 

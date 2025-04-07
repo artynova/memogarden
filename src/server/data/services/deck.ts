@@ -24,7 +24,7 @@ import { CardState } from "@/lib/enums";
 const checkDeckAccessibility = db
     .select({ result: eqPlaceholder(deck.userId) })
     .from(deck)
-    .where(and(eqPlaceholder(deck.id), isNotDeleted(deck)))
+    .where(and(eqPlaceholder(deck.id, undefined, true), isNotDeleted(deck)))
     .prepare("check_deck_ownership");
 
 /**

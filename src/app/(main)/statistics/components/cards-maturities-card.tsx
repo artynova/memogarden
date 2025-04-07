@@ -7,7 +7,7 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/shadcn/chart";
-import { cardMaturities } from "@/lib/ui/maturity";
+import { cardMaturities } from "@/components/icons/maturity/card-maturities";
 import * as React from "react";
 import { TitledCard } from "@/components/titled-card";
 import { MaturityCountsEntry } from "@/lib/utils/statistics";

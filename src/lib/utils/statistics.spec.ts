@@ -319,7 +319,7 @@ describe(getFutureRevisionsDates, () => {
                     "2020-04-07": 25,
                 },
                 expected: [
-                    { date: new Date("2020-03-03T05:00:00.000Z"), reviews: 2 },
+                    { date: new Date("2020-03-03T05:00:00.000Z"), reviews: 36 }, // Review prediction adds overdue cards (due on earlier dates) to the cards due on the first prediction interval date, urging the user to review as soon as possible
                     { date: new Date("2020-03-04T05:00:00.000Z"), reviews: 4 },
                     { date: new Date("2020-03-05T05:00:00.000Z"), reviews: 3 },
                     { date: new Date("2020-03-06T05:00:00.000Z"), reviews: 5 },

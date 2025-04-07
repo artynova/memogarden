@@ -136,7 +136,7 @@ export function BrowsePage({
     ];
 
     return (
-        <PageTemplate title="Search Cards" user={user} footerActions={footerActions}>
+        <PageTemplate title="Search cards" user={user} footerActions={footerActions}>
             <ContentWrapper>
                 <div className="flex gap-x-2">
                     <Input

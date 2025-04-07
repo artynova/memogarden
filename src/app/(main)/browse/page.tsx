@@ -3,7 +3,7 @@ import { PageWithSearchParamsProps, parseIntParam, parseStringParam } from "@/li
 import { Pagination } from "@/server/data/services/utils";
 import { BrowsePage } from "@/app/(main)/browse/components/browse-page";
 import { getDeckOptions, isDeckAccessible } from "@/server/data/services/deck";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getUserOrRedirectSC } from "@/lib/utils/server";
 
 const PAGE_SIZE = 20;
@@ -22,16 +22,16 @@ const PAGE_SIZE = 20;
  */
 export default async function Page({ searchParams }: PageWithSearchParamsProps) {
     const user = await getUserOrRedirectSC();
-    const { page: pageRaw, query: queryRaw, deckId: deckIdRaw } = await searchParams;
-    const parsedPage = parseIntParam(pageRaw);
+    const raw = await searchParams;
+    const parsedPage = parseIntParam(raw.page);
     const pagination: Pagination = {
-        page: parseIntParam(pageRaw) ?? 1,
+        page: parsedPage ?? 1,
         pageSize: PAGE_SIZE,
     };
-    const parsedQuery = parseStringParam(queryRaw);
+    const parsedQuery = parseStringParam(raw.query);
     const query = parsedQuery ?? "";
-    const deckId = parseStringParam(deckIdRaw);
-    if (deckId && !(await isDeckAccessible(user.id, deckId))) notFound();
+    let deckId = parseStringParam(raw.deckId);
+    if (deckId && !(await isDeckAccessible(user.id, deckId))) deckId = null; // Remove invalid deck filter
 
     const searchResults = await searchCards(user.id, pagination, query, deckId);
 
@@ -47,12 +47,17 @@ export default async function Page({ searchParams }: PageWithSearchParamsProps) 
     if (deckId !== null) realParams.append("deckId", deckId);
     realParams.sort();
 
-    // Redirect if real parameters do not match the resolved parameters (e.g., the search revealed that the requested results page is invalid)
-    if (resolvedParams.toString() !== realParams.toString()) {
+    // Redirect if real parameters do not match the resolved parameters (e.g., the search revealed that the requested results page is invalid, or if any query parameters are malformed)
+    if (
+        resolvedParams.toString() !== realParams.toString() ||
+        Array.isArray(raw.page) ||
+        Array.isArray(raw.query) ||
+        Array.isArray(raw.deckId)
+    ) {
         redirect(`/browse${resolvedParams.toString() ? "?" : ""}${resolvedParams}`);
     }
-
     const deckOptions = await getDeckOptions(user.id);
+
     return (
         <BrowsePage
             user={user}

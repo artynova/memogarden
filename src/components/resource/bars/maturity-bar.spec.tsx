@@ -1,6 +1,6 @@
 import { MaturityBar } from "@/components/resource/bars/maturity-bar";
 import { CardMaturity } from "@/lib/enums";
-import { cardMaturities } from "@/lib/ui/maturity";
+import { cardMaturities } from "@/components/icons/maturity/card-maturities";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 

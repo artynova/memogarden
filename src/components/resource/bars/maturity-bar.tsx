@@ -1,5 +1,5 @@
 import React from "react";
-import { cardMaturities } from "@/lib/ui/maturity";
+import { cardMaturities } from "@/components/icons/maturity/card-maturities";
 
 import { cn } from "@/lib/ui/generic";
 import { CardMaturity } from "@/lib/enums";

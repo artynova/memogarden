@@ -46,8 +46,8 @@ export function DeckListCard({ preview }: { preview: DeckPreview }) {
             >
                 {revisionCleared ? (
                     <button>
-                        <span className="sr-only">Revision cleared</span>
-                        <Check aria-label="Revision cleared icon" />
+                        <span className="sr-only">Review cleared</span>
+                        <Check aria-label="Review cleared icon" />
                     </button>
                 ) : (
                     <Link href={`/deck/${deck.id}/review`}>

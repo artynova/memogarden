@@ -16,6 +16,7 @@ import { HealthBar } from "@/components/resource/bars/health-bar";
 import { MaturityBar } from "@/components/resource/bars/maturity-bar";
 
 import { ReviewRating } from "@/lib/enums";
+import { ignoreAsyncFnResult } from "@/lib/utils/generic";
 
 /**
  * Client part of the deck review page.
@@ -118,22 +119,22 @@ function ReviewPagePostAnswer({
         {
             Icon: Frown,
             text: "Again",
-            action: () => void onRatingSubmit(ReviewRating.Again),
+            action: ignoreAsyncFnResult(() => onRatingSubmit(ReviewRating.Again)),
         },
         {
             Icon: Meh,
             text: "Hard",
-            action: () => void onRatingSubmit(ReviewRating.Hard),
+            action: ignoreAsyncFnResult(() => onRatingSubmit(ReviewRating.Hard)),
         },
         {
             Icon: Smile,
             text: "Good",
-            action: () => void onRatingSubmit(ReviewRating.Good),
+            action: ignoreAsyncFnResult(() => onRatingSubmit(ReviewRating.Good)),
         },
         {
             Icon: Laugh,
             text: "Easy",
-            action: () => void onRatingSubmit(ReviewRating.Easy),
+            action: ignoreAsyncFnResult(() => onRatingSubmit(ReviewRating.Easy)),
         },
     ];
 

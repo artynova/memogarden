@@ -92,10 +92,8 @@ describe(HealthBar, () => {
                 const indicator = bar?.firstChild;
 
                 expect(bar).toBeInTheDocument();
+                expect(bar).toHaveAttribute("aria-valuenow", expectedProgressPercent.toString());
                 expect(indicator).toBeInTheDocument();
-                expect(indicator).toHaveStyle({
-                    transform: `translateX(-${100 - expectedProgressPercent}%)`,
-                });
             });
 
             test(`should use indicator color class ${expectedForegroundClass}`, () => {

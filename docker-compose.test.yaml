@@ -1,19 +1,20 @@
-name: memogarden
+name: memogarden-test
 
 services:
     nextjs:
         build:
             context: .
+            args:
+                ENV_FILE: .env.testing
             target: prod
         container_name: nextjs_app
-        ports:
-            - "${PORT}:${PORT}"
         env_file:
-            - .env
+            - .env.testing
         environment:
-            # Overriding these since they are managed by docker compose in the production environment
             DB_HOST: postgres
             DB_PORT: 5432
+        ports:
+            - ${PORT}:${PORT}
         depends_on:
             postgres:
                 condition: service_healthy
@@ -28,8 +29,8 @@ services:
             POSTGRES_USER: ${DB_USER}
             POSTGRES_PASSWORD: ${DB_PASSWORD}
             POSTGRES_DB: ${DB_NAME}
-        volumes:
-            - pg_data:/var/lib/postgresql/data
+        ports:
+            - ${DB_PORT}:5432
         networks:
             - app_network
         healthcheck:
@@ -37,9 +38,6 @@ services:
             interval: 5s
             retries: 5
             start_period: 10s
-
-volumes:
-    pg_data:
 
 networks:
     app_network:

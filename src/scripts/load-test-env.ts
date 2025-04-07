@@ -1,3 +1,6 @@
 import dotenv from "dotenv";
 
-dotenv.config({ path: ".env.testing", override: true });
+process.env.ENV = "testing";
+process.env.DB_HOST = "localhost"; // This is for Cypress to refer to the containerized database
+
+dotenv.config({ path: "./.env.testing", override: true });
