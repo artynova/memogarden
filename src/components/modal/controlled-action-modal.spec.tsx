@@ -1,11 +1,21 @@
 import { ControlledActionModal } from "@/components/modal/controlled-action-modal";
+import { suppressWarning } from "@/test/logging";
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, test, vi } from "vitest";
 
+/**
+ * Message that gets printed when a description is not supplied for the sheet element, which uses DialogContent internally.
+ * Suppressed in most tests of this suite because description is omitted intentionally.
+ */
+const missingDescriptionMessage =
+    "Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.";
+
 describe(ControlledActionModal, () => {
     describe("given false value for 'open' prop", () => {
         test("should not render any modal elements", () => {
+            suppressWarning(missingDescriptionMessage);
+
             render(
                 <ControlledActionModal open={false} onOpenChange={() => {}} title="">
                     Content
@@ -22,6 +32,8 @@ describe(ControlledActionModal, () => {
             "given title $title",
             ({ title }) => {
                 test(`should render title as second-level heading`, () => {
+                    suppressWarning(missingDescriptionMessage);
+
                     render(
                         <ControlledActionModal open={true} onOpenChange={() => {}} title={title}>
                             Content
@@ -34,6 +46,8 @@ describe(ControlledActionModal, () => {
 
                 describe("given no description", () => {
                     test(`should not render description paragraph`, () => {
+                        suppressWarning(missingDescriptionMessage);
+
                         render(
                             <ControlledActionModal
                                 open={true}
@@ -82,6 +96,8 @@ describe(ControlledActionModal, () => {
                     },
                 ])("given children $children", ({ children, testId }) => {
                     test("should render children", () => {
+                        suppressWarning(missingDescriptionMessage);
+
                         render(
                             <ControlledActionModal
                                 open={true}
@@ -100,6 +116,7 @@ describe(ControlledActionModal, () => {
 
                 describe("when close button is clicked", () => {
                     test("should call 'onOpenChange' callback with false vlaue", () => {
+                        suppressWarning(missingDescriptionMessage);
                         const mockOnOpenChange = vi.fn();
 
                         render(
@@ -120,6 +137,7 @@ describe(ControlledActionModal, () => {
 
                 describe("when dark background overlay is clicked", () => {
                     test("should call 'onOpenChange' callback with false vlaue", async () => {
+                        suppressWarning(missingDescriptionMessage);
                         const mockOnOpenChange = vi.fn();
 
                         render(
