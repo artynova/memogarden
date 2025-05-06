@@ -69,6 +69,10 @@ users.
     ```bash
     pnpm run docker:stop
     ```
+6. If you modify the code after running the production version for the first time and want to run a production version with those changes, forcibly rebuild the containers before running `docker:start` by first running
+    ```bash
+    pnpm run docker:build
+    ```
 
 ### Tests
 
