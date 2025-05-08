@@ -7,7 +7,6 @@ services:
             args:
                 ENV_FILE: .env.testing
             target: prod
-        container_name: nextjs_app
         env_file:
             - .env.testing
         environment:
@@ -23,7 +22,6 @@ services:
 
     postgres:
         image: postgres:16-alpine
-        container_name: postgres_db
         restart: unless-stopped
         environment:
             POSTGRES_USER: ${DB_USER}
