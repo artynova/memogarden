@@ -79,5 +79,5 @@ export async function reviewCardWithRating(id: string, answer: string, rating: R
     const user = await getUserOrRedirect();
     if (!(await isCardAccessible(user.id, id))) return ResponseNotFound;
     const now = new Date();
-    return reviewCard(id, answer, now, getDayEnd(now, user.timezone), rating);
+    return reviewCard(id, answer, now, getDayEnd(now, user.timezone!), rating);
 }

@@ -21,7 +21,7 @@ export const avatarReference = () => smallint().references(() => avatar.id);
 export const user = pgTable("user", {
     id: autoId(),
     lastHealthSync: timestampTz().notNull().defaultNow(), // When was the last automatic account-wide update of card retrievabilities (and thus "health")
-    timezone: varchar({ length: 50 }).notNull(), // Canonical IANA timezone name, e.g., America/New_York
+    timezone: varchar({ length: 50 }), // Canonical IANA timezone name, e.g., America/New_York. Null value means that there was no opportunity to infer the timezone yet and that it should be inferred as soon as possible
     retrievability: doublePrecision(), // Aggregated average retrievability of all active cards of the account
     avatarId: avatarReference().notNull().default(0),
     darkMode: boolean(), // Nullable, absence means that explicit preference in the app is not chosen and system light / dark mode setting should be used instead

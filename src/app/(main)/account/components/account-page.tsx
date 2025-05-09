@@ -72,13 +72,13 @@ export function AccountPage({
     }
 
     async function onAvatarChange(value: number) {
-        await updateUser({ timezone: user.timezone, avatarId: value, darkMode: user.darkMode });
+        await updateUser({ timezone: user.timezone!, avatarId: value, darkMode: user.darkMode });
         router.refresh();
     }
 
     async function onThemeChange(value: Theme) {
         await updateUser({
-            timezone: user.timezone,
+            timezone: user.timezone!,
             avatarId: user.avatarId,
             darkMode: value === "dark" ? true : value === "light" ? false : null,
         });
@@ -114,7 +114,7 @@ export function AccountPage({
                         <Label htmlFor="select-timezone">Your time zone:</Label>
                         <div className="flex flex-col gap-3 sm:flex-row">
                             <ControlledSelectTimezone
-                                value={user.timezone}
+                                value={user.timezone!}
                                 onValueChange={ignoreAsyncFnResult(onTimezoneChange)}
                                 id="select-timezone"
                             />

@@ -177,7 +177,7 @@ export function BrowsePage({
                 <ResultsTable
                     data={searchResults.pageCards.map((value) => ({
                         ...value,
-                        timezone: user.timezone,
+                        timezone: user.timezone!,
                     }))}
                     pagination={pagination}
                 />

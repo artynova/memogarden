@@ -105,7 +105,7 @@ export function CardPage({
                 <CardHealthBarWithLabel
                     retrievability={card.retrievability}
                     due={card.due}
-                    timezone={user.timezone}
+                    timezone={user.timezone!}
                     withBarText
                 />
                 <MaturityBar currentMaturity={getCardMaturity(card.stateId, card.scheduledDays)} />

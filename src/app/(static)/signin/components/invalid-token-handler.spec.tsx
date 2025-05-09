@@ -53,11 +53,11 @@ describe(InvalidTokenHandler, () => {
 
             expect(mockedSignOut).not.toHaveBeenCalled();
         });
+    });
 
-        test("should not render any DOM elements", () => {
-            const { container } = render(<InvalidTokenHandler />);
+    test("should not render any DOM elements", () => {
+        const { container } = render(<InvalidTokenHandler />);
 
-            expect(container).toBeEmptyDOMElement();
-        });
+        expect(container).toBeEmptyDOMElement();
     });
 });

@@ -44,12 +44,12 @@ export default async function Page({ searchParams }: PageWithSearchParamsProps) 
 
     const now = new Date();
     const retrospectionStats = getPastRevisionsDates(
-        user.timezone,
+        user.timezone!,
         now,
         await getSparseRetrospection(user.id, new Date(), deckId),
     );
     const predictionStats = getFutureRevisionsDates(
-        user.timezone,
+        user.timezone!,
         now,
         await getSparsePrediction(user.id, new Date(), deckId),
     );
@@ -71,13 +71,13 @@ export default async function Page({ searchParams }: PageWithSearchParamsProps) 
                 <DailyReviewsCard
                     title="Recent reviews"
                     data={retrospectionStats}
-                    timezone={user.timezone}
+                    timezone={user.timezone!}
                     retrospect
                 />
                 <DailyReviewsCard
                     title="Scheduled reviews"
                     data={predictionStats}
-                    timezone={user.timezone}
+                    timezone={user.timezone!}
                 />
             </ContentWrapper>
         </PageTemplate>

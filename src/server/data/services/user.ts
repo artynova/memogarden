@@ -18,7 +18,7 @@ import {
 } from "@/server/data/services/utils";
 import bcrypt from "bcrypt";
 import { env } from "@/server/env";
-import { Account, Profile } from "next-auth";
+import { Account } from "next-auth";
 import { card, reviewLog } from "@/server/data/schemas/card";
 import { deck } from "@/server/data/schemas/deck";
 import { DateTime } from "luxon";
@@ -57,7 +57,7 @@ const insertUser = db
  * @param timezone User's timezone inferred by the client.
  * @returns Internal ID of the newly created user.
  */
-async function createUser(timezone: string) {
+async function createUser(timezone: string | null) {
     return (await insertUser.execute({ timezone }).then(takeFirstOrNull))!.id;
 }
 
@@ -161,6 +161,8 @@ export async function maybeSyncUserHealth(id: string) {
     if (!syncData) return false; // Since a user is guaranteed to have non-null lastHealthSync, this case means that the user ID itself was invalid and nothing can be done further
 
     const { lastHealthSync, timezone } = syncData;
+    if (!timezone) return false; // The timezone can only be unavailable immediately after sign-up in OAuth accounts, when there are no flashcards yet and thus no health to sync anyway. It would never be null in situations where a sync is actually necessary
+
     const lastSyncInTimezone = DateTime.fromJSDate(lastHealthSync, { zone: timezone });
     const nowInTimezone = DateTime.now().setZone(timezone);
     if (lastSyncInTimezone.hasSame(nowInTimezone, "day")) return false; // If the check returns true, the sync has already occurred "today" from the user's perspective and a new sync is not needed
@@ -422,10 +424,14 @@ export function usesSupportedOAuth(account: Account | null): account is Supporte
  *
  * @param provider OAuth provider string.
  * @param sub Subject ID in the provider's system.
- * @param timezone User's timezone inferred by the client.
+ * @param timezone User's timezone inferred from the OAuth data, or `null` if timezone data is unavailable (will trigger delayed inference later).
  * @returns Internal ID of the newly created user.
  */
-async function createOAuthUser(provider: "google" | "facebook", sub: string, timezone: string) {
+async function createOAuthUser(
+    provider: "google" | "facebook",
+    sub: string,
+    timezone: string | null,
+) {
     const userId = await createUser(timezone);
     await OAuthProviderToStatements[provider].insert.execute({ userId, sub });
     return userId;
@@ -436,13 +442,12 @@ async function createOAuthUser(provider: "google" | "facebook", sub: string, tim
  * Will create a new user if the user does not exist (i.e., it is their first sign-in with these OAuth credentials).
  *
  * @param account Account returned by Auth.js, ensured to be provided by Google or Facebook.
- * @param profile ProfileBadge returned by Auth.js.
  * @returns Internal ID of the user (potentially newly created).
  */
-export async function getOrCreateIdFromOAuth(account: SupportedAccount, profile: Profile) {
+export async function getOrCreateIdFromOAuth(account: SupportedAccount) {
     const provider = account.provider;
     const sub = account.providerAccountId.toString();
-    const timezone = profile.zoneinfo ?? "UTC"; // Default to the UTC timezone
+    const timezone = null; // Clearly mark timezone as missing via null value to force inference later
     const internalId = await getUserIdBySub(provider, sub);
     if (internalId) return internalId; // User exists, just return the ID
     return createOAuthUser(provider, sub, timezone); // User lookup failed, create instead

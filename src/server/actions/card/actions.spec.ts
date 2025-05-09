@@ -269,7 +269,7 @@ describe(reviewCardWithRating, () => {
                                 id,
                                 answer,
                                 now,
-                                getDayEnd(now, user.timezone),
+                                getDayEnd(now, user.timezone!),
                                 rating,
                             );
                         });

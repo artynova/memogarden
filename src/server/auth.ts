@@ -49,10 +49,10 @@ export const authConfig: NextAuthConfig = {
         FacebookProvider,
     ],
     callbacks: {
-        async jwt({ user, profile, account, token }) {
+        async jwt({ user, account, token }) {
             if (!user) return token; // Handle subsequent calls after sign-in, when the user data is no longer accessible
             if (!usesSupportedOAuth(account)) return { ...token, id: user.id }; // Case when the user uses credentials, the ID is already attached to the user object by the authorization process
-            const internalId = await getOrCreateIdFromOAuth(account, profile!);
+            const internalId = await getOrCreateIdFromOAuth(account);
             return { ...token, id: internalId };
         },
 
