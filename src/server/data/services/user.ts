@@ -338,7 +338,7 @@ export async function isCredentialsUser(id: string) {
     return !!(await getUserPasswordHash(id)); // If the hash (inherently truthy) was found, it means that the ID belongs to a valid credentials user. Otherwise, the user ID may not exist or may belong to an OAuth user
 }
 
-const insertUserGoogleColumns = [userGoogle.userId, userGoogle.sub] as const;
+const insertUserGoogleColumns = [userGoogle.userId, userGoogle.accountId] as const;
 
 /**
  * Placeholders: derived from insertUserGoogleColumns.
@@ -349,15 +349,15 @@ const insertUserGoogle = db
     .prepare("insert_user_google");
 
 /**
- * Placeholders: "sub" = OAuth subject claim.
+ * Placeholders: "accountId" = account ID in Google's system.
  */
-const selectUserGoogleBySub = db
+const selectUserGoogleByAccountId = db
     .select()
     .from(userGoogle)
-    .where(eqPlaceholder(userGoogle.sub))
-    .prepare("select_user_google_by_sub");
+    .where(eqPlaceholder(userGoogle.accountId))
+    .prepare("select_user_google_by_account_id");
 
-const insertUserFacebookColumns = [userGoogle.userId, userGoogle.sub] as const;
+const insertUserFacebookColumns = [userFacebook.userId, userFacebook.accountId] as const;
 
 /**
  * Placeholders: derived from insertUserFacebookColumns.
@@ -368,35 +368,35 @@ const insertUserFacebook = db
     .prepare("insert_user_facebook");
 
 /**
- * Placeholders: "sub" = OAuth subject claim.
+ * Placeholders: "accountId" = account ID in Facebook's system.
  */
-const selectUserFacebookBySub = db
+const selectUserFacebookByAccountId = db
     .select()
     .from(userFacebook)
-    .where(eqPlaceholder(userFacebook.sub))
-    .prepare("select_user_facebook_by_sub");
+    .where(eqPlaceholder(userFacebook.accountId))
+    .prepare("select_user_facebook_by_account_id");
 
 const OAuthProviderToStatements = {
     google: {
         insert: insertUserGoogle,
-        selectBySub: selectUserGoogleBySub,
+        selectByAccountId: selectUserGoogleByAccountId,
     },
     facebook: {
         insert: insertUserFacebook,
-        selectBySub: selectUserFacebookBySub,
+        selectByAccountId: selectUserFacebookByAccountId,
     },
 };
 
 /**
- * Retrieves the MemoGarden ID of a user by their OAuth data (provider and subject ID).
+ * Retrieves the MemoGarden ID of a user by their external identification data (OAuth provider and ID in the provider's system).
  *
  * @param provider Provider ("google" or "facebook").
- * @param sub Subject ID returned by the provider.
+ * @param accountId Account ID in the provider's system.
  * @returns User's ID, or `null` if the corresponding user does not exist.
  */
-async function getUserIdBySub(provider: "google" | "facebook", sub: string) {
-    const user = await OAuthProviderToStatements[provider].selectBySub
-        .execute({ sub })
+async function getUserIdBySub(provider: "google" | "facebook", accountId: string) {
+    const user = await OAuthProviderToStatements[provider].selectByAccountId
+        .execute({ accountId })
         .then(takeFirstOrNull);
     return user?.userId ?? null;
 }
@@ -419,21 +419,20 @@ export function usesSupportedOAuth(account: Account | null): account is Supporte
 }
 
 /**
- * Creates a new user with OAuth-based authentication. Assumes that the sub is unique for this provider, assumption
- * should be verified elsewhere.
+ * Creates a new user with OAuth-based authentication.
  *
  * @param provider OAuth provider string.
- * @param sub Subject ID in the provider's system.
+ * @param accountId Account ID in the provider's system.
  * @param timezone User's timezone inferred from the OAuth data, or `null` if timezone data is unavailable (will trigger delayed inference later).
  * @returns Internal ID of the newly created user.
  */
 async function createOAuthUser(
     provider: "google" | "facebook",
-    sub: string,
+    accountId: string,
     timezone: string | null,
 ) {
     const userId = await createUser(timezone);
-    await OAuthProviderToStatements[provider].insert.execute({ userId, sub });
+    await OAuthProviderToStatements[provider].insert.execute({ userId, accountId });
     return userId;
 }
 
@@ -446,11 +445,11 @@ async function createOAuthUser(
  */
 export async function getOrCreateIdFromOAuth(account: SupportedAccount) {
     const provider = account.provider;
-    const sub = account.providerAccountId.toString();
+    const accountId = account.providerAccountId;
     const timezone = null; // Clearly mark timezone as missing via null value to force inference later
-    const internalId = await getUserIdBySub(provider, sub);
+    const internalId = await getUserIdBySub(provider, accountId);
     if (internalId) return internalId; // User exists, just return the ID
-    return createOAuthUser(provider, sub, timezone); // User lookup failed, create instead
+    return createOAuthUser(provider, accountId, timezone); // User lookup failed, create instead
 }
 
 /**

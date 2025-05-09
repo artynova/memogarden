@@ -49,7 +49,7 @@ export const userCredentials = pgTable("user_credentials", {
  */
 export const userGoogle = pgTable("user_google", {
     userId: userReference().primaryKey(),
-    sub: varchar({ length: 300 }).unique().notNull(), // Subject ID returned by Google, link between the external account and the MemoGarden account
+    accountId: varchar({ length: 300 }).unique().notNull(), // Account ID returned by Google, link between the external account and the MemoGarden account
 });
 
 /**
@@ -57,5 +57,5 @@ export const userGoogle = pgTable("user_google", {
  */
 export const userFacebook = pgTable("user_facebook", {
     userId: userReference().primaryKey(),
-    sub: varchar({ length: 300 }).unique().notNull(), // Subject ID returned by Facebook, link between the external account and the MemoGarden account
+    accountId: varchar({ length: 300 }).unique().notNull(), // Account ID returned by Facebook, link between the external account and the MemoGarden account
 });
