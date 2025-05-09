@@ -12,12 +12,12 @@ import { vi } from "vitest";
  * @param message Exact text of the warning message to be suppressed.
  */
 export function suppressWarning(message: string) {
-    const originalError = console.error;
+    const originalWarn = console.warn;
     vi.spyOn(console, "warn").mockImplementation((...args: Parameters<typeof console.warn>) => {
         const fullMessage = util.format(...args);
         if (fullMessage === message) {
             return;
         }
-        originalError(...args);
+        originalWarn(...args);
     });
 }
