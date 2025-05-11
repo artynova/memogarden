@@ -113,6 +113,13 @@
       "when": 1746825809094,
       "tag": "0015_special_rumiko_fujikawa",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1746971962637,
+      "tag": "0016_cheerful_brother_voodoo",
+      "breakpoints": true
     }
   ]
 }

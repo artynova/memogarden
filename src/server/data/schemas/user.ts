@@ -1,5 +1,6 @@
 import { boolean, char, doublePrecision, pgTable, smallint, varchar } from "drizzle-orm/pg-core";
 import { autoId, autoIdExternal, timestampTz } from "@/server/data/schemas/utils";
+import { sql } from "drizzle-orm";
 
 /**
  * Table with IDs of all existing avatars. The avatars are inserted via DB migrations.
@@ -25,7 +26,9 @@ export const user = pgTable("user", {
     retrievability: doublePrecision(), // Aggregated average retrievability of all active cards of the account
     avatarId: avatarReference().notNull().default(0),
     darkMode: boolean(), // Nullable, absence means that explicit preference in the app is not chosen and system light / dark mode setting should be used instead
-    acceptTokensAfter: timestampTz().notNull().defaultNow(), // Session tokens store the "issued at" date, and if they are issued before the date stored here, they are considered invalidated
+    acceptTokensAfter: timestampTz()
+        .notNull()
+        .default(sql`DATE_TRUNC('second', NOW())`), // Session tokens store the "issued at" date, and if they are issued before the date stored here, they are considered invalidated. Truncated to seconds to match the token "issued at" timestamp precision
 });
 
 /**

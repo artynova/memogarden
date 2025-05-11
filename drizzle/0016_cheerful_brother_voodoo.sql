@@ -1,0 +1,1 @@
+ALTER TABLE "user" ALTER COLUMN "accept_tokens_after" SET DEFAULT DATE_TRUNC('second', NOW());

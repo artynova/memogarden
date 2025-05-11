@@ -67,7 +67,7 @@ export async function getUserOrRedirectSC() {
     if (!id) signoutSC(); // This triggers a redirect, which works by throwing an exception, so in subsequent code the id can be safely assumed to be truthy
     const user = await getUser(id!);
     if (!user) signoutSC(); // Again, this branch triggers an exception if the user object is falsy, so in subsequent code it can be assumed to be truthy
-    if (user!.acceptTokensAfter >= new Date((tokenIat ?? 0) * 1000)) signoutSC();
+    if (user!.acceptTokensAfter > new Date((tokenIat ?? 0) * 1000)) signoutSC();
     const syncHappened = await maybeSyncUserHealth(id!);
     return syncHappened ? (await getUser(id!))! : user!; // Re-fetch the user only if the sync did occur
 }
@@ -98,7 +98,7 @@ export async function getUserOrRedirect() {
     if (!id) await signout(); // This triggers a redirect, which works by throwing an exception, so in subsequent code the id can be safely assumed to be truthy
     const user = await getUser(id!);
     if (!user) await signout(); // Again, this branch triggers an exception if the user object is falsy, so in subsequent code it can be assumed to be truthy
-    if (user!.acceptTokensAfter >= new Date((tokenIat ?? 0) * 1000)) await signout();
+    if (user!.acceptTokensAfter > new Date((tokenIat ?? 0) * 1000)) await signout();
     const syncHappened = await maybeSyncUserHealth(id!);
     return syncHappened ? (await getUser(id!))! : user!; // Re-fetch the user only if the sync did occur
 }
