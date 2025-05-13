@@ -26,11 +26,11 @@ users.
 - React
 - Next.js
 - Tailwind CSS
-- ShadcnUI (components imported from its collection are located inside `src/components/ui/shadcn`)
+- ShadcnUI (components imported from its collection are located inside `src/components/shadcn`)
 - Drizzle ORM
 - PostgreSQL
 
-## Running
+## How to Run the Application
 
 ### Local Development Version
 
@@ -56,7 +56,7 @@ users.
 ### Production Version
 
 1. Ensure you have [Docker Compose](https://docs.docker.com/compose) installed and available, e.g., by
-   downloading [Docker Desktop](https://www.docker.com/products/docker-desktop) and opening it
+   installing [Docker Desktop](https://www.docker.com/products/docker-desktop) and opening it
 2. Clone the repository and navigate into its folder
 3. Create `.env` and fill in the necessary environment variables there. Use `.env.example` for guidance. The process is
    mostly the same as for the `.env.development` file (see development version instructions), but you do not need to specify
@@ -74,9 +74,9 @@ users.
     pnpm run docker:build
     ```
 
-### Tests
+## How to Run Tests
 
-#### Unit Tests
+### Unit Tests
 
 1. Ensure steps 1, 2, and 4 of running the local development version are completed
 2. Create `.env.testing` and fill in the necessary environment variables there. Use `.env.testing.example` for guidance. The process is
@@ -87,7 +87,7 @@ users.
     pnpm run test:unit
     ```
 
-#### End-to-End Tests
+### End-to-End Tests
 
 1. Ensure steps 1 and 2 of running the production version are completed
 2. Ensure step 2 of running the unit tests is completed. Note that the database port in the `.env.testing` file needs to be specified because the Cypress
@@ -98,7 +98,7 @@ users.
     pnpm run test:e2e
     ```
 
-#### All Tests
+### All Tests
 
 1. Ensure steps 1 and 2 of running unit tests are completed
 2. Ensure steps 1 and 2 of running end-to-end tests are completed
